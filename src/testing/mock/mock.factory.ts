@@ -12,8 +12,6 @@ export type MockedInstance<T extends object> = {
 export class MockFactory {
   /**
    * Create a mock Nest.js provider for a Prisma model (injecting a token), providing an object with all Prisma methods set to a mock function
-   * @param entityName - the name of the model token to inject
-   * @returns an object with all prisma methods mocked
    */
   static createForModelToken<T extends PrismaModelToken>(token: T): Provider {
     return {
