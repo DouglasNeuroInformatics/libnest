@@ -1,7 +1,7 @@
 {
-  "name": "@douglasneuroinformatics/nestjs",
-  "version": "3.0.0",
-  "description": "NestJS Core",
+  "name": "@douglasneuroinformatics/nestjs-core",
+  "version": "0.0.1",
+  "description": "Generic NestJS decorators, pipes, modules, and utilities used across DNP projects",
   "license": "LGPL-3.0",
   "type": "module",
   "exports": {
