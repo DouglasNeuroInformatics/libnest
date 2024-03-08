@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, type PipeTransform } from '@nestjs/common';
 
 /**
- * Create
+ * Use the provided schema to transform values
  */
 @Injectable()
 export class ParseSchemaPipe<T> implements PipeTransform<T> {
