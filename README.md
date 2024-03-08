@@ -24,6 +24,7 @@
 
 ![license](https://img.shields.io/github/license/DouglasNeuroInformatics/libnest)
 ![version](https://img.shields.io/github/package-json/v/DouglasNeuroInformatics/libnest)
+[![codecov](https://codecov.io/gh/DouglasNeuroInformatics/libnest/graph/badge.svg?token=3057mHMv7o)](https://codecov.io/gh/DouglasNeuroInformatics/libnest)
 
 </div>
 <hr />
