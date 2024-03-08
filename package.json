@@ -1,9 +1,10 @@
 {
   "name": "@douglasneuroinformatics/libnest",
+  "type": "module",
   "version": "0.0.1",
+  "packageManager": "pnpm@8.15.3",
   "description": "Generic NestJS decorators, pipes, modules, and utilities used across DNP projects",
   "license": "LGPL-3.0",
-  "type": "module",
   "homepage": "https://github.com/DouglasNeuroInformatics/libnest/#readme",
   "repository": {
     "type": "git",
@@ -14,16 +15,16 @@
   },
   "exports": {
     "./core": {
-      "import": "./dist/core/index.js",
-      "types": "./dist/core/index.d.ts"
+      "types": "./dist/core/index.d.ts",
+      "import": "./dist/core/index.js"
     },
     "./modules": {
-      "import": "./dist/modules/index.js",
-      "types": "./dist/modules/index.d.ts"
+      "types": "./dist/modules/index.d.ts",
+      "import": "./dist/modules/index.js"
     },
     "./testing": {
-      "import": "./dist/testing/index.js",
-      "types": "./dist/testing/index.d.ts"
+      "types": "./dist/testing/index.d.ts",
+      "import": "./dist/testing/index.js"
     }
   },
   "files": [
@@ -35,6 +36,16 @@
     "lint": "tsc --noEmit && eslint --fix src",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage"
+  },
+  "peerDependencies": {
+    "@nestjs/common": "^10.2.3",
+    "@nestjs/core": "^10.2.3",
+    "@nestjs/platform-express": "^10.2.5",
+    "@nestjs/testing": "^10.2.5",
+    "express": "^4.18.2",
+    "mongodb": "^6.3.0",
+    "reflect-metadata": "^0.1.13",
+    "rxjs": "^7.8.1"
   },
   "dependencies": {
     "lodash": "^4.17.21",
@@ -59,15 +70,5 @@
     "typescript": "~5.3.3",
     "unplugin-swc": "^1.4.4",
     "vitest": "^1.3.1"
-  },
-  "peerDependencies": {
-    "@nestjs/common": "^10.2.3",
-    "@nestjs/core": "^10.2.3",
-    "@nestjs/platform-express": "^10.2.5",
-    "@nestjs/testing": "^10.2.5",
-    "express": "^4.18.2",
-    "mongodb": "^6.3.0",
-    "reflect-metadata": "^0.1.13",
-    "rxjs": "^7.8.1"
   }
 }
