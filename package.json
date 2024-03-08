@@ -1,9 +1,17 @@
 {
-  "name": "@douglasneuroinformatics/nestjs-core",
+  "name": "@douglasneuroinformatics/libnest",
   "version": "0.0.1",
   "description": "Generic NestJS decorators, pipes, modules, and utilities used across DNP projects",
   "license": "LGPL-3.0",
   "type": "module",
+  "homepage": "https://github.com/DouglasNeuroInformatics/libnest/#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DouglasNeuroInformatics/libnest/.git"
+  },
+  "bugs": {
+    "url": "https://github.com/DouglasNeuroInformatics/libnest/issues"
+  },
   "exports": {
     "./core": {
       "import": "./dist/core/index.js",
@@ -22,13 +30,11 @@
     "dist"
   ],
   "scripts": {
-    "build": "rm -rf dist && pnpm build:js && pnpm build:ts",
-    "build:js": "pnpm exec esbuild --bundle --format=esm --outdir=dist --packages=external --platform=node --sourcemap=external  src/core/index.ts src/modules/index.ts src/testing/index.ts",
-    "build:ts": "tsc -b tsconfig.build.json",
+    "build": "tsc",
     "format": "prettier --write src",
-    "lint": "tsc && eslint --fix src",
-    "push": "pnpm lint && pnpm test && pnpm build && npm publish",
-    "test": "vitest run"
+    "lint": "tsc --noEmit && eslint --fix src",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
     "lodash": "^4.17.21",
@@ -46,6 +52,7 @@
     "@types/express": "^4.17.21",
     "@types/lodash": "^4.14.202",
     "@types/node": "^20.11.21",
+    "@vitest/coverage-v8": "^1.3.1",
     "esbuild": "^0.20.1",
     "eslint": "^8.52.0",
     "prettier": "^3.0.3",
