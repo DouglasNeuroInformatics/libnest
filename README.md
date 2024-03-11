@@ -7,7 +7,7 @@
   <p align="center">
     Generic NestJS decorators, pipes, modules, and utilities used across DNP projects
     <br />
-    <a href="https://github.com/DouglasNeuroInformatics/libnest">
+    <a href="https://douglasneuroinformatics.github.io/libnest/">
       <strong>Explore the docs »
       </strong>
     </a>
