@@ -28,7 +28,7 @@ export default defineConfig({
   test: {
     coverage: {
       include: ['src/**/*'],
-      provider: 'v8',
+      provider: 'v8'
       // thresholds: {
       //   branches: 100,
       //   functions: 100,
