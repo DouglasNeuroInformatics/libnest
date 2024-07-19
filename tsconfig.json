@@ -1,27 +1,12 @@
 {
+  "extends": ["@douglasneuroinformatics/tsconfig"],
   "compilerOptions": {
-    "allowJs": true,
-    "allowSyntheticDefaultImports": true,
-    "checkJs": true,
     "declaration": true,
     "declarationMap": true,
     "emitDecoratorMetadata": true,
-    "esModuleInterop": false,
     "experimentalDecorators": true,
-    "forceConsistentCasingInFileNames": true,
-    "isolatedModules": true,
-    "maxNodeModuleJsDepth": 0,
-    "module": "Node16",
-    "moduleDetection": "force",
-    "moduleResolution": "Node16",
-    "outDir": "dist",
-    "resolveJsonModule": true,
-    "skipLibCheck": true,
-    "strict": true,
-    "strictPropertyInitialization": false,
-    "target": "ESNext",
-    "useDefineForClassFields": true,
-    "verbatimModuleSyntax": true
+    "noEmit": false,
+    "outDir": "dist"
   },
   "include": ["src/**/*"]
 }

@@ -38,10 +38,3 @@ pnpm install @douglasneuroinformatics/libnest
 ## Contributing
 
 We welcome contributions! If you're interested in improving the library or adding new features, please refer to our contribution guide.
-
-## License
-
-Copyright (C) 2024 Douglas Neuroinformatics Platform
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the Apache License, Version 2.0.
