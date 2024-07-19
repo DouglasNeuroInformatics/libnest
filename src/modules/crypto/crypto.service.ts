@@ -6,7 +6,15 @@ import { CRYPTO_MODULE_OPTIONS_TOKEN, type CryptoModuleOptions } from './crypto.
 
 @Injectable()
 export class CryptoService {
-  constructor(@Inject(CRYPTO_MODULE_OPTIONS_TOKEN) private readonly options: CryptoModuleOptions) {}
+  private readonly pbkdf2Params: NonNullable<CryptoModuleOptions['pbkdf2Params']>;
+  private readonly secretKey: string;
+
+  constructor(@Inject(CRYPTO_MODULE_OPTIONS_TOKEN) options: CryptoModuleOptions) {
+    this.pbkdf2Params = options.pbkdf2Params ?? {
+      iterations: 100_000
+    };
+    this.secretKey = options.secretKey;
+  }
 
   async comparePassword(password: string, hashedPassword: string) {
     const [hash, salt] = hashedPassword.split('$');
@@ -17,7 +25,7 @@ export class CryptoService {
   hash(source: string) {
     return crypto
       .createHash('sha256')
-      .update(source + this.options.secretKey)
+      .update(source + this.secretKey)
       .digest('hex');
   }
 
@@ -33,7 +41,7 @@ export class CryptoService {
 
   private pbkdf2(password: string, salt: string): Promise<string> {
     return new Promise((resolve, reject) => {
-      crypto.pbkdf2(password, salt, 100000, 64, 'sha512', (err, key) => {
+      crypto.pbkdf2(password, salt, this.pbkdf2Params.iterations, 64, 'sha512', (err, key) => {
         if (err) {
           return reject(err);
         }
