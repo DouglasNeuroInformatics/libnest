@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.1](https://github.com/DouglasNeuroInformatics/libnest/compare/v0.1.0...v0.1.1) (2024-08-18)
+
+
+### Bug Fixes
+
+* move zod to peers ([1cbadd5](https://github.com/DouglasNeuroInformatics/libnest/commit/1cbadd51dd9a33f52b00e3726617e961ade5967c))
+
 ## [0.1.0](https://github.com/DouglasNeuroInformatics/libnest/compare/v0.0.1...v0.1.0) (2024-07-19)
 
 
