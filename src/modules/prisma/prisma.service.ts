@@ -18,6 +18,10 @@ export class PrismaService implements OnModuleInit, OnApplicationShutdown {
     }
   }
 
+  async getDbName() {
+    return this.client.$runCommandRaw({ dbStats: 1 }).then((stats) => stats.db as string);
+  }
+
   async getDbStats() {
     return (await this.client.$runCommandRaw({ dbStats: 1 })) as {
       collections: number;
