@@ -58,8 +58,8 @@ export class MockFactory {
    * @returns an object representing an instance of T with all own and inherited properties mocked (excluding those of Object.prototype)
    */
   private static createMock<T extends object>(constructor: Class<T>) {
-    const prototype = constructor.prototype as Record<string, unknown>;
-    const obj: Record<string, unknown> = {};
+    const prototype = constructor.prototype as { [key: string]: unknown };
+    const obj: { [key: string]: unknown } = {};
     this.getAllPropertyNames(constructor.prototype)
       .filter((s) => s !== 'constructor')
       .forEach((prop) => {
