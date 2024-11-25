@@ -30,3 +30,5 @@ export class LoggingModule extends ConfigurableLoggingModule implements NestModu
     consumer.apply(LoggerMiddleware).forRoutes('*');
   }
 }
+
+export { JSONLogger } from './json.logger.js';

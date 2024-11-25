@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import type { LogLevel, LoggerService } from '@nestjs/common';
+import type { LoggerService, LogLevel } from '@nestjs/common';
 import chalk from 'chalk';
 import { type ColorName } from 'chalk';
 
