@@ -1,4 +1,4 @@
-import crypto from 'node:crypto';
+import { createHash, pbkdf2, randomBytes } from 'node:crypto';
 
 import { Inject, Injectable } from '@nestjs/common';
 
@@ -23,8 +23,7 @@ export class CryptoService {
   }
 
   hash(source: string) {
-    return crypto
-      .createHash('sha256')
+    return createHash('sha256')
       .update(source + this.secretKey)
       .digest('hex');
   }
@@ -36,12 +35,12 @@ export class CryptoService {
   }
 
   private genSalt() {
-    return crypto.randomBytes(16).toString('hex');
+    return randomBytes(16).toString('hex');
   }
 
   private pbkdf2(password: string, salt: string): Promise<string> {
     return new Promise((resolve, reject) => {
-      crypto.pbkdf2(password, salt, this.pbkdf2Params.iterations, 64, 'sha512', (err, key) => {
+      pbkdf2(password, salt, this.pbkdf2Params.iterations, 64, 'sha512', (err, key) => {
         if (err) {
           return reject(err);
         }
