@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.0](https://github.com/DouglasNeuroInformatics/libnest/compare/v0.3.0...v0.4.0) (2024-11-25)
+
+
+### Features
+
+* rewrite of logging module ([92e53f5](https://github.com/DouglasNeuroInformatics/libnest/commit/92e53f5fce78f651394ce6d381c7404f64c221c0))
+
 ## [0.3.0](https://github.com/DouglasNeuroInformatics/libnest/compare/v0.2.0...v0.3.0) (2024-11-25)
 
 ### Features
