@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/DouglasNeuroInformatics/libnest/compare/v0.2.0...v0.3.0) (2024-11-25)
+
+
+### Features
+
+* add getDbName method to PrismaService ([6059576](https://github.com/DouglasNeuroInformatics/libnest/commit/6059576ccaa0ede295378b6b6c26a7f5b55f406c))
+
 ## [0.2.0](https://github.com/DouglasNeuroInformatics/libnest/compare/v0.1.1...v0.2.0) (2024-11-05)
 
 
