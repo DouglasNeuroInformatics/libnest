@@ -32,3 +32,5 @@ export class LoggingModule extends ConfigurableLoggingModule implements NestModu
 }
 
 export { JSONLogger } from './json.logger.js';
+export type { LoggingModuleOptions } from './logging.config.js';
+export { LoggingService } from './logging.service.js';
