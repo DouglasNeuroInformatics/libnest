@@ -1,4 +1,3 @@
-import { Injectable } from '@nestjs/common';
 import type { LoggerService, LogLevel } from '@nestjs/common';
 import chalk from 'chalk';
 import { type ColorName } from 'chalk';
@@ -14,7 +13,6 @@ const LOG_COLORS: { [K in LogLevel]: ColorName } = {
   warn: 'yellow'
 };
 
-@Injectable()
 export class JSONLogger implements LoggerService {
   private readonly dateFormatter = new Intl.DateTimeFormat('en-CA', {
     day: 'numeric',
@@ -48,6 +46,10 @@ export class JSONLogger implements LoggerService {
 
   log(message: unknown) {
     this.write(message, { file: 'stdout', level: 'log' });
+  }
+
+  setOptions(options: LoggingModuleOptions) {
+    this.options = options;
   }
 
   verbose(message: unknown) {
