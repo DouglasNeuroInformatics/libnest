@@ -15,39 +15,39 @@ const LOG_COLORS: { [K in LogLevel]: ColorName } = {
 };
 
 type LoggerMethod = {
-  (message: unknown, ...optionalParams: [...additionalMessages: any, context?: string]): void;
+  (message: unknown, ...args: [...additionalMessages: any, context?: string]): void;
   (message: unknown, context?: string): void;
 };
 
 export class JSONLogger implements LoggerService {
-  public debug: LoggerMethod = (message: unknown, ...optionalParams: unknown[]) => {
+  public debug: LoggerMethod = (...args) => {
     if (!this.options.debug) {
       return;
     }
-    const { context, messages } = this.getContextAndMessagesToPrint([message, ...optionalParams]);
+    const { context, messages } = this.getContextAndMessagesToPrint(args);
     this.printMessages(messages, { context, file: 'stdout', level: 'debug' });
   };
 
-  public fatal: LoggerMethod = (message: unknown, ...optionalParams: unknown[]) => {
-    const { context, messages } = this.getContextAndMessagesToPrint([message, ...optionalParams]);
+  public fatal: LoggerMethod = (...args) => {
+    const { context, messages } = this.getContextAndMessagesToPrint(args);
     this.printMessages(messages, { context, file: 'stderr', level: 'fatal' });
   };
 
-  public log: LoggerMethod = (message: unknown, ...optionalParams: unknown[]) => {
-    const { context, messages } = this.getContextAndMessagesToPrint([message, ...optionalParams]);
+  public log: LoggerMethod = (...args) => {
+    const { context, messages } = this.getContextAndMessagesToPrint(args);
     this.printMessages(messages, { context, file: 'stdout', level: 'log' });
   };
 
-  public verbose: LoggerMethod = (message: unknown, ...optionalParams: unknown[]) => {
+  public verbose: LoggerMethod = (...args) => {
     if (!this.options.verbose) {
       return;
     }
-    const { context, messages } = this.getContextAndMessagesToPrint([message, ...optionalParams]);
+    const { context, messages } = this.getContextAndMessagesToPrint(args);
     this.printMessages(messages, { context, file: 'stdout', level: 'verbose' });
   };
 
-  public warn: LoggerMethod = (message: unknown, ...optionalParams: unknown[]) => {
-    const { context, messages } = this.getContextAndMessagesToPrint([message, ...optionalParams]);
+  public warn: LoggerMethod = (...args) => {
+    const { context, messages } = this.getContextAndMessagesToPrint(args);
     this.printMessages(messages, { context, file: 'stderr', level: 'warn' });
   };
 
@@ -66,6 +66,7 @@ export class JSONLogger implements LoggerService {
     private readonly context: null | string,
     private readonly options: LoggingModuleOptions
   ) {}
+
   error(message: unknown, stackOrContext?: string): void;
   error(message: unknown, stack?: string, context?: string): void;
   error(message: unknown, ...optionalParams: [...any, string?, string?]): void;
