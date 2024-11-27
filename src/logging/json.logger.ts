@@ -27,7 +27,7 @@ export class JSONLogger implements LoggerService {
 
   constructor(
     private readonly context: null | string,
-    private options: LoggingModuleOptions
+    private readonly options: LoggingModuleOptions
   ) {}
 
   debug(message: unknown) {
@@ -46,10 +46,6 @@ export class JSONLogger implements LoggerService {
 
   log(message: unknown) {
     this.write(message, { file: 'stdout', level: 'log' });
-  }
-
-  setOptions(options: LoggingModuleOptions) {
-    this.options = options;
   }
 
   verbose(message: unknown) {
