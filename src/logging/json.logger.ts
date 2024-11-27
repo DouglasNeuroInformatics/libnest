@@ -1,4 +1,3 @@
-/* eslint-disable no-dupe-class-members */
 import type { LoggerService, LogLevel } from '@nestjs/common';
 import chalk from 'chalk';
 import { type ColorName } from 'chalk';
@@ -27,6 +26,17 @@ export class JSONLogger implements LoggerService {
     const { context, messages } = this.getContextAndMessagesToPrint(args);
     this.printMessages(messages, { context, file: 'stdout', level: 'debug' });
   };
+
+  public error: LoggerMethod = (...args) => {
+    const { context, messages } = this.getContextAndMessagesToPrint(args);
+    this.printMessages(messages, { context, file: 'stderr', level: 'error' });
+  };
+
+  // public error: LoggerMethod = (message: unknown, ...optionalParams: unknown[]) => {
+  //   const { context, messages, stack } = this.getContextAndStackAndMessagesToPrint([message, ...optionalParams]);
+  //   this.printMessages(messages, { context, file: 'stderr', level: 'error' });
+  //   this.printStackTrace(stack);
+  // };
 
   public fatal: LoggerMethod = (...args) => {
     const { context, messages } = this.getContextAndMessagesToPrint(args);
@@ -67,66 +77,51 @@ export class JSONLogger implements LoggerService {
     private readonly options: LoggingModuleOptions
   ) {}
 
-  error(message: unknown, stackOrContext?: string): void;
-  error(message: unknown, stack?: string, context?: string): void;
-  error(message: unknown, ...optionalParams: [...any, string?, string?]): void;
-
-  error(message: unknown, ...optionalParams: unknown[]) {
-    const { context, messages, stack } = this.getContextAndStackAndMessagesToPrint([message, ...optionalParams]);
-    this.printMessages(messages, { context, file: 'stderr', level: 'error' });
-    this.printStackTrace(stack);
-  }
-
   private getContextAndMessagesToPrint(args: unknown[]) {
-    if (args?.length <= 1) {
-      return { context: this.context, messages: args };
-    }
-    const lastElement = args[args.length - 1];
-    const isContext = typeof lastElement === 'string';
-    if (!isContext) {
+    if (args.length <= 1 || typeof args.at(-1) !== 'string') {
       return { context: this.context, messages: args };
     }
     return {
-      context: lastElement,
+      context: args.at(-1) as string,
       messages: args.slice(0, args.length - 1)
     };
   }
 
-  private getContextAndStackAndMessagesToPrint(args: unknown[]) {
-    if (args.length === 2) {
-      return this.isStackFormat(args[1])
-        ? {
-            context: this.context,
-            messages: [args[0]],
-            stack: args[1] as string
-          }
-        : {
-            context: args[1] as string,
-            messages: [args[0]]
-          };
-    }
-    const { context, messages } = this.getContextAndMessagesToPrint(args);
-    if (messages?.length <= 1) {
-      return { context, messages };
-    }
-    const lastElement = messages[messages.length - 1];
-    const isStack = typeof lastElement === 'string';
-    if (!isStack) {
-      return { context, messages };
-    }
-    return {
-      context,
-      messages: messages.slice(0, messages.length - 1),
-      stack: lastElement
-    };
-  }
+  // private getContextAndStackAndMessagesToPrint(args: unknown[]) {
+  //   if (args.length === 2) {
+  //     return this.isStackFormat(args[1])
+  //       ? {
+  //           context: this.context,
+  //           messages: [args[0]],
+  //           stack: args[1] as string
+  //         }
+  //       : {
+  //           context: args[1] as string,
+  //           messages: [args[0]]
+  //         };
+  //   }
+  //   const { context, messages } = this.getContextAndMessagesToPrint(args);
+  //   if (messages?.length <= 1) {
+  //     return { context, messages };
+  //   }
+  //   const lastElement = messages[messages.length - 1];
+  //   const isStack = typeof lastElement === 'string';
+  //   if (!isStack) {
+  //     return { context, messages };
+  //   }
+  //   return {
+  //     context,
+  //     messages: messages.slice(0, messages.length - 1),
+  //     stack: lastElement
+  //   };
+  // }
 
-  private isStackFormat(stack: unknown) {
-    if (typeof stack !== 'string') {
-      return false;
-    }
-    return /^(.)+\n\s+at .+:\d+:\d+/.test(stack);
-  }
+  // private isStackFormat(stack: unknown) {
+  //   if (typeof stack !== 'string') {
+  //     return false;
+  //   }
+  //   return /^(.)+\n\s+at .+:\d+:\d+/.test(stack);
+  // }
 
   private printMessages(
     messages: unknown[],
@@ -150,10 +145,10 @@ export class JSONLogger implements LoggerService {
     });
   }
 
-  private printStackTrace(stack?: string) {
-    if (!stack) {
-      return;
-    }
-    process.stderr.write(`${stack}\n`);
-  }
+  // private printStackTrace(stack?: string) {
+  //   if (!stack) {
+  //     return;
+  //   }
+  //   process.stderr.write(`${stack}\n`);
+  // }
 }
