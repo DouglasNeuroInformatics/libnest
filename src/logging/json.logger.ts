@@ -15,7 +15,7 @@ const LOG_COLORS: { [K in LogLevel]: ColorName } = {
 };
 
 type LoggerMethod = {
-  (message: unknown, ...optionalParams: [...any, string?]): void;
+  (message: unknown, ...optionalParams: [...additionalMessages: any, context?: string]): void;
   (message: unknown, context?: string): void;
 };
 
