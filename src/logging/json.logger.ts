@@ -14,7 +14,43 @@ const LOG_COLORS: { [K in LogLevel]: ColorName } = {
   warn: 'yellow'
 };
 
+type LoggerMethod = {
+  (message: unknown, ...optionalParams: [...any, string?]): void;
+  (message: unknown, context?: string): void;
+};
+
 export class JSONLogger implements LoggerService {
+  public debug: LoggerMethod = (message: unknown, ...optionalParams: unknown[]) => {
+    if (!this.options.debug) {
+      return;
+    }
+    const { context, messages } = this.getContextAndMessagesToPrint([message, ...optionalParams]);
+    this.printMessages(messages, { context, file: 'stdout', level: 'debug' });
+  };
+
+  public fatal: LoggerMethod = (message: unknown, ...optionalParams: unknown[]) => {
+    const { context, messages } = this.getContextAndMessagesToPrint([message, ...optionalParams]);
+    this.printMessages(messages, { context, file: 'stderr', level: 'fatal' });
+  };
+
+  public log: LoggerMethod = (message: unknown, ...optionalParams: unknown[]) => {
+    const { context, messages } = this.getContextAndMessagesToPrint([message, ...optionalParams]);
+    this.printMessages(messages, { context, file: 'stdout', level: 'log' });
+  };
+
+  public verbose: LoggerMethod = (message: unknown, ...optionalParams: unknown[]) => {
+    if (!this.options.verbose) {
+      return;
+    }
+    const { context, messages } = this.getContextAndMessagesToPrint([message, ...optionalParams]);
+    this.printMessages(messages, { context, file: 'stdout', level: 'verbose' });
+  };
+
+  public warn: LoggerMethod = (message: unknown, ...optionalParams: unknown[]) => {
+    const { context, messages } = this.getContextAndMessagesToPrint([message, ...optionalParams]);
+    this.printMessages(messages, { context, file: 'stderr', level: 'warn' });
+  };
+
   private readonly dateFormatter = new Intl.DateTimeFormat('en-CA', {
     day: 'numeric',
     hour: 'numeric',
@@ -30,55 +66,14 @@ export class JSONLogger implements LoggerService {
     private readonly context: null | string,
     private readonly options: LoggingModuleOptions
   ) {}
-
-  debug(message: unknown, context?: string): void;
-  debug(message: unknown, ...optionalParams: [...any, string?]): void;
-  debug(message: unknown, ...optionalParams: unknown[]) {
-    if (!this.options.debug) {
-      return;
-    }
-    const { context, messages } = this.getContextAndMessagesToPrint([message, ...optionalParams]);
-    this.printMessages(messages, { context, file: 'stdout', level: 'debug' });
-  }
-
   error(message: unknown, stackOrContext?: string): void;
   error(message: unknown, stack?: string, context?: string): void;
   error(message: unknown, ...optionalParams: [...any, string?, string?]): void;
+
   error(message: unknown, ...optionalParams: unknown[]) {
     const { context, messages, stack } = this.getContextAndStackAndMessagesToPrint([message, ...optionalParams]);
     this.printMessages(messages, { context, file: 'stderr', level: 'error' });
     this.printStackTrace(stack);
-  }
-
-  fatal(message: unknown, context?: string): void;
-  fatal(message: unknown, ...optionalParams: [...any, string?]): void;
-  fatal(message: unknown, ...optionalParams: unknown[]) {
-    const { context, messages } = this.getContextAndMessagesToPrint([message, ...optionalParams]);
-    this.printMessages(messages, { context, file: 'stderr', level: 'fatal' });
-  }
-
-  log(message: unknown, context?: string): void;
-  log(message: unknown, ...optionalParams: [...any, string?]): void;
-  log(message: unknown, ...optionalParams: unknown[]) {
-    const { context, messages } = this.getContextAndMessagesToPrint([message, ...optionalParams]);
-    this.printMessages(messages, { context, file: 'stdout', level: 'log' });
-  }
-
-  verbose(message: unknown, context?: string): void;
-  verbose(message: unknown, ...optionalParams: [...any, string?]): void;
-  verbose(message: unknown, ...optionalParams: unknown[]) {
-    if (!this.options.verbose) {
-      return;
-    }
-    const { context, messages } = this.getContextAndMessagesToPrint([message, ...optionalParams]);
-    this.printMessages(messages, { context, file: 'stdout', level: 'verbose' });
-  }
-
-  warn(message: unknown, context?: string): void;
-  warn(message: unknown, ...optionalParams: [...any, string?]): void;
-  warn(message: unknown, ...optionalParams: unknown[]) {
-    const { context, messages } = this.getContextAndMessagesToPrint([message, ...optionalParams]);
-    this.printMessages(messages, { context, file: 'stderr', level: 'warn' });
   }
 
   private getContextAndMessagesToPrint(args: unknown[]) {
