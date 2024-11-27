@@ -7,6 +7,9 @@ settings:
 importers:
   .:
     dependencies:
+      '@douglasneuroinformatics/libjs':
+        specifier: 1.x
+        version: 1.0.2(typescript@5.5.4)
       '@nestjs/common':
         specifier: ^10.2.3
         version: 10.4.8(reflect-metadata@0.1.14)(rxjs@7.8.1)
@@ -251,6 +254,12 @@ packages:
     peerDependenciesMeta:
       typescript:
         optional: true
+
+  '@douglasneuroinformatics/libjs@1.0.2':
+    resolution:
+      { integrity: sha512-MyUx0ty8KMZH0ra59TPmzjQH5jtqPuMcGZN7CpzLgZedzcgoIWZCOPbdnjonqyB0q1JaxN8CPIacIFw9NvFS7w== }
+    peerDependencies:
+      typescript: ^5.1.0
 
   '@douglasneuroinformatics/prettier-config@0.0.1':
     resolution:
@@ -5004,6 +5013,11 @@ snapshots:
       - svelte-eslint-parser
       - ts-node
       - vue-eslint-parser
+
+  '@douglasneuroinformatics/libjs@1.0.2(typescript@5.5.4)':
+    dependencies:
+      type-fest: 4.27.0
+      typescript: 5.5.4
 
   '@douglasneuroinformatics/prettier-config@0.0.1(husky@9.1.6)(prettier@3.3.3)':
     dependencies:

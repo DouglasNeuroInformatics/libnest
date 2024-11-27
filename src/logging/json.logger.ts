@@ -1,5 +1,4 @@
-import { Injectable } from '@nestjs/common';
-import type { LogLevel, LoggerService } from '@nestjs/common';
+import type { LoggerService, LogLevel } from '@nestjs/common';
 import chalk from 'chalk';
 import { type ColorName } from 'chalk';
 
@@ -14,8 +13,54 @@ const LOG_COLORS: { [K in LogLevel]: ColorName } = {
   warn: 'yellow'
 };
 
-@Injectable()
+type LoggerMethod = {
+  (message: unknown, ...args: [...additionalMessages: any, context?: string]): void;
+  (message: unknown, context?: string): void;
+};
+
 export class JSONLogger implements LoggerService {
+  public debug: LoggerMethod = (...args) => {
+    if (!this.options.debug) {
+      return;
+    }
+    const { context, messages } = this.getContextAndMessagesToPrint(args);
+    this.printMessages(messages, { context, file: 'stdout', level: 'debug' });
+  };
+
+  public error: LoggerMethod = (...args) => {
+    const { context, messages } = this.getContextAndMessagesToPrint(args);
+    this.printMessages(messages, { context, file: 'stderr', level: 'error' });
+  };
+
+  // public error: LoggerMethod = (message: unknown, ...optionalParams: unknown[]) => {
+  //   const { context, messages, stack } = this.getContextAndStackAndMessagesToPrint([message, ...optionalParams]);
+  //   this.printMessages(messages, { context, file: 'stderr', level: 'error' });
+  //   this.printStackTrace(stack);
+  // };
+
+  public fatal: LoggerMethod = (...args) => {
+    const { context, messages } = this.getContextAndMessagesToPrint(args);
+    this.printMessages(messages, { context, file: 'stderr', level: 'fatal' });
+  };
+
+  public log: LoggerMethod = (...args) => {
+    const { context, messages } = this.getContextAndMessagesToPrint(args);
+    this.printMessages(messages, { context, file: 'stdout', level: 'log' });
+  };
+
+  public verbose: LoggerMethod = (...args) => {
+    if (!this.options.verbose) {
+      return;
+    }
+    const { context, messages } = this.getContextAndMessagesToPrint(args);
+    this.printMessages(messages, { context, file: 'stdout', level: 'verbose' });
+  };
+
+  public warn: LoggerMethod = (...args) => {
+    const { context, messages } = this.getContextAndMessagesToPrint(args);
+    this.printMessages(messages, { context, file: 'stderr', level: 'warn' });
+  };
+
   private readonly dateFormatter = new Intl.DateTimeFormat('en-CA', {
     day: 'numeric',
     hour: 'numeric',
@@ -29,51 +74,81 @@ export class JSONLogger implements LoggerService {
 
   constructor(
     private readonly context: null | string,
-    private options: LoggingModuleOptions
+    private readonly options: LoggingModuleOptions
   ) {}
 
-  debug(message: unknown) {
-    if (this.options.debug) {
-      this.write(message, { file: 'stdout', level: 'debug' });
+  private getContextAndMessagesToPrint(args: unknown[]) {
+    if (args.length <= 1 || typeof args.at(-1) !== 'string') {
+      return { context: this.context, messages: args };
     }
+    return {
+      context: args.at(-1) as string,
+      messages: args.slice(0, args.length - 1)
+    };
   }
 
-  error(message: unknown) {
-    this.write(message, { file: 'stderr', level: 'error' });
-  }
+  // private getContextAndStackAndMessagesToPrint(args: unknown[]) {
+  //   if (args.length === 2) {
+  //     return this.isStackFormat(args[1])
+  //       ? {
+  //           context: this.context,
+  //           messages: [args[0]],
+  //           stack: args[1] as string
+  //         }
+  //       : {
+  //           context: args[1] as string,
+  //           messages: [args[0]]
+  //         };
+  //   }
+  //   const { context, messages } = this.getContextAndMessagesToPrint(args);
+  //   if (messages?.length <= 1) {
+  //     return { context, messages };
+  //   }
+  //   const lastElement = messages[messages.length - 1];
+  //   const isStack = typeof lastElement === 'string';
+  //   if (!isStack) {
+  //     return { context, messages };
+  //   }
+  //   return {
+  //     context,
+  //     messages: messages.slice(0, messages.length - 1),
+  //     stack: lastElement
+  //   };
+  // }
 
-  fatal(message: unknown) {
-    this.write(message, { file: 'stderr', level: 'fatal' });
-  }
+  // private isStackFormat(stack: unknown) {
+  //   if (typeof stack !== 'string') {
+  //     return false;
+  //   }
+  //   return /^(.)+\n\s+at .+:\d+:\d+/.test(stack);
+  // }
 
-  log(message: unknown) {
-    this.write(message, { file: 'stdout', level: 'log' });
-  }
-
-  verbose(message: unknown) {
-    if (this.options.verbose) {
-      this.write(message, { file: 'stdout', level: 'verbose' });
-    }
-  }
-
-  warn(message: unknown) {
-    this.write(message, { file: 'stderr', level: 'warn' });
-  }
-
-  private write(
-    message: unknown,
+  private printMessages(
+    messages: unknown[],
     options: {
+      context: null | string;
       file: 'stderr' | 'stdout';
       level: LogLevel;
     }
   ) {
-    const output = {
-      context: this.context,
-      date: this.dateFormatter.format(new Date()),
-      level: options.level.toUpperCase(),
-      message
-    };
-    process[options.file].write(chalk[LOG_COLORS[options.level]](JSON.stringify(output, null, 2)));
-    process[options.file].write('\n');
+    messages.forEach((message) => {
+      const output: { [key: string]: unknown } = {
+        date: this.dateFormatter.format(new Date()),
+        level: options.level.toUpperCase(),
+        message
+      };
+      if (options.context) {
+        output.context = options.context;
+      }
+      process[options.file].write(chalk[LOG_COLORS[options.level]](JSON.stringify(output, null, 2)));
+      process[options.file].write('\n');
+    });
   }
+
+  // private printStackTrace(stack?: string) {
+  //   if (!stack) {
+  //     return;
+  //   }
+  //   process.stderr.write(`${stack}\n`);
+  // }
 }
