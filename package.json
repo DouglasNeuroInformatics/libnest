@@ -62,6 +62,7 @@
     "zod": "^3.22.6"
   },
   "dependencies": {
+    "@douglasneuroinformatics/libjs": "1.x",
     "chalk": "^5.3.0",
     "lodash": "^4.17.21",
     "type-fest": "^4.27.0"
