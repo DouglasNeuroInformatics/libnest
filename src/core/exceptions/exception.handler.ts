@@ -32,6 +32,7 @@ export class ExceptionHandler implements ExceptionFilter {
   constructor(protected readonly applicationRef?: HttpServer) {}
 
   catch(exception: unknown, host: ArgumentsHost): void {
+    this.loggingService.log();
     const applicationRef = (this.applicationRef ?? this.httpAdapterHost?.httpAdapter)!;
     if (!(exception instanceof HttpException)) {
       return this.handleUnknownError(exception, host, applicationRef);
