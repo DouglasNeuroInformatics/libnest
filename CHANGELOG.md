@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.1](https://github.com/DouglasNeuroInformatics/libnest/compare/v0.5.0...v0.5.1) (2025-01-22)
+
+
+### Bug Fixes
+
+* log error as json ([d5f4277](https://github.com/DouglasNeuroInformatics/libnest/commit/d5f42777b4a56b7dc5ef5ed8cc7290b18dfcce8c))
+
 ## [0.5.0](https://github.com/DouglasNeuroInformatics/libnest/compare/v0.4.0...v0.5.0) (2024-11-27)
 
 
