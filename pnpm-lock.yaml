@@ -43,6 +43,9 @@ importers:
       rxjs:
         specifier: ^7.8.1
         version: 7.8.1
+      serialize-error:
+        specifier: ^12.0.0
+        version: 12.0.0
       type-fest:
         specifier: ^4.27.0
         version: 4.27.0
@@ -4062,6 +4065,11 @@ packages:
       { integrity: sha512-dW41u5VfLXu8SJh5bwRmyYUbAoSB3c9uQh6L8h/KtsFREPWpbX1lrljJo186Jc4nmci/sGUZ9a0a0J2zgfq2hw== }
     engines: { node: '>= 0.8.0' }
 
+  serialize-error@12.0.0:
+    resolution:
+      { integrity: sha512-ZYkZLAvKTKQXWuh5XpBw7CdbSzagarX39WyZ2H07CDLC5/KfsRGlIXV8d4+tfqX1M7916mRqR1QfNHSij+c9Pw== }
+    engines: { node: '>=18' }
+
   serve-static@1.16.2:
     resolution:
       { integrity: sha512-VqpjJZKadQB/PEbEwvFdO43Ax5dFBZ2UECszz8bQ7pi7wt//PWe1P6MN7eCnjsatYtBT6EuiClbjSWP2WrIoTw== }
@@ -4471,6 +4479,11 @@ packages:
   type-fest@4.27.0:
     resolution:
       { integrity: sha512-3IMSWgP7C5KSQqmo1wjhKrwsvXAtF33jO3QY+Uy++ia7hqvgSK6iXbbg5PbDBc1P2ZbNEDgejOrN4YooXvhwCw== }
+    engines: { node: '>=16' }
+
+  type-fest@4.33.0:
+    resolution:
+      { integrity: sha512-s6zVrxuyKbbAsSAD5ZPTB77q4YIdRctkTbJ2/Dqlinwz+8ooH2gd+YA7VA6Pa93KML9GockVvoxjZ2vHP+mu8g== }
     engines: { node: '>=16' }
 
   type-is@1.6.18:
@@ -8184,6 +8197,10 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  serialize-error@12.0.0:
+    dependencies:
+      type-fest: 4.33.0
+
   serve-static@1.16.2:
     dependencies:
       encodeurl: 2.0.0
@@ -8509,6 +8526,8 @@ snapshots:
   type-fest@2.19.0: {}
 
   type-fest@4.27.0: {}
+
+  type-fest@4.33.0: {}
 
   type-is@1.6.18:
     dependencies:

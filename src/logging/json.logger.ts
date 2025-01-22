@@ -1,6 +1,7 @@
 import type { LoggerService, LogLevel } from '@nestjs/common';
 import chalk from 'chalk';
 import { type ColorName } from 'chalk';
+import { isErrorLike, serializeError } from 'serialize-error';
 
 import type { LoggingModuleOptions } from './logging.config.js';
 
@@ -87,42 +88,6 @@ export class JSONLogger implements LoggerService {
     };
   }
 
-  // private getContextAndStackAndMessagesToPrint(args: unknown[]) {
-  //   if (args.length === 2) {
-  //     return this.isStackFormat(args[1])
-  //       ? {
-  //           context: this.context,
-  //           messages: [args[0]],
-  //           stack: args[1] as string
-  //         }
-  //       : {
-  //           context: args[1] as string,
-  //           messages: [args[0]]
-  //         };
-  //   }
-  //   const { context, messages } = this.getContextAndMessagesToPrint(args);
-  //   if (messages?.length <= 1) {
-  //     return { context, messages };
-  //   }
-  //   const lastElement = messages[messages.length - 1];
-  //   const isStack = typeof lastElement === 'string';
-  //   if (!isStack) {
-  //     return { context, messages };
-  //   }
-  //   return {
-  //     context,
-  //     messages: messages.slice(0, messages.length - 1),
-  //     stack: lastElement
-  //   };
-  // }
-
-  // private isStackFormat(stack: unknown) {
-  //   if (typeof stack !== 'string') {
-  //     return false;
-  //   }
-  //   return /^(.)+\n\s+at .+:\d+:\d+/.test(stack);
-  // }
-
   private printMessages(
     messages: unknown[],
     options: {
@@ -135,7 +100,7 @@ export class JSONLogger implements LoggerService {
       const output: { [key: string]: unknown } = {
         date: this.dateFormatter.format(new Date()),
         level: options.level.toUpperCase(),
-        message
+        message: isErrorLike(message) ? serializeError(message) : message
       };
       if (options.context) {
         output.context = options.context;
@@ -144,11 +109,4 @@ export class JSONLogger implements LoggerService {
       process[options.file].write('\n');
     });
   }
-
-  // private printStackTrace(stack?: string) {
-  //   if (!stack) {
-  //     return;
-  //   }
-  //   process.stderr.write(`${stack}\n`);
-  // }
 }
