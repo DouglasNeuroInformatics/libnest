@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/consistent-type-definitions */
-/* eslint-disable @typescript-eslint/no-empty-object-type */
+import type { PrismaUserClient } from '../types.js';
 
 export type PrismaModelName = typeof import('@prisma/client') extends {
   Prisma: {
@@ -15,7 +14,5 @@ export type PrismaClientLike = {
   $runCommandRaw(command: { [key: string]: any }): Promise<{ [key: string]: any }>;
   [key: string]: unknown;
 };
-
-export interface PrismaUserClient extends PrismaClientLike {}
 
 export type Model<T extends PrismaModelName> = PrismaUserClient[`${Uncapitalize<T>}`];

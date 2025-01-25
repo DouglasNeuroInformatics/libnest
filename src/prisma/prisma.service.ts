@@ -3,7 +3,7 @@ import type { OnApplicationShutdown, OnModuleInit } from '@nestjs/common';
 
 import { PRISMA_CLIENT_TOKEN } from './prisma.config.js';
 
-import type { PrismaUserClient } from './prisma.types.js';
+import type { PrismaUserClient } from '../types.js';
 
 @Injectable()
 export class PrismaService implements OnModuleInit, OnApplicationShutdown {

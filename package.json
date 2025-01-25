@@ -35,9 +35,6 @@
       "types": "./dist/prisma/prisma.module.d.ts",
       "import": "./dist/prisma/prisma.module.js"
     },
-    "./prisma/types": {
-      "types": "./dist/prisma/prisma.types.d.ts"
-    },
     "./testing": {
       "types": "./dist/testing/index.d.ts",
       "import": "./dist/testing/index.js"

@@ -11,7 +11,8 @@ import {
 import { PrismaService } from './prisma.service.js';
 import { getModelToken } from './prisma.utils.js';
 
-import type { PrismaModelName, PrismaUserClient } from './prisma.types.js';
+import type { PrismaUserClient } from '../types.js';
+import type { PrismaModelName } from './prisma.types.js';
 
 @Module({})
 export class PrismaModule extends ConfigurablePrismaModule {
