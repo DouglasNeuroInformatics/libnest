@@ -1,7 +1,15 @@
-import type { Prisma } from '@prisma/client';
+/* eslint-disable @typescript-eslint/consistent-type-definitions */
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 
-import type { PrismaFactory } from './prisma.factory.js';
+export type PrismaModelName = string;
 
-export type ExtendedPrismaClient = ReturnType<(typeof PrismaFactory)['createClient']>;
+export type PrismaClientLike = {
+  $connect(): Promise<void>;
+  $disconnect(): Promise<void>;
+  $runCommandRaw(command: { [key: string]: any }): Promise<{ [key: string]: any }>;
+  [key: string]: unknown;
+};
 
-export type Model<T extends Prisma.ModelName> = ExtendedPrismaClient[`${Uncapitalize<T>}`];
+export interface PrismaUserClient extends PrismaClientLike {}
+
+export type Model<T extends PrismaModelName> = PrismaUserClient[`${Uncapitalize<T>}`];
