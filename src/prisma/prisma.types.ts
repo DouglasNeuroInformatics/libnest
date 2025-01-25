@@ -1,7 +1,9 @@
 /* eslint-disable @typescript-eslint/consistent-type-definitions */
 /* eslint-disable @typescript-eslint/no-empty-object-type */
 
-export type PrismaModelName = string;
+export type PrismaModelName = typeof import('@prisma/client').Prisma extends { ModelName: infer TModelName }
+  ? keyof TModelName
+  : string;
 
 export type PrismaClientLike = {
   $connect(): Promise<void>;
