@@ -2,7 +2,9 @@ import { ConfigurableModuleBuilder } from '@nestjs/common';
 
 type LoggingModuleOptions = {
   debug?: boolean;
+  log?: boolean;
   verbose?: boolean;
+  warn?: boolean;
 };
 
 const { ASYNC_OPTIONS_TYPE, ConfigurableModuleClass, MODULE_OPTIONS_TOKEN, OPTIONS_TYPE } =

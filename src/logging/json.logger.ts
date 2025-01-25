@@ -33,18 +33,15 @@ export class JSONLogger implements LoggerService {
     this.printMessages(messages, { context, file: 'stderr', level: 'error' });
   };
 
-  // public error: LoggerMethod = (message: unknown, ...optionalParams: unknown[]) => {
-  //   const { context, messages, stack } = this.getContextAndStackAndMessagesToPrint([message, ...optionalParams]);
-  //   this.printMessages(messages, { context, file: 'stderr', level: 'error' });
-  //   this.printStackTrace(stack);
-  // };
-
   public fatal: LoggerMethod = (...args) => {
     const { context, messages } = this.getContextAndMessagesToPrint(args);
     this.printMessages(messages, { context, file: 'stderr', level: 'fatal' });
   };
 
   public log: LoggerMethod = (...args) => {
+    if (!this.options.log) {
+      return;
+    }
     const { context, messages } = this.getContextAndMessagesToPrint(args);
     this.printMessages(messages, { context, file: 'stdout', level: 'log' });
   };
@@ -58,6 +55,9 @@ export class JSONLogger implements LoggerService {
   };
 
   public warn: LoggerMethod = (...args) => {
+    if (!this.options.warn) {
+      return;
+    }
     const { context, messages } = this.getContextAndMessagesToPrint(args);
     this.printMessages(messages, { context, file: 'stderr', level: 'warn' });
   };
@@ -73,10 +73,18 @@ export class JSONLogger implements LoggerService {
     year: 'numeric'
   });
 
+  private readonly options: LoggingModuleOptions;
+
   constructor(
     private readonly context: null | string,
-    private readonly options: LoggingModuleOptions
-  ) {}
+    options: LoggingModuleOptions
+  ) {
+    this.options = {
+      log: true,
+      warn: true,
+      ...options
+    };
+  }
 
   private getContextAndMessagesToPrint(args: unknown[]) {
     if (args.length <= 1 || typeof args.at(-1) !== 'string') {
