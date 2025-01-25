@@ -6,9 +6,9 @@ import type { Config } from '../types.js';
 
 @Injectable()
 export class ConfigService {
-  constructor(@Inject(CONFIG_TOKEN) private readonly configuration: Config) {}
+  constructor(@Inject(CONFIG_TOKEN) private readonly config: Config) {}
 
   get<TKey extends Extract<keyof Config, string>>(key: TKey): Config[TKey] {
-    return this.configuration[key];
+    return this.config[key];
   }
 }
