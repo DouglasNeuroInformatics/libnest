@@ -35,7 +35,7 @@ importers:
         specifier: ^4.17.21
         version: 4.17.21
       mongodb:
-        specifier: ^6.12.0
+        specifier: ^6.10.0
         version: 6.12.0
       reflect-metadata:
         specifier: ~0.1.13
