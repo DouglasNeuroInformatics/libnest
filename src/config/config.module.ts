@@ -22,7 +22,15 @@ export class ConfigModule {
         {
           provide: CONFIG_TOKEN,
           useFactory: async () => {
-            return options.schema.parseAsync(process.env);
+            const result = await options.schema.safeParseAsync(process.env);
+            if (result.success) {
+              return result.data;
+            }
+            throw new Error('Failed to Parse Environment Variables', {
+              cause: {
+                issues: result.error.issues
+              }
+            });
           }
         },
         ConfigService
