@@ -1,7 +1,11 @@
 /* eslint-disable @typescript-eslint/consistent-type-definitions */
 /* eslint-disable @typescript-eslint/no-empty-object-type */
 
-export type PrismaModelName = typeof import('@prisma/client').Prisma extends { ModelName: infer TModelName }
+export type PrismaModelName = typeof import('@prisma/client') extends {
+  Prisma: {
+    ModelName: infer TModelName;
+  };
+}
   ? keyof TModelName
   : string;
 
