@@ -77,7 +77,7 @@ export class JSONLogger implements LoggerService {
 
   constructor(
     private readonly context: null | string,
-    options: LoggingModuleOptions
+    options?: LoggingModuleOptions
   ) {
     this.options = {
       log: true,
