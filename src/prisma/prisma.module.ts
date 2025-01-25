@@ -4,9 +4,7 @@ import {
   ConfigurablePrismaModule,
   PRISMA_ASYNC_OPTIONS_TYPE,
   PRISMA_CLIENT_TOKEN,
-  PRISMA_MODULE_OPTIONS_TOKEN,
-  PRISMA_OPTIONS_TYPE,
-  type PrismaModuleOptions
+  PRISMA_OPTIONS_TYPE
 } from './prisma.config.js';
 import { PrismaService } from './prisma.service.js';
 import { getModelToken } from './prisma.utils.js';
@@ -45,22 +43,11 @@ export class PrismaModule extends ConfigurablePrismaModule {
     return {
       ...base,
       exports: [...exports, PRISMA_CLIENT_TOKEN, PrismaService],
-      providers: [
-        ...providers,
-        PrismaService,
-        {
-          inject: [PRISMA_MODULE_OPTIONS_TOKEN],
-          provide: PRISMA_CLIENT_TOKEN,
-          useFactory({ client }: PrismaModuleOptions) {
-            return client;
-          }
-        }
-      ]
+      providers: [...providers, PrismaService]
     };
   }
 }
 
-export type { PrismaModuleOptions } from './prisma.config.js';
 export { InjectModel } from './prisma.decorators.js';
 export { PrismaService } from './prisma.service.js';
 export type { Model } from './prisma.types.js';
