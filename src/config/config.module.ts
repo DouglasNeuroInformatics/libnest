@@ -4,12 +4,12 @@ import type { z } from 'zod';
 
 import { ConfigService } from './config.service.js';
 
-import type { Config } from '../types.js';
+import type { AppConfig } from '../types.js';
 
 export const CONFIG_TOKEN = 'LIBNEST_CONFIG';
 
 export type ConfigModuleOptions = {
-  schema: z.ZodType<Config>;
+  schema: z.ZodType<AppConfig>;
 };
 
 @Module({})
