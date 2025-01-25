@@ -1,11 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma, PrismaClient } from '@prisma/client';
 
+import type { PrismaModuleOptions } from './prisma.config.js';
+
 export const PRISMA_CLIENT_TOKEN = 'PRISMA_CLIENT';
 
 @Injectable()
 export class PrismaFactory {
-  static createClient(options: Prisma.PrismaClientOptions) {
+  static createClient(options: PrismaModuleOptions) {
     return new PrismaClient(options).$extends({
       model: {
         $allModels: {
