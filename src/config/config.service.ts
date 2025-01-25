@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 
-import { CONFIG_TOKEN } from './config.module.js';
+import { CONFIG_TOKEN } from './config.token.js';
 
 import type { AppConfig } from '../types.js';
 

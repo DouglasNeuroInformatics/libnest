@@ -3,13 +3,12 @@ import type { DynamicModule } from '@nestjs/common';
 import type { z } from 'zod';
 
 import { ConfigService } from './config.service.js';
+import { CONFIG_TOKEN } from './config.token.js';
 
 import type { AppConfig } from '../types.js';
 
-export const CONFIG_TOKEN = 'LIBNEST_CONFIG';
-
 export type ConfigModuleOptions = {
-  schema: z.ZodType<AppConfig>;
+  schema: z.ZodType<AppConfig, z.ZodTypeDef, { [key: string]: string }>;
 };
 
 @Module({})
