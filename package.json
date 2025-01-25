@@ -39,6 +39,9 @@
   "files": [
     "dist"
   ],
+  "engines": {
+    "node": "22.x"
+  },
   "scripts": {
     "build": "tsc",
     "build:docs": "typedoc",
