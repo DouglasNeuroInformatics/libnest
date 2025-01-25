@@ -1,9 +1,9 @@
 import { ConfigurableModuleBuilder } from '@nestjs/common';
 
-import type { PrismaUserClient } from '../types.js';
+import type { UserPrismaClient } from '../types.js';
 
 type PrismaModuleOptions = {
-  client: PrismaUserClient;
+  client: UserPrismaClient;
 };
 
 const PRISMA_CLIENT_TOKEN = 'PRISMA_CLIENT';

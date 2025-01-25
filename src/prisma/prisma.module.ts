@@ -11,7 +11,7 @@ import {
 import { PrismaService } from './prisma.service.js';
 import { getModelToken } from './prisma.utils.js';
 
-import type { PrismaUserClient } from '../types.js';
+import type { UserPrismaClient } from '../types.js';
 import type { PrismaModelName } from './prisma.types.js';
 
 @Module({})
@@ -25,7 +25,7 @@ export class PrismaModule extends ConfigurablePrismaModule {
         {
           inject: [PRISMA_CLIENT_TOKEN],
           provide: modelToken,
-          useFactory: (client: PrismaUserClient) => {
+          useFactory: (client: UserPrismaClient) => {
             return client[modelName.toLowerCase() as Lowercase<T>];
           }
         }

@@ -3,6 +3,6 @@
 
 import type { PrismaClientLike } from './prisma/prisma.types.js';
 
-export interface AppConfig {}
+export interface UserConfig {}
 
-export interface PrismaUserClient extends PrismaClientLike {}
+export interface UserPrismaClient extends PrismaClientLike {}

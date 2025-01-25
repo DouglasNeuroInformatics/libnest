@@ -1,4 +1,4 @@
-import type { PrismaUserClient } from '../types.js';
+import type { UserPrismaClient } from '../types.js';
 
 export type PrismaModelName = typeof import('@prisma/client') extends {
   Prisma: {
@@ -15,4 +15,4 @@ export type PrismaClientLike = {
   [key: string]: unknown;
 };
 
-export type Model<T extends PrismaModelName> = PrismaUserClient[`${Uncapitalize<T>}`];
+export type Model<T extends PrismaModelName> = UserPrismaClient[`${Uncapitalize<T>}`];
