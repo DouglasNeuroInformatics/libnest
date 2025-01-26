@@ -1,3 +1,4 @@
+import { isPlainObject } from '@douglasneuroinformatics/libjs';
 import type { LoggerService, LogLevel } from '@nestjs/common';
 import chalk from 'chalk';
 import { type ColorName } from 'chalk';
@@ -105,11 +106,16 @@ export class JSONLogger implements LoggerService {
     }
   ) {
     messages.forEach((message) => {
-      const output: { [key: string]: unknown } = {
-        date: this.dateFormatter.format(new Date()),
-        level: options.level.toUpperCase(),
-        message: isErrorLike(message) ? serializeError(message) : message
-      };
+      const output: { [key: string]: unknown } = {};
+      if (isErrorLike(message)) {
+        output.error = serializeError(message);
+      } else if (isPlainObject(message)) {
+        Object.assign(output, message);
+      } else {
+        output.message = message;
+      }
+      output.date = this.dateFormatter.format(new Date());
+      output.level = options.level.toUpperCase();
       if (options.context) {
         output.context = options.context;
       }
