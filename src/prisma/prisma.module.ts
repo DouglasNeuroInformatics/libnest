@@ -48,6 +48,7 @@ export class PrismaModule extends ConfigurablePrismaModule {
   }
 }
 
+export { PRISMA_CLIENT_TOKEN };
 export { InjectModel } from './prisma.decorators.js';
 export { PrismaService } from './prisma.service.js';
 export type { Model } from './prisma.types.js';
