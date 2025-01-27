@@ -39,6 +39,7 @@ export default defineConfig({
       // }
     },
     globals: true,
-    root: './'
+    root: './',
+    watch: false
   }
 });
