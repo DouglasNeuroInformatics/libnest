@@ -2,8 +2,9 @@ import type { Provider } from '@nestjs/common';
 import type { Class } from 'type-fest';
 import { type Mock, vi } from 'vitest';
 
-// This can be overridden in a custom declaration
-export type PrismaModelToken = string;
+import { getModelToken } from '../../prisma/prisma.utils.js';
+
+import type { PrismaModelName } from '../../prisma/prisma.types.js';
 
 export type MockedInstance<T extends object> = {
   [K in keyof T as T[K] extends (...args: any[]) => any ? K : never]: Mock;
@@ -13,7 +14,15 @@ export class MockFactory {
   /**
    * Create a mock Nest.js provider for a Prisma model (injecting a token), providing an object with all Prisma methods set to a mock function
    */
-  static createForModelToken<T extends PrismaModelToken>(token: T): Provider {
+  static createForModel(modelName: PrismaModelName) {
+    return this.createForModelToken(getModelToken(modelName));
+  }
+
+  /**
+   * Create a mock Nest.js provider for a Prisma model (injecting a token), providing an object with all Prisma methods set to a mock function
+   * @deprecated - use `MockFactory.createForModel`
+   */
+  static createForModelToken(token: string): Provider {
     return {
       provide: token,
       useValue: {
