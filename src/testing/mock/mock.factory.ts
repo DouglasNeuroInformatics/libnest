@@ -69,7 +69,7 @@ export class MockFactory {
   private static createMock<T extends object>(constructor: Class<T>) {
     const prototype = constructor.prototype as { [key: string]: unknown };
     const obj: { [key: string]: unknown } = {};
-    this.getAllPropertyNames(constructor.prototype)
+    this.getAllPropertyNames(prototype)
       .filter((s) => s !== 'constructor')
       .forEach((prop) => {
         const value = prototype[prop];
