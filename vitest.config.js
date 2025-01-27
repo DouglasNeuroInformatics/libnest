@@ -29,7 +29,8 @@ export default defineConfig({
     coverage: {
       exclude: ['src/types.ts'],
       include: ['src/**/*'],
-      provider: 'v8'
+      provider: 'v8',
+      skipFull: true
       // thresholds: {
       //   branches: 100,
       //   functions: 100,
