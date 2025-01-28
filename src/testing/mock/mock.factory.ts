@@ -76,7 +76,7 @@ export class MockFactory {
         if (typeof value === 'function') {
           obj[prop] = vi.fn();
         } else {
-          throw new Error(`Unexpected type for property '${prop}': ${typeof prototype[prop]}`);
+          throw new Error(`Unexpected type for property '${prop}': ${typeof value}`);
         }
       });
     return obj as MockedInstance<T>;
