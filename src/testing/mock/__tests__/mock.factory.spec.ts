@@ -6,6 +6,27 @@ import { CryptoService } from '../../../crypto/crypto.service.js';
 import { getModelToken } from '../../../prisma/prisma.utils.js';
 import { type MockedInstance, MockFactory } from '../mock.factory.js';
 
+class Animal {
+  kingdom = 'Animalia';
+  constructor(public age: number) {}
+}
+
+class Dog extends Animal {
+  breed: string;
+  name: string;
+
+  constructor(name: string, age: number, breed: string) {
+    super(age);
+    this.breed = breed;
+    this.name = name;
+  }
+
+  speak() {
+    // eslint-disable-next-line no-console
+    console.log('Woof!');
+  }
+}
+
 describe('MockFactory', () => {
   describe('createForModel', () => {
     it('should provide the correct token', () => {
@@ -37,6 +58,14 @@ describe('MockFactory', () => {
         comparePassword: expect.any(Function),
         hash: expect.any(Function),
         hashPassword: expect.any(Function)
+      });
+    });
+  });
+  describe('createMock', () => {
+    it('should successfully mock all method', () => {
+      const mock = MockFactory.createMock(Dog);
+      expect(mock).toMatchObject({
+        speak: expect.any(Function)
       });
     });
   });
