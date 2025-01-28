@@ -66,7 +66,7 @@ export class MockFactory {
    * @param constructor - the class to mock
    * @returns an object representing an instance of T with all own and inherited properties mocked (excluding those of Object.prototype)
    */
-  private static createMock<T extends object>(constructor: Class<T>) {
+  static createMock<T extends object>(constructor: Class<T>) {
     const prototype = constructor.prototype as { [key: string]: unknown };
     const obj: { [key: string]: unknown } = {};
     this.getAllPropertyNames(prototype)
