@@ -87,7 +87,7 @@ export class MockFactory {
    * @param object - the object whose prototype chain to recurse through
    * @returns an array of string representing all own and inherited properties of the object
    */
-  private static getAllPropertyNames(object: object): string[] {
+  static getAllPropertyNames(object: object): string[] {
     const properties = Object.getOwnPropertyNames(object);
     const prototype: unknown = Object.getPrototypeOf(object);
     if (prototype === Object.prototype) {
