@@ -1,3 +1,6 @@
+/* eslint-disable perfectionist/sort-classes */
+/* eslint-disable no-dupe-class-members */
+
 import { isPlainObject } from '@douglasneuroinformatics/libjs';
 import type { LoggerService, LogLevel } from '@nestjs/common';
 import chalk from 'chalk';
@@ -20,48 +23,68 @@ type LoggerMethod = {
   (message: unknown, context?: string): void;
 };
 
-export class JSONLogger implements LoggerService {
-  public debug: LoggerMethod = (...args) => {
+type JSONLoggerType = {
+  debug: LoggerMethod;
+  error: LoggerMethod;
+  fatal: LoggerMethod;
+  verbose: LoggerMethod;
+  warn: LoggerMethod;
+};
+
+export class JSONLogger implements LoggerService, JSONLoggerType {
+  debug(message: unknown, ...args: [...additionalMessages: any, context?: string]): void;
+  debug(message: unknown, context?: string): void;
+  debug(...args: unknown[]): void {
     if (!this.options.debug) {
       return;
     }
     const { context, messages } = this.getContextAndMessagesToPrint(args);
     this.printMessages(messages, { context, file: 'stdout', level: 'debug' });
-  };
+  }
 
-  public error: LoggerMethod = (...args) => {
+  error(message: unknown, ...args: [...additionalMessages: any, context?: string]): void;
+  error(message: unknown, context?: string): void;
+  error(...args: unknown[]) {
     const { context, messages } = this.getContextAndMessagesToPrint(args);
     this.printMessages(messages, { context, file: 'stderr', level: 'error' });
-  };
+  }
 
-  public fatal: LoggerMethod = (...args) => {
+  fatal(message: unknown, ...args: [...additionalMessages: any, context?: string]): void;
+  fatal(message: unknown, context?: string): void;
+  fatal(...args: unknown[]) {
     const { context, messages } = this.getContextAndMessagesToPrint(args);
     this.printMessages(messages, { context, file: 'stderr', level: 'fatal' });
-  };
+  }
 
-  public log: LoggerMethod = (...args) => {
+  log(message: unknown, ...args: [...additionalMessages: any, context?: string]): void;
+  log(message: unknown, context?: string): void;
+  log(...args: unknown[]) {
     if (!this.options.log) {
       return;
     }
     const { context, messages } = this.getContextAndMessagesToPrint(args);
     this.printMessages(messages, { context, file: 'stdout', level: 'log' });
-  };
+  }
 
-  public verbose: LoggerMethod = (...args) => {
+  verbose(message: unknown, ...args: [...additionalMessages: any, context?: string]): void;
+  verbose(message: unknown, context?: string): void;
+  verbose(...args: unknown[]) {
     if (!this.options.verbose) {
       return;
     }
     const { context, messages } = this.getContextAndMessagesToPrint(args);
     this.printMessages(messages, { context, file: 'stdout', level: 'verbose' });
-  };
+  }
 
-  public warn: LoggerMethod = (...args) => {
+  warn(message: unknown, ...args: [...additionalMessages: any, context?: string]): void;
+  warn(message: unknown, context?: string): void;
+  warn(...args: unknown[]) {
     if (!this.options.warn) {
       return;
     }
     const { context, messages } = this.getContextAndMessagesToPrint(args);
     this.printMessages(messages, { context, file: 'stderr', level: 'warn' });
-  };
+  }
 
   private readonly dateFormatter = new Intl.DateTimeFormat('en-CA', {
     day: 'numeric',
