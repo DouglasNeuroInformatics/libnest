@@ -11,4 +11,12 @@ export class ConfigService {
   get<TKey extends Extract<keyof UserConfig, string>>(key: TKey): UserConfig[TKey] {
     return this.config[key];
   }
+
+  getOrThrow<TKey extends Extract<keyof UserConfig, string>>(key: TKey): Exclude<UserConfig[TKey], undefined> {
+    const value = this.config[key];
+    if (value === undefined) {
+      throw new Error(`Property '${key}' is undefined`);
+    }
+    return value;
+  }
 }
