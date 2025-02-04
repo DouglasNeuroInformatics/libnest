@@ -1,3 +1,5 @@
+import path from 'path';
+
 import swc from 'unplugin-swc';
 import { defineConfig } from 'vitest/config';
 
@@ -40,6 +42,7 @@ export default defineConfig({
     },
     globals: true,
     root: './',
+    setupFiles: [path.resolve(import.meta.dirname, 'src/testing/setup.ts')],
     watch: false
   }
 });
