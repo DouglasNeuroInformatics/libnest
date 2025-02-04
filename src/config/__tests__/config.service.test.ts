@@ -7,6 +7,7 @@ import { CONFIG_TOKEN } from '../config.token.js';
 describe('ConfigService', () => {
   let configService: ConfigService & {
     get: (key: unknown) => unknown;
+    getOrThrow: (key: unknown) => unknown;
   };
 
   beforeEach(async () => {
@@ -24,13 +25,17 @@ describe('ConfigService', () => {
     configService = moduleRef.get(ConfigService);
   });
 
-  it('should be defined', () => {
-    expect(configService).toBeDefined();
-  });
-
   describe('get', () => {
     it('should return the value provided by the token', () => {
       expect(configService.get('foo')).toBe(true);
+    });
+  });
+  describe('getOrThrow', () => {
+    it('should return the value provided by the token', () => {
+      expect(configService.getOrThrow('foo')).toBe(true);
+    });
+    it('should throw if attempting to get a property that is undefined', () => {
+      expect(() => configService.getOrThrow('bar')).toThrow("Property 'bar' is undefined");
     });
   });
 });
