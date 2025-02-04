@@ -1,4 +1,4 @@
-import { createParamDecorator } from '@nestjs/common';
+import { createParamDecorator, InternalServerErrorException } from '@nestjs/common';
 
 import type { AppRequest } from '../types.js';
 
@@ -10,8 +10,10 @@ type CurrentUserDecorator = (key?: Extract<keyof AppRequest['user'], string>) =>
  */
 export const CurrentUser: CurrentUserDecorator = createParamDecorator((key, context) => {
   const request = context.switchToHttp().getRequest<AppRequest>();
-  if (key) {
-    return request.user?.[key];
+  if (!request.user) {
+    throw new InternalServerErrorException('Request object does not include expected user property');
+  } else if (key) {
+    return request.user[key];
   }
   return request.user;
 });
