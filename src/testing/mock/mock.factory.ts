@@ -72,12 +72,7 @@ export class MockFactory {
     this.getAllPropertyNames(prototype)
       .filter((s) => s !== 'constructor')
       .forEach((prop) => {
-        const value = prototype[prop];
-        if (typeof value === 'function') {
-          obj[prop] = vi.fn();
-        } else {
-          throw new Error(`Unexpected type for property '${prop}': ${typeof value}`);
-        }
+        obj[prop] = vi.fn();
       });
     return obj as MockedInstance<T>;
   }
