@@ -2,8 +2,7 @@ import * as module from 'node:module';
 
 import { InvalidArgumentError, program } from 'commander';
 
-import { $BootstrapFunction, $ConfigOptions } from './schemas.js';
-import { importDefault, resolveAbsoluteImportPath } from './utils.js';
+import { resolveAbsoluteImportPath, resolveBootstrapFunction } from './utils.js';
 
 module.register('@swc-node/register/esm', import.meta.url);
 
@@ -29,29 +28,13 @@ program
   })
   .action(async function () {
     const { configFile } = this.opts<{ configFile: string }>();
+    const result = await resolveBootstrapFunction(configFile);
 
-    const configResult = await importDefault(configFile, $ConfigOptions);
-    if (configResult.isErr()) {
-      program.error(configResult.error, { exitCode: 1 });
+    if (result.isErr()) {
+      program.error(result.error, { exitCode: 1 });
     }
 
-    const { entry, globals } = configResult.value;
-
-    const bootstrapResult = await importDefault(entry, $BootstrapFunction);
-    if (bootstrapResult.isErr()) {
-      program.error(bootstrapResult.error, { exitCode: 1 });
-    }
-
-    if (globals) {
-      Object.entries(globals).forEach(([key, value]) => {
-        Object.defineProperty(globalThis, key, {
-          value,
-          writable: false
-        });
-      });
-    }
-
-    await bootstrapResult.value();
+    await result.value();
   });
 
 await program.parseAsync(process.argv);

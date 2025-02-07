@@ -5,6 +5,8 @@ import { err, ok } from 'neverthrow';
 import type { Result } from 'neverthrow';
 import type { z } from 'zod';
 
+import { $BootstrapFunction, $ConfigOptions, type BootstrapFunction } from './schemas.js';
+
 export function resolveAbsoluteImportPath(filename: string): Result<string, string> {
   const filepath = path.resolve(process.cwd(), filename);
   const extension = path.extname(filepath);
@@ -39,4 +41,30 @@ export async function importDefault<TSchema extends z.ZodTypeAny>(
     return err(`Invalid default export in file '${filepath}'`);
   }
   return ok(result.data);
+}
+
+export async function resolveBootstrapFunction(configFile: string): Promise<Result<BootstrapFunction, string>> {
+  const configResult = await importDefault(configFile, $ConfigOptions);
+
+  if (configResult.isErr()) {
+    return err(configResult.error);
+  }
+
+  const { entry, globals } = configResult.value;
+
+  const bootstrapResult = await importDefault(entry, $BootstrapFunction);
+  if (bootstrapResult.isErr()) {
+    return bootstrapResult;
+  }
+
+  if (globals) {
+    Object.entries(globals).forEach(([key, value]) => {
+      Object.defineProperty(globalThis, key, {
+        value,
+        writable: false
+      });
+    });
+  }
+
+  return bootstrapResult;
 }

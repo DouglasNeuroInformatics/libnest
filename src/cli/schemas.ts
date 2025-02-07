@@ -18,4 +18,5 @@ export const $ConfigOptions = z.object({
   globals: z.record(z.unknown()).optional()
 });
 
+export type BootstrapFunction = z.infer<typeof $BootstrapFunction>;
 export const $BootstrapFunction = z.function().returns(z.promise(z.void()));
