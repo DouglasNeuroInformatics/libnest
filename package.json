@@ -31,6 +31,7 @@
       "types": "./dist/logging/logging.module.d.ts",
       "import": "./dist/logging/logging.module.js"
     },
+    "./package.json": "./package.json",
     "./prisma": {
       "types": "./dist/prisma/prisma.module.d.ts",
       "import": "./dist/prisma/prisma.module.js"
@@ -42,6 +43,9 @@
     "./types": {
       "types": "./dist/types.d.ts"
     }
+  },
+  "bin": {
+    "libnest": "./dist/cli.js"
   },
   "files": [
     "dist"
@@ -73,7 +77,10 @@
   },
   "dependencies": {
     "@douglasneuroinformatics/libjs": "1.x",
+    "@swc-node/register": "^1.10.9",
+    "@swc/core": "^1.10.14",
     "chalk": "^5.4.1",
+    "commander": "^13.1.0",
     "lodash": "^4.17.21",
     "serialize-error": "^12.0.0",
     "type-fest": "^4.33.0"
