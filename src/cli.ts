@@ -20,8 +20,8 @@ program.allowExcessArguments(false);
 
 const dev = program.command('dev');
 
-dev.argument('<entry>', 'the entry file', (filename) => {
-  const filepath = path.join(process.cwd(), filename);
+function parseEntryArgument(filename: string): string {
+  const filepath = path.resolve(process.cwd(), filename);
   const extension = path.extname(filepath);
   if (!fs.existsSync(filepath)) {
     throw new InvalidArgumentError(`File does not exist: ${filepath}`);
@@ -31,9 +31,9 @@ dev.argument('<entry>', 'the entry file', (filename) => {
     throw new InvalidArgumentError(`Unexpected file extension '${extension}': must be '.js' or '.ts'`);
   }
   return filepath;
-});
+}
 
-dev.action(async (entry: string) => {
+async function devAction(entry: string) {
   const { default: main } = (await import(entry)) as { [key: string]: any };
   if (typeof main === 'undefined') {
     program.error(`Missing required default export from entry file: ${entry}`, { exitCode: 1 });
@@ -42,6 +42,10 @@ dev.action(async (entry: string) => {
   }
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call
   main();
-});
+}
 
-program.parse(process.argv);
+dev.argument('<entry>', 'the entry file', parseEntryArgument);
+
+dev.action(devAction);
+
+await program.parseAsync(process.argv);
