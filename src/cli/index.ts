@@ -35,9 +35,20 @@ program
       program.error(configResult.error, { exitCode: 1 });
     }
 
-    const bootstrapResult = await importDefault(configResult.value.entry, $BootstrapFunction);
+    const { entry, globals } = configResult.value;
+
+    const bootstrapResult = await importDefault(entry, $BootstrapFunction);
     if (bootstrapResult.isErr()) {
       program.error(bootstrapResult.error, { exitCode: 1 });
+    }
+
+    if (globals) {
+      Object.entries(globals).forEach(([key, value]) => {
+        Object.defineProperty(globalThis, key, {
+          value,
+          writable: false
+        });
+      });
     }
 
     await bootstrapResult.value();

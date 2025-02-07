@@ -14,7 +14,8 @@ export const $ConfigOptions = z.object({
       return z.NEVER;
     }
     return result.value;
-  })
+  }),
+  globals: z.record(z.unknown()).optional()
 });
 
 export const $BootstrapFunction = z.function().returns(z.promise(z.void()));
