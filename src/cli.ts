@@ -17,7 +17,10 @@ const program = new Command();
 program.name(name);
 program.version(version);
 program.allowExcessArguments(false);
-program.argument('<entry>', 'the entry file', (filename) => {
+
+const dev = program.command('dev');
+
+dev.argument('<entry>', 'the entry file', (filename) => {
   const filepath = path.join(process.cwd(), filename);
   const extension = path.extname(filepath);
   if (!fs.existsSync(filepath)) {
@@ -30,19 +33,15 @@ program.argument('<entry>', 'the entry file', (filename) => {
   return filepath;
 });
 
+dev.action(async (entry: string) => {
+  const { default: main } = (await import(entry)) as { [key: string]: any };
+  if (typeof main === 'undefined') {
+    program.error(`Missing required default export from entry file: ${entry}`, { exitCode: 1 });
+  } else if (typeof main !== 'function') {
+    program.error(`Error: Default export from entry file '${entry}' is not a function`, { exitCode: 1 });
+  }
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+  main();
+});
+
 program.parse(process.argv);
-
-const [entry] = program.processedArgs as [string];
-
-const { default: main } = (await import(entry)) as { [key: string]: any };
-
-if (!main) {
-  console.error(`Missing required default export from entry file: ${entry}`);
-  process.exit(1);
-} else if (typeof main !== 'function') {
-  console.error(`Error: Default export from entry file '${entry}' is not a function`);
-  process.exit(1);
-}
-
-// eslint-disable-next-line @typescript-eslint/no-unsafe-call
-main();
