@@ -131,3 +131,6 @@ dist
 
 # typedoc
 ./docs/
+
+# local scripts for linking
+local/
