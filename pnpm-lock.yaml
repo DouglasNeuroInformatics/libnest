@@ -46,6 +46,9 @@ importers:
       mongodb:
         specifier: ^6.10.0
         version: 6.12.0
+      neverthrow:
+        specifier: ^8.1.1
+        version: 8.1.1
       reflect-metadata:
         specifier: ~0.1.13
         version: 0.1.14
@@ -3454,6 +3457,11 @@ packages:
   nerf-dart@1.0.0:
     resolution:
       { integrity: sha512-EZSPZB70jiVsivaBLYDCyntd5eH8NTSMOn3rB+HxwdmKThGELLdYv8qVIMWvZEFy9w8ZZpW9h9OB32l1rGtj7g== }
+
+  neverthrow@8.1.1:
+    resolution:
+      { integrity: sha512-DpbZ/UDI0B+TxJB1JysXSfi1++3YK2xLBqQLTlRN0b4zxlZ2MoiB+dKKV8dMRzt1fAFjRKDknXOVJgpl+a4Amw== }
+    engines: { node: '>=18' }
 
   node-emoji@2.2.0:
     resolution:
@@ -7734,6 +7742,10 @@ snapshots:
   neo-async@2.6.2: {}
 
   nerf-dart@1.0.0: {}
+
+  neverthrow@8.1.1:
+    optionalDependencies:
+      '@rollup/rollup-linux-x64-gnu': 4.32.0
 
   node-emoji@2.2.0:
     dependencies:
