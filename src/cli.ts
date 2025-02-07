@@ -2,50 +2,104 @@ import * as fs from 'node:fs';
 import * as module from 'node:module';
 import * as path from 'node:path';
 
-import { Command, InvalidArgumentError } from 'commander';
-import type { PackageJson } from 'type-fest';
+import { InvalidArgumentError, program } from 'commander';
+import { err, ok } from 'neverthrow';
+import type { Result } from 'neverthrow';
+import { z } from 'zod';
 
 module.register('@swc-node/register/esm', import.meta.url);
 
+type ConfigOptions = z.infer<typeof $ConfigOptions>;
+const $ConfigOptions = z.object({
+  entry: z.string().transform((arg, ctx) => {
+    const result = resolveAbsoluteImportPath(arg);
+    if (result.isErr()) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: result.error
+      });
+      return z.NEVER;
+    }
+    return result.value;
+  })
+});
+
+const $BootstrapFunction = z.function().returns(z.promise(z.void()));
+
+const baseDir = process.cwd();
+
 const require = module.createRequire(import.meta.url);
 
-const { name, version } = require('@douglasneuroinformatics/libnest/package.json') as Required<
-  Pick<PackageJson, 'name' | 'version'>
->;
+function resolveAbsoluteImportPath(filename: string): Result<string, string> {
+  const filepath = path.resolve(baseDir, filename);
+  const extension = path.extname(filepath);
+  if (!fs.existsSync(filepath)) {
+    err(`File does not exist: ${filepath}`);
+  } else if (!fs.lstatSync(filepath).isFile()) {
+    err(`Not a file: ${filepath}`);
+  } else if (!(extension === '.js' || extension === '.ts')) {
+    err(`Unexpected file extension '${extension}': must be '.js' or '.ts'`);
+  }
+  return ok(filepath);
+}
 
-const program = new Command();
+async function importDefault<TSchema extends z.ZodTypeAny>(
+  filepath: string,
+  schema: TSchema
+): Promise<Result<z.TypeOf<TSchema>, string>> {
+  let defaultExport: unknown;
+  try {
+    const exports = (await import(filepath)) as { [key: string]: unknown };
+    defaultExport = exports.default;
+  } catch (error) {
+    console.error(error);
+    return err(`Failed to import module: ${filepath}`);
+  }
+  if (defaultExport === undefined) {
+    return err(`Missing required default export in file '${filepath}'`);
+  }
+  const result = await schema.safeParseAsync(defaultExport);
+  if (!result.success) {
+    console.error(result.error.message);
+    return err(`Invalid default export in file '${filepath}'`);
+  }
+  return ok(result.data);
+}
+
+const { name, version } = require('@douglasneuroinformatics/libnest/package.json') as {
+  name: string;
+  version: string;
+};
+
 program.name(name);
 program.version(version);
 program.allowExcessArguments(false);
 
-const dev = program.command('dev');
+program
+  .command('dev')
+  .requiredOption('-c, --config-file <path>', 'path to the config file', (filename) => {
+    const result = resolveAbsoluteImportPath(filename);
+    if (result.isErr()) {
+      throw new InvalidArgumentError(result.error);
+    }
+    return result.value;
+  })
+  .action(async function () {
+    const { configFile } = this.opts<{ configFile: string }>();
 
-function parseEntryArgument(filename: string): string {
-  const filepath = path.resolve(process.cwd(), filename);
-  const extension = path.extname(filepath);
-  if (!fs.existsSync(filepath)) {
-    throw new InvalidArgumentError(`File does not exist: ${filepath}`);
-  } else if (!fs.lstatSync(filepath).isFile()) {
-    throw new InvalidArgumentError(`Not a file: ${filepath}`);
-  } else if (!(extension === '.js' || extension === '.ts')) {
-    throw new InvalidArgumentError(`Unexpected file extension '${extension}': must be '.js' or '.ts'`);
-  }
-  return filepath;
-}
+    const configResult = await importDefault(configFile, $ConfigOptions);
+    if (configResult.isErr()) {
+      program.error(configResult.error, { exitCode: 1 });
+    }
 
-async function devAction(entry: string) {
-  const { default: main } = (await import(entry)) as { [key: string]: any };
-  if (typeof main === 'undefined') {
-    program.error(`Missing required default export from entry file: ${entry}`, { exitCode: 1 });
-  } else if (typeof main !== 'function') {
-    program.error(`Error: Default export from entry file '${entry}' is not a function`, { exitCode: 1 });
-  }
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-  main();
-}
+    const bootstrapResult = await importDefault(configResult.value.entry, $BootstrapFunction);
+    if (bootstrapResult.isErr()) {
+      program.error(bootstrapResult.error, { exitCode: 1 });
+    }
 
-dev.argument('<entry>', 'the entry file', parseEntryArgument);
-
-dev.action(devAction);
+    await bootstrapResult.value();
+  });
 
 await program.parseAsync(process.argv);
+
+export type { ConfigOptions };
