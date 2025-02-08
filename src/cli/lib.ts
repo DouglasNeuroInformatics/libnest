@@ -27,7 +27,7 @@ export function resolveAbsoluteImportPath(filename: string): Result<string, stri
   return ok(filepath);
 }
 
-export function importModule(filepath: string) {
+export function importModule(filepath: string): ResultAsync<{ [key: string]: unknown }, string> {
   return ResultAsync.fromThrowable(
     () => import(filepath) as Promise<{ [key: string]: unknown }>,
     (error) => {
@@ -37,33 +37,23 @@ export function importModule(filepath: string) {
   )();
 }
 
-export async function importDefault<TSchema extends z.ZodTypeAny>(
+export function importDefault<TSchema extends z.ZodTypeAny>(
   filename: string,
   schema: TSchema
-): Promise<Result<z.TypeOf<TSchema>, string>> {
-  const resolveResult = resolveAbsoluteImportPath(filename);
-  if (resolveResult.isErr()) {
-    return err(resolveResult.error);
-  }
-  const filepath = resolveResult.value;
-
-  let defaultExport: unknown;
-  try {
-    const exports = (await import(filepath)) as { [key: string]: unknown };
-    defaultExport = exports.default;
-  } catch (error) {
-    console.error(error);
-    return err(`Failed to import module: ${filepath}`);
-  }
-  if (defaultExport === undefined) {
-    return err(`Missing required default export in module: ${filepath}`);
-  }
-  const result = await schema.safeParseAsync(defaultExport);
-  if (!result.success) {
-    console.error(result.error.issues);
-    return err(`Invalid default export in module: ${filepath}`);
-  }
-  return ok(result.data);
+): ResultAsync<z.TypeOf<TSchema>, string> {
+  return resolveAbsoluteImportPath(filename).asyncAndThen((filepath) => {
+    return importModule(filepath).andThen(({ default: defaultExport }) => {
+      if (defaultExport === undefined) {
+        return err(`Missing required default export in module: ${filepath}`);
+      }
+      const result = schema.safeParse(defaultExport);
+      if (!result.success) {
+        console.error(result.error.issues);
+        return err(`Invalid default export in module: ${filepath}`);
+      }
+      return ok(result.data as z.TypeOf<TSchema>);
+    });
+  });
 }
 
 export async function resolveBootstrapFunction(configFile: string): Promise<Result<BootstrapFunction, string>> {
