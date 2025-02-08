@@ -23,9 +23,15 @@ export function resolveAbsoluteImportPath(filename: string): Result<string, stri
 }
 
 export async function importDefault<TSchema extends z.ZodTypeAny>(
-  filepath: string,
+  filename: string,
   schema: TSchema
 ): Promise<Result<z.TypeOf<TSchema>, string>> {
+  const resolveResult = resolveAbsoluteImportPath(filename);
+  if (resolveResult.isErr()) {
+    return err(resolveResult.error);
+  }
+  const filepath = resolveResult.value;
+
   let defaultExport: unknown;
   try {
     const exports = (await import(filepath)) as { [key: string]: unknown };
@@ -35,12 +41,12 @@ export async function importDefault<TSchema extends z.ZodTypeAny>(
     return err(`Failed to import module: ${filepath}`);
   }
   if (defaultExport === undefined) {
-    return err(`Missing required default export in file '${filepath}'`);
+    return err(`Missing required default export in module: ${filepath}`);
   }
   const result = await schema.safeParseAsync(defaultExport);
   if (!result.success) {
     console.error(result.error.issues);
-    return err(`Invalid default export in file '${filepath}'`);
+    return err(`Invalid default export in module: ${filepath}`);
   }
   return ok(result.data);
 }
