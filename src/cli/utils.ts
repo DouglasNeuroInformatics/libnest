@@ -5,7 +5,9 @@ import { err, ok } from 'neverthrow';
 import type { Result } from 'neverthrow';
 import type { z } from 'zod';
 
-import { $BootstrapFunction, $ConfigOptions, type BootstrapFunction } from './schemas.js';
+import { $BootstrapFunction, $ConfigOptions } from './schemas.js';
+
+import type { BootstrapFunction } from './schemas.js';
 
 export function resolveAbsoluteImportPath(filename: string): Result<string, string> {
   const filepath = path.resolve(process.cwd(), filename);
