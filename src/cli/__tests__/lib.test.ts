@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Mock } from 'vitest';
 import { z } from 'zod';
 
-import { importDefault, importModule, resolveAbsoluteImportPath, resolveBootstrapFunction } from '../lib.js';
+import { importDefault, importModule, resolveAbsoluteImportPath, resolveBootstrapFunction, runDev } from '../lib.js';
 
 import type { ConfigOptions } from '../lib.js';
 
@@ -178,5 +178,25 @@ describe('resolveBootstrapFunction', () => {
     expect(Reflect.get(global, '__TEST__')).toBe(true);
     expect(result.isOk()).toBe(true);
     expect(result.unwrapOr(null)).toBeTypeOf('function');
+  });
+});
+
+describe('runDev', () => {
+  beforeEach(() => {
+    vi.spyOn(fs, 'existsSync').mockReturnValue(true);
+    vi.spyOn(fs, 'lstatSync').mockReturnValue({ isFile: () => true } as any);
+  });
+
+  it('should call the bootstrap function', async () => {
+    const bootstrap = vi.fn();
+    vi.doMock(resolvedConfigFile, () => ({
+      default: {
+        entry: entryFile
+      } satisfies ConfigOptions
+    }));
+    vi.doMock(resolvedEntryFile, () => ({ default: bootstrap }));
+    const result = await runDev(configFile);
+    expect(result.isOk()).toBe(true);
+    expect(bootstrap).toHaveBeenCalledOnce();
   });
 });
