@@ -4,8 +4,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Mock } from 'vitest';
 import { z } from 'zod';
 
-import * as schemas from '../schemas.js';
 import { importDefault, resolveAbsoluteImportPath, resolveBootstrapFunction } from '../utils.js';
+
+import type { ConfigOptions } from '../schemas.js';
 
 const configFile = 'libnest.config.ts';
 const entryFile = 'src/main.ts';
@@ -81,6 +82,13 @@ describe('importDefault', () => {
     vi.spyOn(fs, 'lstatSync').mockReturnValue({ isFile: () => true } as any);
   });
 
+  it('should return an error if the module cannot be resolved', async () => {
+    vi.spyOn(fs, 'existsSync').mockReturnValueOnce(false);
+    await expect(importDefault(entryFile, schema)).resolves.toMatchObject({
+      error: `File does not exist: ${resolvedEntryFile}`
+    });
+  });
+
   it('should fail to import a module that does not exist', async () => {
     await expect(importDefault(entryFile, schema)).resolves.toMatchObject({
       error: `Failed to import module: ${resolvedEntryFile}`
@@ -138,12 +146,29 @@ describe('resolveBootstrapFunction', () => {
     vi.doMock(resolvedConfigFile, () => ({
       default: {
         entry: entryFile
-      } satisfies schemas.ConfigOptions
+      } satisfies ConfigOptions
     }));
     vi.doMock(resolvedEntryFile, () => ({ default: 0 }));
     const result = await resolveBootstrapFunction(configFile);
     expect(result).toMatchObject({
       error: `Invalid default export in module: ${resolvedEntryFile}`
     });
+  });
+
+  it('should assign properties to the global object if specified', async () => {
+    vi.doMock(resolvedConfigFile, () => ({
+      default: {
+        entry: entryFile,
+        globals: {
+          __TEST__: true
+        }
+      } satisfies ConfigOptions
+    }));
+    vi.doMock(resolvedEntryFile, () => ({ default: vi.fn() }));
+    expect(Reflect.get(global, '__TEST__')).toBe(undefined);
+    const result = await resolveBootstrapFunction(configFile);
+    expect(Reflect.get(global, '__TEST__')).toBe(true);
+    expect(result.isOk()).toBe(true);
+    expect(result.unwrapOr(null)).toBeTypeOf('function');
   });
 });
