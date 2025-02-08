@@ -1,7 +1,7 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 
-import { err, ok } from 'neverthrow';
+import { err, ok, ResultAsync } from 'neverthrow';
 import type { Result } from 'neverthrow';
 import { z } from 'zod';
 
@@ -25,6 +25,16 @@ export function resolveAbsoluteImportPath(filename: string): Result<string, stri
     return err(`Unexpected file extension '${extension}': must be '.js' or '.ts'`);
   }
   return ok(filepath);
+}
+
+export function importModule(filepath: string) {
+  return ResultAsync.fromThrowable(
+    () => import(filepath) as Promise<{ [key: string]: unknown }>,
+    (error) => {
+      console.error(error);
+      return `Failed to import module: ${filepath}`;
+    }
+  )();
 }
 
 export async function importDefault<TSchema extends z.ZodTypeAny>(

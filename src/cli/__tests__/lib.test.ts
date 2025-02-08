@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Mock } from 'vitest';
 import { z } from 'zod';
 
-import { importDefault, resolveAbsoluteImportPath, resolveBootstrapFunction } from '../lib.js';
+import { importDefault, importModule, resolveAbsoluteImportPath, resolveBootstrapFunction } from '../lib.js';
 
 import type { ConfigOptions } from '../lib.js';
 
@@ -66,6 +66,14 @@ describe('resolveAbsoluteImportPath', () => {
     expect(resolveAbsoluteImportPath('/root/src/main.ts')).toMatchObject({
       value: '/root/src/main.ts'
     });
+  });
+});
+
+describe('importModule', () => {
+  it('should return an if the module does not exist', async () => {
+    const filepath = '/dev/null/foo.js';
+    const result = await importModule(filepath);
+    expect(result.isErr() && result.error === `Failed to import module: ${filepath}`);
   });
 });
 
