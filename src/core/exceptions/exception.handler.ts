@@ -1,91 +1,33 @@
-import { isObject, isObjectLike } from '@douglasneuroinformatics/libjs';
-import { Catch, HttpException, HttpStatus, Inject, Optional } from '@nestjs/common';
-import type { ArgumentsHost, ExceptionFilter, HttpServer } from '@nestjs/common';
-import { AbstractHttpAdapter, HttpAdapterHost } from '@nestjs/core';
-import { MESSAGES } from '@nestjs/core/constants.js';
-import type { Simplify } from 'type-fest';
-
-import { LoggingService } from '../../logging/logging.service.js';
-
-type ErrorLike = {
-  [key: string]: unknown;
-  message: string;
-  name: string;
-  stack?: string;
-};
-
-type HttpErrorLike = Simplify<
-  ErrorLike & {
-    statusCode: number;
-  }
->;
+import { Catch, HttpException, HttpStatus } from '@nestjs/common';
+import type { ArgumentsHost, ExceptionFilter } from '@nestjs/common';
+import { HttpAdapterHost } from '@nestjs/core';
+import type { ExpressAdapter } from '@nestjs/platform-express';
+import type { Request, Response } from 'express';
 
 @Catch()
 export class ExceptionHandler implements ExceptionFilter {
-  @Optional()
-  @Inject()
-  private readonly httpAdapterHost?: HttpAdapterHost;
+  constructor(private readonly httpAdapterHost: HttpAdapterHost<ExpressAdapter>) {}
 
-  @Inject()
-  private readonly loggingService: LoggingService;
+  catch(exception: unknown, argumentsHost: ArgumentsHost): void {
+    const { httpAdapter } = this.httpAdapterHost;
 
-  constructor(protected readonly applicationRef?: HttpServer) {}
+    const ctx = argumentsHost.switchToHttp();
+    const req = ctx.getRequest<Request>();
+    const res = ctx.getResponse<Response>();
 
-  catch(exception: unknown, host: ArgumentsHost): void {
-    const applicationRef = (this.applicationRef ?? this.httpAdapterHost?.httpAdapter)!;
-    if (!(exception instanceof HttpException)) {
-      return this.handleUnknownError(exception, host, applicationRef);
-    }
-    const res = exception.getResponse();
-    const message = isObject(res)
-      ? res
-      : {
-          message: res,
-          statusCode: exception.getStatus()
-        };
-    const response: unknown = host.getArgByIndex(1);
-    if (!applicationRef.isHeadersSent(response)) {
-      applicationRef.reply(response, message, exception.getStatus());
+    let httpStatus: HttpStatus;
+    if (exception instanceof HttpException) {
+      httpStatus = exception.getStatus();
     } else {
-      applicationRef.end(response);
+      httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
     }
-  }
 
-  handleUnknownError(exception: unknown, host: ArgumentsHost, applicationRef: AbstractHttpAdapter | HttpServer) {
-    const body = this.isHttpErrorLike(exception)
-      ? {
-          message: exception.message,
-          statusCode: exception.statusCode
-        }
-      : {
-          message: MESSAGES.UNKNOWN_EXCEPTION_MESSAGE,
-          statusCode: HttpStatus.INTERNAL_SERVER_ERROR
-        };
-    const response: unknown = host.getArgByIndex(1);
-    if (!applicationRef.isHeadersSent(response)) {
-      applicationRef.reply(response, body, body.statusCode);
-    } else {
-      applicationRef.end(response);
-    }
-    this.loggingService.error(exception);
-  }
+    const responseBody = {
+      path: httpAdapter.getRequestUrl(req),
+      statusCode: httpStatus,
+      timestamp: new Date().toISOString()
+    };
 
-  private isErrorLike(err: unknown): err is ErrorLike {
-    if (!isObjectLike(err)) {
-      return false;
-    }
-    const { message, name, stack } = err as { [key: string]: unknown };
-    return (
-      typeof message === 'string' &&
-      typeof name === 'string' &&
-      (typeof stack === 'undefined' || typeof stack === 'string')
-    );
-  }
-
-  private isHttpErrorLike(err: unknown): err is HttpErrorLike {
-    if (!this.isErrorLike(err)) {
-      return false;
-    }
-    return typeof err.statusCode === 'number';
+    httpAdapter.reply(res, responseBody, httpStatus);
   }
 }
