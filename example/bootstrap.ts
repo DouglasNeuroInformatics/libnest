@@ -4,8 +4,6 @@ import type { NestExpressApplication } from '@nestjs/platform-express';
 import { JSONLogger } from '../src/logging/json.logger.js';
 import { AppModule } from './app.module.js';
 
-import 'reflect-metadata';
-
 export default async function bootstrap(): Promise<void> {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     bufferLogs: true
