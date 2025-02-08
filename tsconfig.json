@@ -3,16 +3,11 @@
   "compilerOptions": {
     "allowJs": true,
     "checkJs": true,
-    "declaration": true,
-    "declarationMap": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "maxNodeModuleJsDepth": 0,
-    "noEmit": false,
-    "outDir": "dist",
     "resolveJsonModule": true,
-    "rootDir": "src",
     "strictPropertyInitialization": false
   },
-  "include": ["src/**/*"]
+  "include": ["example/**/*", "src/**/*"]
 }

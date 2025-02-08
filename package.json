@@ -58,10 +58,10 @@
     "node": "22.x"
   },
   "scripts": {
-    "build": "rm -rf dist && tsc",
+    "build": "rm -rf dist && tsc -b tsconfig.build.json",
     "build:docs": "typedoc",
     "format": "prettier --write src",
-    "lint": "tsc --noEmit && eslint --fix src",
+    "lint": "tsc && eslint --fix src",
     "prepare": "husky",
     "test": "vitest",
     "test:coverage": "vitest --coverage"
