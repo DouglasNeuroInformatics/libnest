@@ -4,9 +4,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Mock } from 'vitest';
 import { z } from 'zod';
 
-import { importDefault, resolveAbsoluteImportPath, resolveBootstrapFunction } from '../utils.js';
+import { importDefault, resolveAbsoluteImportPath, resolveBootstrapFunction } from '../lib.js';
 
-import type { ConfigOptions } from '../schemas.js';
+import type { ConfigOptions } from '../lib.js';
 
 const configFile = 'libnest.config.ts';
 const entryFile = 'src/main.ts';

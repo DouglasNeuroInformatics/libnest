@@ -3,11 +3,16 @@ import * as path from 'node:path';
 
 import { err, ok } from 'neverthrow';
 import type { Result } from 'neverthrow';
-import type { z } from 'zod';
+import { z } from 'zod';
 
-import { $BootstrapFunction, $ConfigOptions } from './schemas.js';
+export type ConfigOptions = z.infer<typeof $ConfigOptions>;
+export const $ConfigOptions = z.object({
+  entry: z.string().min(1),
+  globals: z.record(z.unknown()).optional()
+});
 
-import type { BootstrapFunction } from './schemas.js';
+export type BootstrapFunction = z.infer<typeof $BootstrapFunction>;
+export const $BootstrapFunction = z.function().returns(z.promise(z.void()));
 
 export function resolveAbsoluteImportPath(filename: string): Result<string, string> {
   const filepath = path.resolve(process.cwd(), filename);

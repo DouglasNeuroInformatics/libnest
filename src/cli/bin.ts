@@ -2,7 +2,7 @@ import * as module from 'node:module';
 
 import { InvalidArgumentError, program } from 'commander';
 
-import { resolveAbsoluteImportPath, resolveBootstrapFunction } from './utils.js';
+import { resolveAbsoluteImportPath, resolveBootstrapFunction } from './lib.js';
 
 module.register('@swc-node/register/esm', import.meta.url);
 
@@ -39,4 +39,4 @@ program
 
 await program.parseAsync(process.argv);
 
-export type { ConfigOptions } from './schemas.js';
+export type { ConfigOptions } from './lib.js';
