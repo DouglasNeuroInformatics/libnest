@@ -49,7 +49,7 @@
     }
   },
   "bin": {
-    "libnest": "./dist/cli/index.js"
+    "libnest": "./dist/cli/bin.js"
   },
   "files": [
     "dist"
