@@ -58,7 +58,7 @@
     "node": "22.x"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "rm -rf dist && tsc",
     "build:docs": "typedoc",
     "format": "prettier --write src",
     "lint": "tsc --noEmit && eslint --fix src",
