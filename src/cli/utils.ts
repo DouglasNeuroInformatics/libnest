@@ -11,11 +11,11 @@ export function resolveAbsoluteImportPath(filename: string): Result<string, stri
   const filepath = path.resolve(process.cwd(), filename);
   const extension = path.extname(filepath);
   if (!fs.existsSync(filepath)) {
-    err(`File does not exist: ${filepath}`);
+    return err(`File does not exist: ${filepath}`);
   } else if (!fs.lstatSync(filepath).isFile()) {
-    err(`Not a file: ${filepath}`);
+    return err(`Not a file: ${filepath}`);
   } else if (!(extension === '.js' || extension === '.ts')) {
-    err(`Unexpected file extension '${extension}': must be '.js' or '.ts'`);
+    return err(`Unexpected file extension '${extension}': must be '.js' or '.ts'`);
   }
   return ok(filepath);
 }
