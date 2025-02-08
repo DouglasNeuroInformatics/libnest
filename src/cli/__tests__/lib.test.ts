@@ -70,10 +70,10 @@ describe('resolveAbsoluteImportPath', () => {
 });
 
 describe('importModule', () => {
-  it('should return an if the module does not exist', async () => {
+  it('should return an error if the module does not exist', async () => {
     const filepath = '/dev/null/foo.js';
     const result = await importModule(filepath);
-    expect(result.isErr() && result.error === `Failed to import module: ${filepath}`);
+    expect(result.isErr() && result.error === `Failed to import module: ${filepath}`).toBe(true);
   });
 });
 
