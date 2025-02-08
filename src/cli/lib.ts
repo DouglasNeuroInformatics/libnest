@@ -71,3 +71,9 @@ export function resolveBootstrapFunction(configFile: string): ResultAsync<Bootst
     })
   );
 }
+
+export function runDev(configFile: string): ResultAsync<void, string> {
+  return resolveBootstrapFunction(configFile).map(async (bootstrap) => {
+    await bootstrap();
+  });
+}

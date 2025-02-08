@@ -2,7 +2,7 @@ import * as module from 'node:module';
 
 import { InvalidArgumentError, program } from 'commander';
 
-import { resolveAbsoluteImportPath, resolveBootstrapFunction } from './lib.js';
+import { resolveAbsoluteImportPath, runDev } from './lib.js';
 
 module.register('@swc-node/register/esm', import.meta.url);
 
@@ -28,13 +28,9 @@ program
   })
   .action(async function () {
     const { configFile } = this.opts<{ configFile: string }>();
-    const result = await resolveBootstrapFunction(configFile);
-
-    if (result.isErr()) {
-      program.error(result.error, { exitCode: 1 });
-    }
-
-    await result.value();
+    await runDev(configFile).mapErr((error) => {
+      program.error(error, { exitCode: 1 });
+    });
   });
 
 await program.parseAsync(process.argv);
