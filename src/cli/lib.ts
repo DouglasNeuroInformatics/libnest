@@ -41,8 +41,8 @@ export function importDefault<TSchema extends z.ZodTypeAny>(
   filename: string,
   schema: TSchema
 ): ResultAsync<z.TypeOf<TSchema>, string> {
-  return resolveAbsoluteImportPath(filename).asyncAndThen((filepath) => {
-    return importModule(filepath).andThen(({ default: defaultExport }) => {
+  return resolveAbsoluteImportPath(filename).asyncAndThen((filepath) =>
+    importModule(filepath).andThen(({ default: defaultExport }) => {
       if (defaultExport === undefined) {
         return err(`Missing required default export in module: ${filepath}`);
       }
@@ -52,32 +52,22 @@ export function importDefault<TSchema extends z.ZodTypeAny>(
         return err(`Invalid default export in module: ${filepath}`);
       }
       return ok(result.data as z.TypeOf<TSchema>);
-    });
-  });
+    })
+  );
 }
 
-export async function resolveBootstrapFunction(configFile: string): Promise<Result<BootstrapFunction, string>> {
-  const configResult = await importDefault(configFile, $ConfigOptions);
-
-  if (configResult.isErr()) {
-    return err(configResult.error);
-  }
-
-  const { entry, globals } = configResult.value;
-
-  const bootstrapResult = await importDefault(entry, $BootstrapFunction);
-  if (bootstrapResult.isErr()) {
-    return bootstrapResult;
-  }
-
-  if (globals) {
-    Object.entries(globals).forEach(([key, value]) => {
-      Object.defineProperty(globalThis, key, {
-        value,
-        writable: false
-      });
-    });
-  }
-
-  return bootstrapResult;
+export function resolveBootstrapFunction(configFile: string): ResultAsync<BootstrapFunction, string> {
+  return importDefault(configFile, $ConfigOptions).andThen(({ entry, globals }) =>
+    importDefault(entry, $BootstrapFunction).map((bootstrap) => {
+      if (globals) {
+        Object.entries(globals).forEach(([key, value]) => {
+          Object.defineProperty(globalThis, key, {
+            value,
+            writable: false
+          });
+        });
+      }
+      return bootstrap;
+    })
+  );
 }
