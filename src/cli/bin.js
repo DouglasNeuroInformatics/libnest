@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import * as module from 'node:module';
 
 import { InvalidArgumentError, program } from 'commander';
@@ -8,10 +10,8 @@ module.register('@swc-node/register/esm', import.meta.url);
 
 const require = module.createRequire(import.meta.url);
 
-const { name, version } = require('@douglasneuroinformatics/libnest/package.json') as {
-  name: string;
-  version: string;
-};
+/** @type {{ name: string, version: string}} */
+const { name, version } = require('@douglasneuroinformatics/libnest/package.json');
 
 program.name(name);
 program.version(version);
@@ -27,12 +27,10 @@ program
     return result.value;
   })
   .action(async function () {
-    const { configFile } = this.opts<{ configFile: string }>();
+    const { configFile } = this.opts();
     await runDev(configFile).mapErr((error) => {
       program.error(error, { exitCode: 1 });
     });
   });
 
 await program.parseAsync(process.argv);
-
-export type { ConfigOptions } from './lib.js';
