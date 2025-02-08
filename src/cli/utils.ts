@@ -37,7 +37,7 @@ export async function importDefault<TSchema extends z.ZodTypeAny>(
   }
   const result = await schema.safeParseAsync(defaultExport);
   if (!result.success) {
-    console.error(result.error.message);
+    console.error(result.error.issues);
     return err(`Invalid default export in file '${filepath}'`);
   }
   return ok(result.data);
