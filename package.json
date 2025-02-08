@@ -60,6 +60,7 @@
   "scripts": {
     "build": "rm -rf dist && tsc -b tsconfig.build.json",
     "build:docs": "typedoc",
+    "example:dev": "node src/cli/bin.js dev -c libnest.config.ts",
     "format": "prettier --write src",
     "lint": "tsc && eslint --fix src",
     "prepare": "husky",
