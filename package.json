@@ -49,9 +49,10 @@
     }
   },
   "bin": {
-    "libnest": "./dist/cli/bin.js"
+    "libnest": "./bin/cli.js"
   },
   "files": [
+    "bin",
     "dist"
   ],
   "engines": {
@@ -59,10 +60,11 @@
   },
   "scripts": {
     "build": "rm -rf dist && tsc -b tsconfig.build.json",
-    "build:docs": "typedoc",
-    "example:dev": "./src/cli/bin.js dev -c libnest.config.ts",
+    "docs:build": "typedoc",
+    "docs:dev": "concurrently \"typedoc --watch\" \"http-server docs -c-1\"",
+    "example:dev": "./bin/cli.js dev -c libnest.config.ts",
     "format": "prettier --write src",
-    "lint": "tsc && eslint --fix src",
+    "lint": "tsc && eslint --fix bin example src",
     "prepare": "husky",
     "test": "vitest",
     "test:coverage": "vitest --coverage"
@@ -103,8 +105,11 @@
     "@types/node": "^22.10.10",
     "@types/supertest": "^6.0.2",
     "@vitest/coverage-v8": "^3.0.4",
+    "concurrently": "^9.1.2",
     "esbuild": "^0.24.2",
     "eslint": "9.19.0",
+    "expect-type": "^1.1.0",
+    "http-server": "^14.1.1",
     "husky": "^9.1.7",
     "prettier": "^3.4.2",
     "supertest": "^7.0.0",

@@ -3,7 +3,7 @@ import * as path from 'node:path';
 
 import { describe, expect, it } from 'vitest';
 
-const program = path.resolve(import.meta.dirname, '../bin.js');
+const program = path.resolve(import.meta.dirname, '../cli.js');
 
 describe('CLI', () => {
   it('should successfully output help', () => {

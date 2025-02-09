@@ -4,8 +4,7 @@ import * as path from 'node:path';
 import { err, ok, ResultAsync } from 'neverthrow';
 import { z } from 'zod';
 
-/** @typedef {import('zod').infer<typeof $ConfigOptions>} ConfigOptions */
-
+/** @type {z.ZodType<Libnest.ConfigOptions>} */
 const $ConfigOptions = z.object({
   entry: z.string().min(1),
   globals: z.record(z.unknown()).optional()

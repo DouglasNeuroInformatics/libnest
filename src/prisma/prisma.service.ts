@@ -3,11 +3,11 @@ import type { OnApplicationShutdown, OnModuleInit } from '@nestjs/common';
 
 import { PRISMA_CLIENT_TOKEN } from './prisma.config.js';
 
-import type { UserPrismaClient } from '../types.js';
+import type { PrismaClient } from '../types.js';
 
 @Injectable()
 export class PrismaService implements OnModuleInit, OnApplicationShutdown {
-  constructor(@Inject(PRISMA_CLIENT_TOKEN) public readonly client: UserPrismaClient) {}
+  constructor(@Inject(PRISMA_CLIENT_TOKEN) public readonly client: PrismaClient) {}
 
   async dropDatabase() {
     const result = await this.client.$runCommandRaw({ dropDatabase: 1 });

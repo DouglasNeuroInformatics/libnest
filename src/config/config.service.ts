@@ -2,17 +2,17 @@ import { Inject, Injectable } from '@nestjs/common';
 
 import { CONFIG_TOKEN } from './config.token.js';
 
-import type { UserConfig } from '../types.js';
+import type { RuntimeConfig } from '../types.js';
 
 @Injectable()
 export class ConfigService {
-  constructor(@Inject(CONFIG_TOKEN) private readonly config: UserConfig) {}
+  constructor(@Inject(CONFIG_TOKEN) private readonly config: RuntimeConfig) {}
 
-  get<TKey extends Extract<keyof UserConfig, string>>(key: TKey): UserConfig[TKey] {
+  get<TKey extends Extract<keyof RuntimeConfig, string>>(key: TKey): RuntimeConfig[TKey] {
     return this.config[key];
   }
 
-  getOrThrow<TKey extends Extract<keyof UserConfig, string>>(key: TKey): Exclude<UserConfig[TKey], undefined> {
+  getOrThrow<TKey extends Extract<keyof RuntimeConfig, string>>(key: TKey): Exclude<RuntimeConfig[TKey], undefined> {
     const value = this.config[key];
     if (value === undefined) {
       throw new Error(`Property '${key}' is undefined`);

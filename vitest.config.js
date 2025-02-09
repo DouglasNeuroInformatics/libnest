@@ -32,15 +32,16 @@ export default defineConfig({
       exclude: ['**/index.ts', '**/types.ts'],
       include: ['src/**/*'],
       provider: 'v8',
-      skipFull: true
-      // thresholds: {
-      //   branches: 100,
-      //   functions: 100,
-      //   lines: 100,
-      //   statements: 100
-      // }
+      skipFull: true,
+      thresholds: {
+        branches: 80,
+        functions: 80,
+        lines: 60,
+        statements: 60
+      }
     },
     globals: true,
+    include: ['{bin,example,src}/**/*.{test,spec}.?(c|m)[jt]s?(x)'],
     root: './',
     setupFiles: [path.resolve(import.meta.dirname, 'src/testing/setup.ts')],
     watch: false

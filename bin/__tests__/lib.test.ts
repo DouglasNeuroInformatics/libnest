@@ -6,7 +6,7 @@ import { z } from 'zod';
 
 import { importDefault, importModule, resolveAbsoluteImportPath, resolveBootstrapFunction, runDev } from '../lib.js';
 
-import type { ConfigOptions } from '../lib.js';
+import type { ConfigOptions } from '../../src/types.js';
 
 const configFile = 'libnest.config.ts';
 const entryFile = 'src/main.ts';

@@ -9,8 +9,7 @@ import {
 import { PrismaService } from './prisma.service.js';
 import { getModelToken } from './prisma.utils.js';
 
-import type { UserPrismaClient } from '../types.js';
-import type { PrismaModelName } from './prisma.types.js';
+import type { PrismaClient, PrismaModelName } from '../types.js';
 
 @Module({})
 export class PrismaModule extends ConfigurablePrismaModule {
@@ -23,7 +22,7 @@ export class PrismaModule extends ConfigurablePrismaModule {
         {
           inject: [PRISMA_CLIENT_TOKEN],
           provide: modelToken,
-          useFactory: (client: UserPrismaClient) => {
+          useFactory: (client: PrismaClient) => {
             return client[modelName.toLowerCase() as Lowercase<T>];
           }
         }
@@ -51,5 +50,4 @@ export class PrismaModule extends ConfigurablePrismaModule {
 export { PRISMA_CLIENT_TOKEN };
 export { InjectModel } from './prisma.decorators.js';
 export { PrismaService } from './prisma.service.js';
-export type { Model } from './prisma.types.js';
 export { getModelToken } from './prisma.utils.js';

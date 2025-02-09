@@ -4,7 +4,7 @@ import { type Mock, vi } from 'vitest';
 
 import { getModelToken } from '../../prisma/prisma.utils.js';
 
-import type { PrismaModelName } from '../../prisma/prisma.types.js';
+import type { PrismaModelName } from '../../types.js';
 
 export type MockedInstance<T extends object> = {
   [K in keyof T as T[K] extends (...args: any[]) => any ? K : never]: Mock;

@@ -130,7 +130,7 @@ dist
 .pnp.*
 
 # typedoc
-./docs/
+/docs/
 
 # local scripts for linking
-local/
+bin/_*.*

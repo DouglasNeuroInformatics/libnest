@@ -1,5 +1,6 @@
 {
   "$schema": "https://typedoc.org/schema.json",
-  "entryPoints": ["src/core/index.ts", "src/modules/index.ts", "src/testing/index.ts"],
-  "out": "docs"
+  "entryPoints": ["src/index.ts"],
+  "out": "docs",
+  "cleanOutputDir": true
 }

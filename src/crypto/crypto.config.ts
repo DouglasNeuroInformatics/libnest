@@ -10,9 +10,9 @@ type CryptoModuleOptions = {
 };
 
 const { ConfigurableModuleClass, MODULE_OPTIONS_TOKEN } = new ConfigurableModuleBuilder<CryptoModuleOptions>()
-  .setExtras({ isGlobal: false }, (definition, extras) => ({
+  .setExtras({}, (definition) => ({
     ...definition,
-    global: extras.isGlobal
+    global: true
   }))
   .build();
 
