@@ -1,6 +1,15 @@
 import { isNumberLike, parseNumber } from '@douglasneuroinformatics/libjs';
 import { z } from 'zod';
 
+/**
+ * Schema definition for the base runtime configuration.
+ *
+ * This schema validates and transforms environment variables used in the application. Users
+ * can extend this schema to include additional configuration parameters.
+ *
+ * @see {@link BaseRuntimeConfig}
+ * @see {@link user-config!RuntimeConfig | RuntimeConfig}
+ */
 export const $BaseRuntimeConfig = z.object({
   API_DEV_SERVER_PORT: z
     .string()
@@ -24,4 +33,13 @@ export const $BaseRuntimeConfig = z.object({
     .transform((arg) => arg === 'true')
 });
 
+/**
+ * Type representing the base runtime configuration.
+ *
+ * Users can extend the {@link $BaseRuntimeConfig} schema in their application.
+ * Any extended schema must have, as it's output, a type that is assignable to this type.
+ *
+ * @see {@link $BaseRuntimeConfig}
+ * @see {@link user-config!RuntimeConfig | RuntimeConfig}
+ */
 export type BaseRuntimeConfig = z.infer<typeof $BaseRuntimeConfig>;
