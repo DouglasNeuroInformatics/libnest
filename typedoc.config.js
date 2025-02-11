@@ -23,5 +23,5 @@ export default {
   cleanOutputDir: true,
   entryPoints,
   out: path.resolve(import.meta.dirname, 'docs'),
-  plugin: ['typedoc-plugin-zod']
+  plugin: ['typedoc-material-theme', 'typedoc-plugin-zod']
 };
