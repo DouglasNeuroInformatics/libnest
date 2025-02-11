@@ -23,7 +23,7 @@ type ImportedModule = NonNullable<ModuleMetadata['imports']>[number] & {
 };
 
 type CreateAppOptions = {
-  callback: (app: NestExpressApplication, config: RuntimeConfig) => Promisable<void>;
+  callback: (app: NestExpressApplication, config: RuntimeConfig, logger: JSONLogger) => Promisable<void>;
   docs?: {
     config: DocsConfig;
     path: `/${string}.json`;
@@ -62,7 +62,7 @@ export class AppFactory {
       });
     }
 
-    return callback(app, config);
+    return callback(app, config, logger);
   }
 
   private static createAppModule({
