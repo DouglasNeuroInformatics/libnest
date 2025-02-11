@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 
 import { CONFIG_TOKEN } from './config.token.js';
 
-import type { RuntimeConfig } from '../types.js';
+import type { RuntimeConfig } from '../user-config.js';
 
 @Injectable()
 export class ConfigService {
@@ -17,6 +17,6 @@ export class ConfigService {
     if (value === undefined) {
       throw new Error(`Property '${key}' is undefined`);
     }
-    return value;
+    return value as Exclude<RuntimeConfig[TKey], undefined>;
   }
 }

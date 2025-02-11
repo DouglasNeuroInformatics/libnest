@@ -10,6 +10,7 @@ type CryptoModuleOptions = {
 };
 
 const { ConfigurableModuleClass, MODULE_OPTIONS_TOKEN } = new ConfigurableModuleBuilder<CryptoModuleOptions>()
+  .setClassMethodName('forRoot')
   .setExtras({}, (definition) => ({
     ...definition,
     global: true

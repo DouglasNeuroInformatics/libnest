@@ -7,7 +7,7 @@ import chalk from 'chalk';
 import { type ColorName } from 'chalk';
 import { isErrorLike, serializeError } from 'serialize-error';
 
-import type { LoggingModuleOptions } from './logging.config.js';
+import type { LoggingOptions } from './logging.config.js';
 
 const LOG_COLORS: { [K in LogLevel]: ColorName } = {
   debug: 'green',
@@ -97,11 +97,11 @@ export class JSONLogger implements LoggerService, JSONLoggerType {
     year: 'numeric'
   });
 
-  private readonly options: LoggingModuleOptions;
+  private readonly options: LoggingOptions;
 
   constructor(
     private readonly context: null | string,
-    options?: LoggingModuleOptions
+    options?: LoggingOptions
   ) {
     this.options = {
       log: true,
@@ -142,8 +142,9 @@ export class JSONLogger implements LoggerService, JSONLoggerType {
       if (options.context) {
         output.context = options.context;
       }
-      process[options.file].write(chalk[LOG_COLORS[options.level]](JSON.stringify(output, null, 2)));
-      process[options.file].write('\n');
+      const format = chalk[LOG_COLORS[options.level]];
+      const content = format(JSON.stringify(output, null, 2) + '\n');
+      process[options.file].write(content);
     });
   }
 }

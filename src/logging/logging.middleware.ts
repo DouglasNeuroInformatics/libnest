@@ -3,13 +3,13 @@ import type { NestMiddleware } from '@nestjs/common';
 import type { NextFunction, Request, Response } from 'express';
 
 import { JSONLogger } from './json.logger.js';
-import { LOGGING_MODULE_OPTIONS_TOKEN, type LoggingModuleOptions } from './logging.config.js';
+import { LOGGING_OPTIONS_TOKEN, type LoggingOptions } from './logging.config.js';
 
 @Injectable()
-export class LoggerMiddleware implements NestMiddleware {
+export class LoggingMiddleware implements NestMiddleware {
   private readonly logger: JSONLogger;
 
-  constructor(@Inject(LOGGING_MODULE_OPTIONS_TOKEN) options: LoggingModuleOptions) {
+  constructor(@Inject(LOGGING_OPTIONS_TOKEN) options: LoggingOptions) {
     this.logger = new JSONLogger('HTTP', options);
   }
 

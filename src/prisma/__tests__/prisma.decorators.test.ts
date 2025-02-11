@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { InjectModel } from '../prisma.decorators.js';
 
-import type { PrismaModelName } from '../../types.js';
+import type { PrismaModelName } from '../prisma.types.js';
 
 const Inject = vi.hoisted(() => vi.fn(() => 'INJECTED'));
 const getModelToken = vi.hoisted(() => vi.fn((modelName: PrismaModelName) => `MockToken_${modelName}`));

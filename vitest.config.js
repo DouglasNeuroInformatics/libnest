@@ -29,19 +29,16 @@ export default defineConfig({
   ],
   test: {
     coverage: {
-      exclude: ['**/index.ts', '**/types.ts'],
+      exclude: ['src/**/?(*.)index.ts', 'src/**/*.test-d.ts', 'src/user-config.ts'],
       include: ['src/**/*'],
       provider: 'v8',
       skipFull: true,
       thresholds: {
-        branches: 80,
-        functions: 80,
-        lines: 60,
-        statements: 60
+        100: true
       }
     },
     globals: true,
-    include: ['{bin,example,src}/**/*.{test,spec}.?(c|m)[jt]s?(x)'],
+    include: ['src/**/*.{test,spec}.?(c|m)[jt]s?(x)'],
     root: './',
     setupFiles: [path.resolve(import.meta.dirname, 'src/testing/setup.ts')],
     watch: false

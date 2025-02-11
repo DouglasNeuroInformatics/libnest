@@ -9,5 +9,5 @@
     "resolveJsonModule": true,
     "strictPropertyInitialization": false
   },
-  "include": ["bin/**/*", "example/**/*", "src/**/*", "libnest.config.ts"]
+  "include": ["src/**/*"]
 }

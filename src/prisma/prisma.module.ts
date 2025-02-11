@@ -9,7 +9,7 @@ import {
 import { PrismaService } from './prisma.service.js';
 import { getModelToken } from './prisma.utils.js';
 
-import type { PrismaClient, PrismaModelName } from '../types.js';
+import type { PrismaClient, PrismaModelName } from './prisma.types.js';
 
 @Module({})
 export class PrismaModule extends ConfigurablePrismaModule {
@@ -46,8 +46,3 @@ export class PrismaModule extends ConfigurablePrismaModule {
     };
   }
 }
-
-export { PRISMA_CLIENT_TOKEN };
-export { InjectModel } from './prisma.decorators.js';
-export { PrismaService } from './prisma.service.js';
-export { getModelToken } from './prisma.utils.js';

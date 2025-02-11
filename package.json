@@ -15,44 +15,39 @@
     "url": "https://github.com/DouglasNeuroInformatics/libnest/issues"
   },
   "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
-    },
     "./config": {
-      "types": "./dist/config/config.module.d.ts",
-      "import": "./dist/config/config.module.js"
+      "types": "./dist/config/config.index.d.ts",
+      "import": "./dist/config/config.index.js"
     },
     "./core": {
       "types": "./dist/core/index.d.ts",
       "import": "./dist/core/index.js"
     },
     "./crypto": {
-      "types": "./dist/crypto/crypto.module.d.ts",
-      "import": "./dist/crypto/crypto.module.js"
+      "types": "./dist/crypto/crypto.index.d.ts",
+      "import": "./dist/crypto/crypto.index.js"
     },
     "./logging": {
-      "types": "./dist/logging/logging.module.d.ts",
-      "import": "./dist/logging/logging.module.js"
+      "types": "./dist/logging/logging.index.d.ts",
+      "import": "./dist/logging/logging.index.js"
     },
-    "./package.json": "./package.json",
     "./prisma": {
-      "types": "./dist/prisma/prisma.module.d.ts",
-      "import": "./dist/prisma/prisma.module.js"
+      "types": "./dist/prisma/prisma.index.d.ts",
+      "import": "./dist/prisma/prisma.index.js"
     },
     "./testing": {
       "types": "./dist/testing/index.d.ts",
       "import": "./dist/testing/index.js"
     },
-    "./types": {
-      "types": "./dist/types.d.ts"
+    "./user-config": {
+      "types": "./dist/user-config.d.ts",
+      "import": "./dist/user-config.js"
     }
   },
   "bin": {
-    "libnest": "./bin/cli.js"
+    "libnest": "./dist/cli/bin.js"
   },
   "files": [
-    "bin",
     "dist"
   ],
   "engines": {
@@ -62,9 +57,8 @@
     "build": "rm -rf dist && tsc -b tsconfig.build.json",
     "docs:build": "typedoc",
     "docs:dev": "concurrently \"typedoc --watch\" \"http-server docs -c-1\"",
-    "example:dev": "./bin/cli.js dev -c libnest.config.ts",
     "format": "prettier --write src",
-    "lint": "tsc && eslint --fix bin example src",
+    "lint": "tsc && eslint --fix src",
     "prepare": "husky",
     "test": "vitest",
     "test:coverage": "vitest --coverage"

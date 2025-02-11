@@ -1,1 +1,2 @@
-export * from './mock/mock.factory.js';
+export { MockFactory } from './factories/mock.factory.js';
+export type { MockedInstance } from './factories/mock.factory.js';

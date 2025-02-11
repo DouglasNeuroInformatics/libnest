@@ -1,6 +1,0 @@
-{
-  "version": "1",
-  "name": "Libnest Example",
-  "type": "collection",
-  "ignore": ["node_modules", ".git"]
-}
