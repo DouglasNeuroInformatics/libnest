@@ -22,5 +22,6 @@ const entryPoints = Object.values(exports).map(({ import: importPath }) => {
 export default {
   cleanOutputDir: true,
   entryPoints,
-  out: path.resolve(import.meta.dirname, 'docs')
+  out: path.resolve(import.meta.dirname, 'docs'),
+  plugin: ['typedoc-plugin-zod']
 };
