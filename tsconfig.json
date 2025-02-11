@@ -9,5 +9,5 @@
     "resolveJsonModule": true,
     "strictPropertyInitialization": false
   },
-  "include": ["src/**/*"]
+  "include": ["src/**/*", "typedoc.config.js", "vitest.config.js"]
 }
