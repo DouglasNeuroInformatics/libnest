@@ -63,13 +63,6 @@ export class AppFactory {
     }
 
     return callback(app, config);
-
-    // const port = config.API_DEV_SERVER_PORT;
-    // await app.listen(port);
-    // // const url = await app.getUrl();
-    // // logger.log(`Application is running on: ${url}`);
-
-    // return app;
   }
 
   private static createAppModule({
