@@ -7,9 +7,14 @@ export type MockedInstance<T extends object> = {
   [K in keyof T as T[K] extends (...args: any[]) => any ? K : never]: Mock;
 };
 
+/**
+ * A utility class for creating mock providers and instances for testing.
+ */
 export class MockFactory {
   /**
-   * Create a mock Nest.js provider for a Prisma model (injecting a token), providing an object with all Prisma methods set to a mock function
+   * Creates a mock provider for a Prisma model token.
+   * @param token - The Prisma model token.
+   * @returns A NestJS provider with mock Prisma methods.
    */
   static createForModelToken(token: string): Provider {
     return {
@@ -39,9 +44,9 @@ export class MockFactory {
   }
 
   /**
-   * Create a mock Nest.js provider for a class, with all own and inherited functions set to a mock function
-   * @param constructor - the class to mock
-   * @returns an object representing an instance of T with all own and inherited functions mocked
+   * Creates a mock provider for a service.
+   * @param constructor - The service class.
+   * @returns A NestJS provider with a mocked service instance.
    */
   static createForService<T extends object>(constructor: Class<T>): Provider<MockedInstance<T>> {
     return {
@@ -51,9 +56,9 @@ export class MockFactory {
   }
 
   /**
-   * Recurse through the prototype chain and set all properties where the value is a function to a mock function
-   * @param constructor - the class to mock
-   * @returns an object representing an instance of T with all own and inherited functions mocked (excluding those of Object.prototype)
+   * Creates a mock instance of a class, mocking all its methods.
+   * @param constructor - The class to mock.
+   * @returns A mocked instance of the class.
    */
   static createMock<T extends object>(constructor: Class<T>) {
     const prototype = constructor.prototype as { [key: string]: unknown };
@@ -67,9 +72,9 @@ export class MockFactory {
   }
 
   /**
-   * Recurse through the prototype chain of an object to get all property names, excluding those of Object.prototype
-   * @param object - the object whose prototype chain to recurse through
-   * @returns an array of string representing all own and inherited properties of the object
+   * Gets all property names of an object, including those from its prototype chain.
+   * @param object - The object to get property names from.
+   * @returns An array of property names.
    */
   static getAllPropertyNames(object: object): string[] {
     const properties = Object.getOwnPropertyNames(object);
