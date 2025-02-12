@@ -1,3 +1,5 @@
+import * as path from 'path';
+
 import swc from 'unplugin-swc';
 import { defineConfig } from 'vitest/config';
 
@@ -27,16 +29,18 @@ export default defineConfig({
   ],
   test: {
     coverage: {
+      exclude: ['src/**/?(*.)index.ts', 'src/**/*.test-d.ts', 'src/user-config.ts'],
       include: ['src/**/*'],
-      provider: 'v8'
-      // thresholds: {
-      //   branches: 100,
-      //   functions: 100,
-      //   lines: 100,
-      //   statements: 100
-      // }
+      provider: 'v8',
+      skipFull: true,
+      thresholds: {
+        100: true
+      }
     },
     globals: true,
-    root: './'
+    include: ['src/**/*.{test,spec}.?(c|m)[jt]s?(x)'],
+    root: './',
+    setupFiles: [path.resolve(import.meta.dirname, 'src/testing/setup.ts')],
+    watch: false
   }
 });

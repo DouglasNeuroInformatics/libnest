@@ -2,7 +2,7 @@ import * as path from 'node:path';
 
 import { config } from '@douglasneuroinformatics/eslint-config';
 
-export default config([
+export default config(
   {
     env: {
       browser: false,
@@ -13,5 +13,12 @@ export default config([
       enabled: true,
       project: path.resolve(import.meta.dirname, 'tsconfig.json')
     }
+  },
+  {
+    rules: {
+      '@typescript-eslint/consistent-type-definitions': 'off',
+      '@typescript-eslint/no-empty-object-type': 'off',
+      '@typescript-eslint/no-namespace': 'off'
+    }
   }
-]);
+);

@@ -8,6 +8,3 @@ import { CryptoService } from './crypto.service.js';
   providers: [CryptoService]
 })
 export class CryptoModule extends ConfigurableCryptoModule {}
-
-export type { CryptoModuleOptions } from './crypto.config.js';
-export { CryptoService } from './crypto.service.js';

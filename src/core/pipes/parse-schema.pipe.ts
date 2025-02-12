@@ -1,8 +1,5 @@
 import { BadRequestException, Injectable, type PipeTransform } from '@nestjs/common';
 
-/**
- * Use the provided schema to transform values
- */
 @Injectable()
 export class ParseSchemaPipe<T> implements PipeTransform<T> {
   isOptional: boolean;

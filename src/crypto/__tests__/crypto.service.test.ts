@@ -1,8 +1,14 @@
+import * as crypto from 'node:crypto';
+
 import { Test, TestingModule } from '@nestjs/testing';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { CRYPTO_MODULE_OPTIONS_TOKEN, type CryptoModuleOptions } from '../crypto.config.js';
 import { CryptoService } from '../crypto.service.js';
+
+vi.mock('node:crypto', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('node:crypto')>())
+}));
 
 describe('CryptoService', () => {
   let cryptoService: CryptoService;
@@ -20,10 +26,6 @@ describe('CryptoService', () => {
       ]
     }).compile();
     cryptoService = moduleRef.get(CryptoService);
-  });
-
-  it('should be defined', () => {
-    expect(cryptoService).toBeDefined();
   });
 
   describe('hash', () => {
@@ -52,6 +54,15 @@ describe('CryptoService', () => {
     it('should return false when comparing a hash with an incorrect value', async () => {
       const hash = await cryptoService.hashPassword('foo');
       await expect(cryptoService.comparePassword('bar', hash)).resolves.toBe(false);
+    });
+
+    it('should throw if pbkdf2 rejects', async () => {
+      vi.spyOn(crypto, 'pbkdf2').mockImplementationOnce((_password, _salt, _iterations, _keylen, _digest, callback) => {
+        setTimeout(() => {
+          callback(new Error('ERROR!'), null!);
+        }, 100);
+      });
+      await expect(cryptoService.hashPassword('foo')).rejects.toThrow('ERROR!');
     });
   });
 });

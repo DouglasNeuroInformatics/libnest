@@ -1,22 +1,19 @@
 import { type DynamicModule, Module } from '@nestjs/common';
-import type { Prisma } from '@prisma/client';
 
 import {
   ConfigurablePrismaModule,
   PRISMA_ASYNC_OPTIONS_TYPE,
-  PRISMA_MODULE_OPTIONS_TOKEN,
-  PRISMA_OPTIONS_TYPE,
-  type PrismaModuleOptions
+  PRISMA_CLIENT_TOKEN,
+  PRISMA_OPTIONS_TYPE
 } from './prisma.config.js';
-import { PRISMA_CLIENT_TOKEN, PrismaFactory } from './prisma.factory.js';
 import { PrismaService } from './prisma.service.js';
 import { getModelToken } from './prisma.utils.js';
 
-import type { ExtendedPrismaClient } from './prisma.types.js';
+import type { PrismaClient, PrismaModelName } from './prisma.types.js';
 
 @Module({})
 export class PrismaModule extends ConfigurablePrismaModule {
-  static forFeature<T extends Prisma.ModelName>(modelName: T): DynamicModule {
+  static forFeature<T extends PrismaModelName>(modelName: T): DynamicModule {
     const modelToken = getModelToken(modelName);
     return {
       exports: [modelToken],
@@ -25,7 +22,7 @@ export class PrismaModule extends ConfigurablePrismaModule {
         {
           inject: [PRISMA_CLIENT_TOKEN],
           provide: modelToken,
-          useFactory: (client: ExtendedPrismaClient) => {
+          useFactory: (client: PrismaClient) => {
             return client[modelName.toLowerCase() as Lowercase<T>];
           }
         }
@@ -45,23 +42,7 @@ export class PrismaModule extends ConfigurablePrismaModule {
     return {
       ...base,
       exports: [...exports, PRISMA_CLIENT_TOKEN, PrismaService],
-      providers: [
-        ...providers,
-        PrismaService,
-        {
-          inject: [PRISMA_MODULE_OPTIONS_TOKEN],
-          provide: PRISMA_CLIENT_TOKEN,
-          useFactory: (options: PrismaModuleOptions) => {
-            return PrismaFactory.createClient(options);
-          }
-        }
-      ]
+      providers: [...providers, PrismaService]
     };
   }
 }
-
-export type { PrismaModuleOptions } from './prisma.config.js';
-export { InjectModel } from './prisma.decorators.js';
-export { PrismaService } from './prisma.service.js';
-export type { Model } from './prisma.types.js';
-export { getModelToken } from './prisma.utils.js';

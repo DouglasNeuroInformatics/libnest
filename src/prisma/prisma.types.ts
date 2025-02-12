@@ -1,7 +1,18 @@
-import type { Prisma } from '@prisma/client';
+export interface PrismaClientLike {
+  $connect(): Promise<void>;
+  $disconnect(): Promise<void>;
+  $runCommandRaw(command: { [key: string]: unknown }): Promise<{ [key: string]: unknown }>;
+  [key: string]: unknown;
+}
 
-import type { PrismaFactory } from './prisma.factory.js';
+export interface PrismaClient extends PrismaClientLike {}
 
-export type ExtendedPrismaClient = ReturnType<(typeof PrismaFactory)['createClient']>;
+export type PrismaModelName = typeof import('@prisma/client') extends {
+  Prisma: {
+    ModelName: infer TModelName;
+  };
+}
+  ? keyof TModelName
+  : string;
 
-export type Model<T extends Prisma.ModelName> = ExtendedPrismaClient[`${Uncapitalize<T>}`];
+export type Model<T extends PrismaModelName> = PrismaClient[`${Uncapitalize<T>}`];

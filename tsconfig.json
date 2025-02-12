@@ -1,13 +1,13 @@
 {
   "extends": ["@douglasneuroinformatics/tsconfig"],
   "compilerOptions": {
-    "declaration": true,
-    "declarationMap": true,
+    "allowJs": true,
+    "checkJs": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "noEmit": false,
-    "outDir": "dist",
+    "maxNodeModuleJsDepth": 0,
+    "resolveJsonModule": true,
     "strictPropertyInitialization": false
   },
-  "include": ["src/**/*"]
+  "include": ["src/**/*", "typedoc.config.js", "vitest.config.js"]
 }
