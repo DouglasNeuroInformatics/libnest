@@ -24,7 +24,7 @@ declare global {
  *
  * ### Example:
  * ```typescript
- * declare module '@douglasneuroinformatics/libnest' {
+ * declare module '@douglasneuroinformatics/libnest/user-config' {
  *   export interface RuntimeConfig {
  *     foo: string;
  *   }
