@@ -1,9 +1,9 @@
 import { ConfigurableModuleBuilder } from '@nestjs/common';
 
-import type { PrismaClient } from './prisma.types.js';
+import type { RuntimePrismaClient } from './prisma.types.js';
 
 const { ASYNC_OPTIONS_TYPE, ConfigurableModuleClass, MODULE_OPTIONS_TOKEN, OPTIONS_TYPE } =
-  new ConfigurableModuleBuilder<PrismaClient>({
+  new ConfigurableModuleBuilder<RuntimePrismaClient>({
     moduleName: 'Prisma'
   })
     .setClassMethodName('forRoot')

@@ -5,7 +5,7 @@ export interface PrismaClientLike {
   [key: string]: unknown;
 }
 
-export interface PrismaClient extends PrismaClientLike {}
+export interface RuntimePrismaClient extends PrismaClientLike {}
 
 export type PrismaModelName = typeof import('@prisma/client') extends {
   Prisma: {
@@ -15,4 +15,4 @@ export type PrismaModelName = typeof import('@prisma/client') extends {
   ? keyof TModelName
   : string;
 
-export type Model<T extends PrismaModelName> = PrismaClient[`${Uncapitalize<T>}`];
+export type Model<T extends PrismaModelName> = RuntimePrismaClient[`${Uncapitalize<T>}`];

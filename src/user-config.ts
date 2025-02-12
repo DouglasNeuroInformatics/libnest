@@ -34,10 +34,10 @@ declare global {
 export interface RuntimeConfig extends BaseRuntimeConfig {}
 
 /**
- * Represents the runtime `PrismaClient` for your application. Users should augment
+ * Represents the `PrismaClient` for your application. Users should augment
  * this declaration with their own `PrismaClient`.
  */
-export type { PrismaClient } from './prisma/prisma.types.js';
+export type { RuntimePrismaClient } from './prisma/prisma.types.js';
 
 /**
  * Configuration options for the user-defined settings in the `libnest` CLI.
