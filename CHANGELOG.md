@@ -1,5 +1,49 @@
 # Changelog
 
+## [1.0.0](https://github.com/DouglasNeuroInformatics/libnest/compare/v0.5.1...v1.0.0) (2025-02-12)
+
+
+### ⚠ BREAKING CHANGES
+
+* update to express v5
+
+### Features
+
+* add boilerplate for virtualization module ([9cf1813](https://github.com/DouglasNeuroInformatics/libnest/commit/9cf1813e1e1aa02948ff6df165970c5784c3909a))
+* add conditional modules option to config module ([0599b3b](https://github.com/DouglasNeuroInformatics/libnest/commit/0599b3b3553f8b3d50ed41eadafea33432f9cba2))
+* add ConfigModule ([28a17ff](https://github.com/DouglasNeuroInformatics/libnest/commit/28a17ffdcb12e521ba609c79844d82d7d294ba3b))
+* add createForModel to mock factory ([1b289c5](https://github.com/DouglasNeuroInformatics/libnest/commit/1b289c57c8063c080aa099c40fcb4336330ce40e))
+* add delay middleware ([698499c](https://github.com/DouglasNeuroInformatics/libnest/commit/698499c5cbce9cac17ba6e8b9e3f0d8d41348b07))
+* add docs ([c5cd80a](https://github.com/DouglasNeuroInformatics/libnest/commit/c5cd80a503d387adcd0af060248bc1a34ffe574d))
+* add getOrThrow to ConfigService ([69c24ee](https://github.com/DouglasNeuroInformatics/libnest/commit/69c24ee472eb8f85c3ca029b46d44a771cee6700))
+* add globals option to cli ([cb3e23f](https://github.com/DouglasNeuroInformatics/libnest/commit/cb3e23f535b97ab8aef6a942b09d76b04da35999))
+* add new cli tool ([827be75](https://github.com/DouglasNeuroInformatics/libnest/commit/827be75fe6623a6f9c4f24118d6904d446d18d5f))
+* add option to disable log and warn level logs ([38ccaf7](https://github.com/DouglasNeuroInformatics/libnest/commit/38ccaf7f30dd7440ea7faf21c14458af6f98bc1f))
+* implement virtualization module ([585abe6](https://github.com/DouglasNeuroInformatics/libnest/commit/585abe63ad2519aaf296f41c24bbc09c4d53aa13))
+* infer PrismaModelName ([d103169](https://github.com/DouglasNeuroInformatics/libnest/commit/d103169711f54b637b3c3c68a0daff037fdcf4b1))
+
+
+### Bug Fixes
+
+* add default options for json logger ([de6aab2](https://github.com/DouglasNeuroInformatics/libnest/commit/de6aab2558e8de6d499c83697eec8387ec16295d))
+* add watch flag ([e7a3448](https://github.com/DouglasNeuroInformatics/libnest/commit/e7a3448c39309d27d50bef7ac678969e3ec4d347))
+* adjust log format ([fb26d00](https://github.com/DouglasNeuroInformatics/libnest/commit/fb26d00ed9a71df35a83598af8a1b5065c3a2834))
+* allow key of current user to be undefined ([1046425](https://github.com/DouglasNeuroInformatics/libnest/commit/1046425e645659453e9984f8a479058838abebb6))
+* dynamic config ([f5ef9d7](https://github.com/DouglasNeuroInformatics/libnest/commit/f5ef9d7fb714aa44bf67eb5772adc589eab76062))
+* error message ([39e7e54](https://github.com/DouglasNeuroInformatics/libnest/commit/39e7e546a37622a9811807971a16fbf897c473d4))
+* log issues rather than message ([7106730](https://github.com/DouglasNeuroInformatics/libnest/commit/71067308472b85d8f8364174c93dd00b42dace56))
+* make createMock public ([e60cfb1](https://github.com/DouglasNeuroInformatics/libnest/commit/e60cfb1a61ff8533e030beb8dea5266c4f67f4b5))
+* missing return statements ([6e8a0dd](https://github.com/DouglasNeuroInformatics/libnest/commit/6e8a0dd88f12fd9276d2c2155cfc017bc7b5d385))
+* mock getters ([23a2aad](https://github.com/DouglasNeuroInformatics/libnest/commit/23a2aad64d5e815c74609e00a1171a32f3fe05cb))
+* model name inference in dev ([f498e46](https://github.com/DouglasNeuroInformatics/libnest/commit/f498e4659bd71a1e5f30507d4fb2d5b6d46291d6))
+* rewrite json logger with method signatures ([1e9200a](https://github.com/DouglasNeuroInformatics/libnest/commit/1e9200a7e2a93ee3bd8955c23f39a0cc66706105))
+* set getAllPropertyNames to public ([c20be9a](https://github.com/DouglasNeuroInformatics/libnest/commit/c20be9a188138b93bde0fc9ac89fad9f9d49b825))
+
+
+### Miscellaneous Chores
+
+* update to express v5 ([5a1d4cc](https://github.com/DouglasNeuroInformatics/libnest/commit/5a1d4ccbfeaad1cc39c47e0819fb50949fa715e9))
+
 ## [0.5.1](https://github.com/DouglasNeuroInformatics/libnest/compare/v0.5.0...v0.5.1) (2025-01-22)
 
 
