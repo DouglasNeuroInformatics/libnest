@@ -9,7 +9,7 @@ import {
 import { PrismaService } from './prisma.service.js';
 import { getModelToken } from './prisma.utils.js';
 
-import type { PrismaClient, PrismaModelName } from './prisma.types.js';
+import type { PrismaModelName, RuntimePrismaClient } from './prisma.types.js';
 
 @Module({})
 export class PrismaModule extends ConfigurablePrismaModule {
@@ -22,7 +22,7 @@ export class PrismaModule extends ConfigurablePrismaModule {
         {
           inject: [PRISMA_CLIENT_TOKEN],
           provide: modelToken,
-          useFactory: (client: PrismaClient) => {
+          useFactory: (client: RuntimePrismaClient) => {
             return client[modelName.toLowerCase() as Lowercase<T>];
           }
         }
