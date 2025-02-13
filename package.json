@@ -45,7 +45,7 @@
     },
     "./virtualization": {
       "types": "./dist/virtualization/virtualization.index.d.ts",
-      "import": "./dist/virtualization/virtualization.js"
+      "import": "./dist/virtualization/virtualization.index.js"
     }
   },
   "bin": {
