@@ -1,3 +1,4 @@
+import { filterObject } from '@douglasneuroinformatics/libjs';
 import { type DynamicModule, type ModuleMetadata, VersioningType } from '@nestjs/common';
 import { APP_FILTER, APP_PIPE, NestFactory } from '@nestjs/core';
 import type { NestExpressApplication } from '@nestjs/platform-express';
@@ -97,7 +98,8 @@ export class AppFactory {
   }
 
   private static async parseConfig(schema: ConfigSchema): Promise<RuntimeConfig> {
-    const result = await schema.safeParseAsync(process.env);
+    const input = filterObject(process.env, (value) => value !== '');
+    const result = await schema.safeParseAsync(input);
     if (!result.success) {
       throw new Error('Failed to Parse Environment Variables', {
         cause: {
