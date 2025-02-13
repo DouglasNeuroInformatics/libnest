@@ -1,3 +1,7 @@
+/**
+ * @module core
+ */
+
 export { CurrentUser } from './decorators/current-user.decorator.js';
 export { ValidationSchema } from './decorators/validation-schema.decorator.js';
 export { AppFactory } from './factories/app.factory.js';
