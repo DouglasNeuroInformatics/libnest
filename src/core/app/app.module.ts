@@ -7,6 +7,7 @@ import { JSONLogger } from '../logging/json.logger.js';
 import { LOGGING_OPTIONS_TOKEN } from '../logging/logging.config.js';
 import { LoggingMiddleware } from '../logging/logging.middleware.js';
 import { LoggingService } from '../logging/logging.service.js';
+import { delay } from '../middleware/delay.middleware.js';
 import { ValidationPipe } from '../pipes/validation.pipe.js';
 import { ConfigService } from '../services/config.service.js';
 import { CryptoService } from '../services/crypto.service.js';
@@ -22,6 +23,8 @@ export type CreateAppModuleOptions = {
 };
 
 export class AppModule implements NestModule {
+  constructor(private readonly configService: ConfigService) {}
+
   static create({ config, imports, providers }: CreateAppModuleOptions): DynamicModule {
     const coreImports: ImportedModule[] = [];
     const coreProviders: Provider[] = [
@@ -90,7 +93,13 @@ export class AppModule implements NestModule {
       providers: [...coreProviders, ...providers]
     };
   }
+
   configure(consumer: MiddlewareConsumer) {
+    const isDev = this.configService.get('NODE_ENV') === 'development';
+    const responseDelay = this.configService.get('API_RESPONSE_DELAY');
     consumer.apply(LoggingMiddleware).forRoutes('*');
+    if (isDev && responseDelay) {
+      consumer.apply(delay({ responseDelay })).forRoutes('*');
+    }
   }
 }
