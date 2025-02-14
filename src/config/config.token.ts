@@ -1,1 +1,0 @@
-export const CONFIG_TOKEN = 'LIBNEST_CONFIG';

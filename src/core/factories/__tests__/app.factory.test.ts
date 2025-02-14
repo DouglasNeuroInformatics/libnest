@@ -4,7 +4,7 @@ import type { NestExpressApplication } from '@nestjs/platform-express';
 import request from 'supertest';
 import { afterAll, beforeAll, describe, expect, expectTypeOf, it, vi } from 'vitest';
 
-import { $BaseRuntimeConfig } from '../../../config/config.schema.js';
+import { $BaseRuntimeConfig } from '../../schemas/config.schema.js';
 import { AppFactory, type CreateAppOptions, type UserImportedModule } from '../app.factory.js';
 import { CatsModule } from './stubs/cats.module.js';
 

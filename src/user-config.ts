@@ -4,7 +4,7 @@
  * @module user-config
  */
 
-import type { BaseRuntimeConfig } from './config/config.schema.js';
+import type { BaseRuntimeConfig } from './core/schemas/config.schema.js';
 
 declare global {
   namespace Express {
