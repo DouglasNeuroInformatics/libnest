@@ -23,10 +23,6 @@
       "types": "./dist/core/index.d.ts",
       "import": "./dist/core/index.js"
     },
-    "./crypto": {
-      "types": "./dist/crypto/crypto.index.d.ts",
-      "import": "./dist/crypto/crypto.index.js"
-    },
     "./logging": {
       "types": "./dist/logging/logging.index.d.ts",
       "import": "./dist/logging/logging.index.js"
