@@ -44,7 +44,6 @@ describe('AppFactory.createApp', () => {
       await expect(createApp()).rejects.toThrow('Failed to Parse Environment Variables');
       vi.stubEnv('VERBOSE', env.VERBOSE);
     });
-    it('should not register the Throttler');
   });
 
   describe('integration', () => {

@@ -1,4 +1,11 @@
-import type { DynamicModule, MiddlewareConsumer, ModuleMetadata, NestModule, Provider } from '@nestjs/common';
+import {
+  type DynamicModule,
+  Inject,
+  type MiddlewareConsumer,
+  type ModuleMetadata,
+  type NestModule,
+  type Provider
+} from '@nestjs/common';
 import { APP_FILTER, APP_GUARD, APP_PIPE } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 
@@ -23,7 +30,8 @@ export type CreateAppModuleOptions = {
 };
 
 export class AppModule implements NestModule {
-  constructor(private readonly configService: ConfigService) {}
+  @Inject()
+  private readonly configService: ConfigService;
 
   static create({ config, imports, providers }: CreateAppModuleOptions): DynamicModule {
     const coreImports: ImportedModule[] = [];

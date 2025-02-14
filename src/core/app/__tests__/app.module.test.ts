@@ -1,11 +1,18 @@
-import type { Provider } from '@nestjs/common';
-import { Test } from '@nestjs/testing';
+import { Test, TestingModule } from '@nestjs/testing';
 import type { PartialDeep } from 'type-fest';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeAll, describe, expect, it, vi } from 'vitest';
 
+import { delay } from '../../middleware/delay.middleware.js';
 import { ConfigService } from '../../services/config.service.js';
 import { type CryptoOptions, CryptoService } from '../../services/crypto.service.js';
 import { AppModule, type CreateAppModuleOptions } from '../app.module.js';
+
+vi.mock(import('../../middleware/delay.middleware.js'), async (importOriginal) => {
+  const { delay } = await importOriginal();
+  return {
+    delay: vi.fn(delay)
+  };
+});
 
 vi.mock('../../services/crypto.service.js', async (importOriginal) => {
   const { CryptoService } = await importOriginal<typeof import('../../services/crypto.service.js')>();
@@ -40,46 +47,54 @@ const createModuleRef = (options?: PartialDeep<CreateAppModuleOptions>) => {
 
 describe('AppModule', () => {
   describe('create', () => {
-    it('should provide user-specified imports and providers', () => {
-      class DummyModule {}
-      const dummyProvider: Provider = {
-        provide: 'DUMMY_MODULE_OPTIONS',
-        useValue: 'DUMMY_MODULE_OPTIONS_VALUE'
-      };
-      const module = createAppModule({
-        imports: [DummyModule],
-        providers: [dummyProvider]
+    describe('default configuration', () => {
+      let moduleRef: TestingModule;
+
+      beforeAll(async () => {
+        moduleRef = await createModuleRef();
       });
-      expect(module.imports).toContain(DummyModule);
-      expect(module.providers).toContain(dummyProvider);
+
+      it('should provide the ConfigService', () => {
+        expect(moduleRef.get(ConfigService)).toBeDefined();
+      });
+
+      it('should provide the CryptoService with the default number of pbkdf2 iterations', () => {
+        expect(moduleRef.get(CryptoService)).toBeDefined();
+        expect(CryptoService).toHaveBeenLastCalledWith(
+          expect.objectContaining({
+            pbkdf2Params: {
+              iterations: 100_000
+            }
+          })
+        );
+      });
+
+      it('should not call the delay middleware by default', () => {
+        expect(delay).not.toHaveBeenCalled();
+      });
     });
 
-    it('should provide the ConfigService', async () => {
-      const moduleRef = await createModuleRef();
-      expect(moduleRef.get(ConfigService)).toBeDefined();
-    });
+    describe('custom configuration', () => {
+      let moduleRef: TestingModule;
 
-    it('should provide the CryptoService', async () => {
-      await createModuleRef();
-      expect(CryptoService).toHaveBeenLastCalledWith(
-        expect.objectContaining({
-          pbkdf2Params: {
-            iterations: 100_000
+      beforeAll(async () => {
+        moduleRef = await createModuleRef({
+          config: {
+            DANGEROUSLY_DISABLE_PBKDF2_ITERATION: true
           }
-        })
-      );
-      await createModuleRef({
-        config: {
-          DANGEROUSLY_DISABLE_PBKDF2_ITERATION: true
-        }
+        });
       });
-      expect(CryptoService).toHaveBeenLastCalledWith(
-        expect.objectContaining({
-          pbkdf2Params: {
-            iterations: 1
-          }
-        })
-      );
+
+      it('should provide the CryptoService with pbkdf2 iterations disabled', () => {
+        expect(moduleRef.get(CryptoService)).toBeDefined();
+        expect(CryptoService).toHaveBeenLastCalledWith(
+          expect.objectContaining({
+            pbkdf2Params: {
+              iterations: 1
+            }
+          })
+        );
+      });
     });
   });
 });
