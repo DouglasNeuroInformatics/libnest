@@ -7,3 +7,4 @@ export { ValidationSchema } from './decorators/validation-schema.decorator.js';
 export { AppFactory } from './factories/app.factory.js';
 export { DataTransferObject } from './mixins/data-transfer-object.mixin.js';
 export { ParseSchemaPipe } from './pipes/parse-schema.pipe.js';
+export { CryptoService } from './services/crypto.service.js';

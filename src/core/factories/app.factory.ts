@@ -14,6 +14,7 @@ import { JSONLogger } from '../../logging/json.logger.js';
 import { LoggingModule } from '../../logging/logging.module.js';
 import { GlobalExceptionFilter } from '../filters/global-exception.filter.js';
 import { ValidationPipe } from '../pipes/validation.pipe.js';
+import { CryptoService } from '../services/crypto.service.js';
 import { type DocsConfig, DocsFactory } from './docs.factory.js';
 
 import type { LoggingOptions } from '../../logging/logging.config.js';
@@ -106,6 +107,15 @@ export class AppFactory {
       {
         provide: APP_GUARD,
         useClass: ThrottlerGuard
+      },
+      {
+        provide: CryptoService,
+        useValue: new CryptoService({
+          pbkdf2Params: {
+            iterations: config.DANGEROUSLY_DISABLE_PBKDF2_ITERATION ? 1 : 100_000
+          },
+          secretKey: config.SECRET_KEY
+        })
       }
     ];
 
