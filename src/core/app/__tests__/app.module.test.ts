@@ -1,11 +1,18 @@
 import type { Provider } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import type { PartialDeep } from 'type-fest';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import { ConfigService } from '../../services/config.service.js';
-import { CryptoService } from '../../services/crypto.service.js';
+import { type CryptoOptions, CryptoService } from '../../services/crypto.service.js';
 import { AppModule, type CreateAppModuleOptions } from '../app.module.js';
+
+vi.mock('../../services/crypto.service.js', async (importOriginal) => {
+  const { CryptoService } = await importOriginal<typeof import('../../services/crypto.service.js')>();
+  return {
+    CryptoService: vi.fn((options: CryptoOptions) => new CryptoService(options))
+  };
+});
 
 const createAppModule = ({ config, imports = [], providers = [] }: PartialDeep<CreateAppModuleOptions> = {}) => {
   return AppModule.create({
@@ -25,6 +32,12 @@ const createAppModule = ({ config, imports = [], providers = [] }: PartialDeep<C
   });
 };
 
+const createModuleRef = (options?: PartialDeep<CreateAppModuleOptions>) => {
+  return Test.createTestingModule({
+    imports: [createAppModule(options)]
+  }).compile();
+};
+
 describe('AppModule', () => {
   describe('create', () => {
     it('should provide user-specified imports and providers', () => {
@@ -40,12 +53,33 @@ describe('AppModule', () => {
       expect(module.imports).toContain(DummyModule);
       expect(module.providers).toContain(dummyProvider);
     });
-    it('should provide global services', async () => {
-      const moduleRef = await Test.createTestingModule({
-        imports: [createAppModule()]
-      }).compile();
+
+    it('should provide the ConfigService', async () => {
+      const moduleRef = await createModuleRef();
       expect(moduleRef.get(ConfigService)).toBeDefined();
-      expect(moduleRef.get(CryptoService)).toBeDefined();
+    });
+
+    it('should provide the CryptoService', async () => {
+      await createModuleRef();
+      expect(CryptoService).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          pbkdf2Params: {
+            iterations: 100_000
+          }
+        })
+      );
+      await createModuleRef({
+        config: {
+          DANGEROUSLY_DISABLE_PBKDF2_ITERATION: true
+        }
+      });
+      expect(CryptoService).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          pbkdf2Params: {
+            iterations: 1
+          }
+        })
+      );
     });
   });
 });
