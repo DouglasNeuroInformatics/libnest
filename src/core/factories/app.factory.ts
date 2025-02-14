@@ -8,6 +8,8 @@ import type { Promisable } from 'type-fest';
 import type { z } from 'zod';
 
 import { ConfigModule } from '../../config/config.module.js';
+import { ConfigService } from '../../config/config.service.js';
+import { CryptoModule } from '../../crypto/crypto.module.js';
 import { JSONLogger } from '../../logging/json.logger.js';
 import { LoggingModule } from '../../logging/logging.module.js';
 import { GlobalExceptionFilter } from '../filters/global-exception.filter.js';
@@ -81,6 +83,15 @@ export class AppFactory {
   }): DynamicModule {
     const coreImports: ImportedModule[] = [
       ConfigModule.forRoot({ config }),
+      CryptoModule.forRootAsync({
+        inject: [ConfigService],
+        useFactory: (configService: ConfigService) => ({
+          pbkdf2Params: {
+            iterations: configService.get('DANGEROUSLY_DISABLE_PBKDF2_ITERATION') ? 1 : 100_000
+          },
+          secretKey: configService.get('SECRET_KEY')
+        })
+      }),
       LoggingModule.forRoot(this.getLoggingOptions(config))
     ];
     const coreProviders: Provider[] = [
