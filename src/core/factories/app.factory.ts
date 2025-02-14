@@ -33,6 +33,7 @@ type CreateAppOptions = {
     path: `/${string}.json`;
   };
   modules: UserImportedModule[];
+  providers?: Provider[];
   schema: ConfigSchema;
   version: `${number}`;
 };
@@ -40,9 +41,9 @@ type CreateAppOptions = {
 class AppModule {}
 
 export class AppFactory {
-  static async createApp({ callback, docs, modules, schema, version }: CreateAppOptions) {
+  static async createApp({ callback, docs, modules, providers, schema, version }: CreateAppOptions) {
     const config = await this.parseConfig(schema);
-    const AppModule = this.createAppModule({ config, modules });
+    const AppModule = this.createAppModule({ config, modules, providers: providers ?? [] });
     const app = await NestFactory.create<NestExpressApplication>(AppModule, {
       bufferLogs: true
     });
@@ -71,16 +72,18 @@ export class AppFactory {
 
   private static createAppModule({
     config,
-    modules
+    modules,
+    providers
   }: {
     config: RuntimeConfig;
     modules: ImportedModule[];
+    providers: Provider[];
   }): DynamicModule {
-    const imports: ImportedModule[] = [
+    const coreImports: ImportedModule[] = [
       ConfigModule.forRoot({ config }),
       LoggingModule.forRoot(this.getLoggingOptions(config))
     ];
-    const providers: Provider[] = [
+    const coreProviders: Provider[] = [
       {
         provide: APP_FILTER,
         useClass: GlobalExceptionFilter
@@ -96,7 +99,7 @@ export class AppFactory {
     ];
 
     if (config.THROTTLER_ENABLED) {
-      imports.push(
+      coreImports.push(
         ThrottlerModule.forRoot([
           {
             limit: 25,
@@ -115,15 +118,15 @@ export class AppFactory {
           }
         ])
       );
-      providers.push({
+      coreProviders.push({
         provide: APP_GUARD,
         useClass: ThrottlerGuard
       });
     }
     return {
-      imports: [...imports, ...modules],
+      imports: [...coreImports, ...modules],
       module: AppModule,
-      providers
+      providers: [...coreProviders, ...providers]
     };
   }
 
