@@ -1,6 +1,7 @@
 import type { DynamicModule, ModuleMetadata, Provider } from '@nestjs/common';
 
 import { JSONLogger } from '../logging/json.logger.js';
+import { LOGGING_OPTIONS_TOKEN } from '../logging/logging.config.js';
 import { ConfigService } from '../services/config.service.js';
 import { CryptoService } from '../services/crypto.service.js';
 
@@ -32,6 +33,14 @@ export class AppModule {
             },
             secretKey: config.SECRET_KEY
           })
+        },
+        {
+          provide: LOGGING_OPTIONS_TOKEN,
+          useValue: {
+            debug: config.DEBUG,
+            log: config.NODE_ENV !== 'test',
+            verbose: config.VERBOSE
+          }
         },
         JSONLogger,
         ...providers
