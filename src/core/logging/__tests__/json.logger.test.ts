@@ -140,7 +140,7 @@ describe('JSONLogger', () => {
     });
 
     it('should handle logs without a context', () => {
-      logger = new JSONLogger(null);
+      logger = new JSONLogger();
       logger.log('Test message');
       expect(JSON.parse(stdoutSpy.mock.lastCall![0])).toStrictEqual({
         date: expect.any(String),
