@@ -1,5 +1,7 @@
 import type { DynamicModule, ModuleMetadata, Provider } from '@nestjs/common';
 
+import { ConfigService } from '../services/config.service.js';
+
 import type { RuntimeConfig } from '../../user-config.js';
 
 export type ImportedModule = NonNullable<ModuleMetadata['imports']>[number];
@@ -11,11 +13,17 @@ export type CreateAppModuleOptions = {
 };
 
 export class AppModule {
-  static create({ imports, providers }: CreateAppModuleOptions): DynamicModule {
+  static create({ config, imports, providers }: CreateAppModuleOptions): DynamicModule {
     return {
       imports,
       module: AppModule,
-      providers
+      providers: [
+        {
+          provide: ConfigService,
+          useValue: new ConfigService(config)
+        },
+        ...providers
+      ]
     };
   }
 }
