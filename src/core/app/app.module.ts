@@ -1,7 +1,8 @@
-import type { DynamicModule, ModuleMetadata, Provider } from '@nestjs/common';
+import type { DynamicModule, MiddlewareConsumer, ModuleMetadata, NestModule, Provider } from '@nestjs/common';
 
 import { JSONLogger } from '../logging/json.logger.js';
 import { LOGGING_OPTIONS_TOKEN } from '../logging/logging.config.js';
+import { LoggingMiddleware } from '../logging/logging.middleware.js';
 import { ConfigService } from '../services/config.service.js';
 import { CryptoService } from '../services/crypto.service.js';
 
@@ -15,7 +16,7 @@ export type CreateAppModuleOptions = {
   providers: Provider[];
 };
 
-export class AppModule {
+export class AppModule implements NestModule {
   static create({ config, imports, providers }: CreateAppModuleOptions): DynamicModule {
     return {
       imports,
@@ -46,5 +47,8 @@ export class AppModule {
         ...providers
       ]
     };
+  }
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(LoggingMiddleware).forRoutes('*');
   }
 }
