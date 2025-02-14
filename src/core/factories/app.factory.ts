@@ -1,7 +1,8 @@
 import { filterObject } from '@douglasneuroinformatics/libjs';
 import { type DynamicModule, type ModuleMetadata, VersioningType } from '@nestjs/common';
-import { APP_FILTER, APP_PIPE, NestFactory } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD, APP_PIPE, NestFactory } from '@nestjs/core';
 import type { NestExpressApplication } from '@nestjs/platform-express';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { json } from 'express';
 import type { Promisable } from 'type-fest';
 import type { z } from 'zod';
@@ -74,7 +75,32 @@ export class AppFactory {
     modules: ImportedModule[];
   }): DynamicModule {
     return {
-      imports: [ConfigModule.forRoot({ config }), LoggingModule.forRoot(this.getLoggingOptions(config)), ...modules],
+      imports: [
+        ConfigModule.forRoot({ config }),
+        LoggingModule.forRoot(this.getLoggingOptions(config)),
+        ThrottlerModule.forRoot(
+          config.THROTTLER_ENABLED
+            ? [
+                {
+                  limit: 25,
+                  name: 'short',
+                  ttl: 1000
+                },
+                {
+                  limit: 100,
+                  name: 'medium',
+                  ttl: 10000
+                },
+                {
+                  limit: 250,
+                  name: 'long',
+                  ttl: 60000
+                }
+              ]
+            : []
+        ),
+        ...modules
+      ],
       module: AppModule,
       providers: [
         {
@@ -84,6 +110,10 @@ export class AppFactory {
         {
           provide: APP_PIPE,
           useClass: ValidationPipe
+        },
+        {
+          provide: APP_GUARD,
+          useClass: ThrottlerGuard
         }
       ]
     };

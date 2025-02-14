@@ -18,6 +18,7 @@ describe('$BaseRuntimeConfig', () => {
       API_DEV_SERVER_PORT: 3000,
       API_PROD_SERVER_PORT: 80,
       DEBUG: true,
+      THROTTLER_ENABLED: true,
       VERBOSE: true
     });
   });
