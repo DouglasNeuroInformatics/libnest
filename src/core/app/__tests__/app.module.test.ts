@@ -80,7 +80,9 @@ describe('AppModule', () => {
       beforeAll(async () => {
         moduleRef = await createModuleRef({
           config: {
-            DANGEROUSLY_DISABLE_PBKDF2_ITERATION: true
+            API_RESPONSE_DELAY: 10,
+            DANGEROUSLY_DISABLE_PBKDF2_ITERATION: true,
+            NODE_ENV: 'development'
           }
         });
       });
@@ -94,6 +96,13 @@ describe('AppModule', () => {
             }
           })
         );
+      });
+
+      it('should call the delay middleware', async () => {
+        const app = moduleRef.createNestApplication();
+        await app.init();
+        expect(delay).toHaveBeenLastCalledWith({ responseDelay: 10 });
+        await app.close();
       });
     });
   });

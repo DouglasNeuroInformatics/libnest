@@ -103,10 +103,10 @@ export class AppModule implements NestModule {
   }
 
   configure(consumer: MiddlewareConsumer) {
-    const isDev = this.configService.get('NODE_ENV') === 'development';
+    const isProd = this.configService.get('NODE_ENV') === 'production';
     const responseDelay = this.configService.get('API_RESPONSE_DELAY');
     consumer.apply(LoggingMiddleware).forRoutes('*');
-    if (isDev && responseDelay) {
+    if (!isProd && responseDelay) {
       consumer.apply(delay({ responseDelay })).forRoutes('*');
     }
   }
