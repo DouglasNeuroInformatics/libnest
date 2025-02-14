@@ -16,6 +16,7 @@ describe('$BaseRuntimeConfig', () => {
     expect(result).toEqual({
       ...input,
       API_DEV_SERVER_PORT: 3000,
+      API_PROD_SERVER_PORT: 80,
       DEBUG: true,
       VERBOSE: true
     });

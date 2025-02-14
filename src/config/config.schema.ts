@@ -12,6 +12,7 @@ import { z } from 'zod';
  */
 export const $BaseRuntimeConfig = z.object({
   API_DEV_SERVER_PORT: $$NumberLike((base) => base.int().nonnegative()),
+  API_PROD_SERVER_PORT: $$NumberLike((base) => base.int().nonnegative()).default(80),
   DEBUG: $$BooleanLike().optional(),
   MONGO_DIRECT_CONNECTION: $$BooleanLike().optional(),
   MONGO_REPLICA_SET: z.enum(['rs0']).optional(),
