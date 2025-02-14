@@ -7,7 +7,7 @@ import { json } from 'express';
 import type { Promisable } from 'type-fest';
 import type { z } from 'zod';
 
-import { JSONLogger } from '../../logging/json.logger.js';
+import { JSONLogger } from '../logging/json.logger.js';
 import { AppModule } from './app.module.js';
 import { type DocsConfig, DocsFactory } from './docs.factory.js';
 

@@ -2,12 +2,12 @@
 /* eslint-disable no-dupe-class-members */
 
 import { isPlainObject } from '@douglasneuroinformatics/libjs';
-import type { LoggerService, LogLevel } from '@nestjs/common';
+import { Inject, Injectable, type LoggerService, type LogLevel, Optional } from '@nestjs/common';
 import chalk from 'chalk';
 import { type ColorName } from 'chalk';
 import { isErrorLike, serializeError } from 'serialize-error';
 
-import type { LoggingOptions } from './logging.config.js';
+import { LOGGING_OPTIONS_TOKEN, type LoggingOptions } from './logging.config.js';
 
 const LOG_COLORS: { [K in LogLevel]: ColorName } = {
   debug: 'green',
@@ -31,6 +31,7 @@ type JSONLoggerType = {
   warn: LoggerMethod;
 };
 
+@Injectable()
 export class JSONLogger implements LoggerService, JSONLoggerType {
   debug(message: unknown, ...args: [...additionalMessages: any, context?: string]): void;
   debug(message: unknown, context?: string): void;
@@ -100,8 +101,9 @@ export class JSONLogger implements LoggerService, JSONLoggerType {
   private readonly options: LoggingOptions;
 
   constructor(
-    private readonly context: null | string,
-    options?: LoggingOptions
+    @Optional()
+    private readonly context?: string,
+    @Optional() @Inject(LOGGING_OPTIONS_TOKEN) options?: LoggingOptions
   ) {
     this.options = {
       log: true,
@@ -123,7 +125,7 @@ export class JSONLogger implements LoggerService, JSONLoggerType {
   private printMessages(
     messages: unknown[],
     options: {
-      context: null | string;
+      context?: string;
       file: 'stderr' | 'stdout';
       level: LogLevel;
     }
