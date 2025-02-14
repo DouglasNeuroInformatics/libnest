@@ -1,6 +1,7 @@
 import type { DynamicModule, ModuleMetadata, Provider } from '@nestjs/common';
 
 import { ConfigService } from '../services/config.service.js';
+import { CryptoService } from '../services/crypto.service.js';
 
 import type { RuntimeConfig } from '../../user-config.js';
 
@@ -21,6 +22,15 @@ export class AppModule {
         {
           provide: ConfigService,
           useValue: new ConfigService(config)
+        },
+        {
+          provide: CryptoService,
+          useValue: new CryptoService({
+            pbkdf2Params: {
+              iterations: config.DANGEROUSLY_DISABLE_PBKDF2_ITERATION ? 1 : 100_000
+            },
+            secretKey: config.SECRET_KEY
+          })
         },
         ...providers
       ]

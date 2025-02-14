@@ -1,10 +1,13 @@
 import type { Provider } from '@nestjs/common';
+import { Test } from '@nestjs/testing';
 import type { PartialDeep } from 'type-fest';
 import { describe, expect, it } from 'vitest';
 
+import { ConfigService } from '../../services/config.service.js';
+import { CryptoService } from '../../services/crypto.service.js';
 import { AppModule, type CreateAppModuleOptions } from '../app.module.js';
 
-const createAppModule = ({ config, imports = [], providers = [] }: PartialDeep<CreateAppModuleOptions>) => {
+const createAppModule = ({ config, imports = [], providers = [] }: PartialDeep<CreateAppModuleOptions> = {}) => {
   return AppModule.create({
     config: {
       API_DEV_SERVER_PORT: 5500,
@@ -36,6 +39,13 @@ describe('AppModule', () => {
       });
       expect(module.imports).toContain(DummyModule);
       expect(module.providers).toContain(dummyProvider);
+    });
+    it('should provide global services', async () => {
+      const moduleRef = await Test.createTestingModule({
+        imports: [createAppModule()]
+      }).compile();
+      expect(moduleRef.get(ConfigService)).toBeDefined();
+      expect(moduleRef.get(CryptoService)).toBeDefined();
     });
   });
 });
