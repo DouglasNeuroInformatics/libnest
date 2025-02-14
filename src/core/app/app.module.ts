@@ -1,5 +1,6 @@
 import type { DynamicModule, ModuleMetadata, Provider } from '@nestjs/common';
 
+import { JSONLogger } from '../logging/json.logger.js';
 import { ConfigService } from '../services/config.service.js';
 import { CryptoService } from '../services/crypto.service.js';
 
@@ -32,6 +33,7 @@ export class AppModule {
             secretKey: config.SECRET_KEY
           })
         },
+        JSONLogger,
         ...providers
       ]
     };

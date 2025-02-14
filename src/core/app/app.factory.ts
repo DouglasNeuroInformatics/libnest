@@ -1,0 +1,81 @@
+import { filterObject } from '@douglasneuroinformatics/libjs';
+import { VersioningType } from '@nestjs/common';
+import type { ModuleMetadata, Provider } from '@nestjs/common';
+import { NestFactory } from '@nestjs/core';
+import type { NestExpressApplication } from '@nestjs/platform-express';
+import { json } from 'express';
+import type { Promisable } from 'type-fest';
+import type { z } from 'zod';
+
+import { JSONLogger } from '../../logging/json.logger.js';
+import { AppModule } from './app.module.js';
+import { type DocsConfig, DocsFactory } from './docs.factory.js';
+
+import type { RuntimeConfig } from '../../user-config.js';
+
+type ConfigSchema = z.ZodType<RuntimeConfig, z.ZodTypeDef, { [key: string]: string }>;
+
+type ImportedModule = NonNullable<ModuleMetadata['imports']>[number];
+
+type CreateAppOptions = {
+  callback: (app: NestExpressApplication, config: RuntimeConfig, logger: JSONLogger) => Promisable<void>;
+  docs?: {
+    config: DocsConfig;
+    path: `/${string}.json`;
+  };
+  imports?: ImportedModule[];
+  providers?: Provider[];
+  schema: ConfigSchema;
+  version: `${number}`;
+};
+
+export class AppFactory {
+  static async createApp({ callback, docs, imports, providers, schema, version }: CreateAppOptions) {
+    const config = await this.parseConfig(schema);
+    const app = await NestFactory.create<NestExpressApplication>(
+      AppModule.create({
+        config,
+        imports: imports ?? [],
+        providers: providers ?? []
+      }),
+      {
+        bufferLogs: true
+      }
+    );
+    const logger = app.get(JSONLogger);
+    app.useLogger(logger);
+
+    app.enableCors();
+    app.enableShutdownHooks();
+    app.enableVersioning({
+      defaultVersion: version,
+      type: VersioningType.URI
+    });
+    app.use(json({ limit: '50MB' }));
+
+    if (docs) {
+      const document = DocsFactory.createDocs(app, docs.config);
+      const httpAdapter = app.getHttpAdapter().getInstance();
+      httpAdapter.get(docs.path, (_, res) => {
+        res.send(document);
+      });
+    }
+
+    return callback(app, config, logger);
+  }
+
+  private static async parseConfig(schema: ConfigSchema): Promise<RuntimeConfig> {
+    const input = filterObject(process.env, (value) => value !== '');
+    const result = await schema.safeParseAsync(input);
+    if (!result.success) {
+      throw new Error('Failed to Parse Environment Variables', {
+        cause: {
+          issues: result.error.issues
+        }
+      });
+    }
+    return result.data;
+  }
+}
+
+export type { CreateAppOptions, ImportedModule };
