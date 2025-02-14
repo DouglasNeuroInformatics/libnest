@@ -2,14 +2,23 @@ import type { IncomingMessage, Server, ServerResponse } from 'node:http';
 
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import request from 'supertest';
-import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
+import { afterAll, beforeAll, describe, expect, expectTypeOf, it, vi } from 'vitest';
 
 import { $BaseRuntimeConfig } from '../../../config/config.schema.js';
-import { AppFactory, type CreateAppOptions } from '../app.factory.js';
+import { AppFactory, type CreateAppOptions, type UserImportedModule } from '../app.factory.js';
 import { CatsModule } from './stubs/cats.module.js';
 
 import type { RuntimeConfig } from '../../../user-config.js';
+import type { InternalDynamicModule } from '../internal-module.factory.js';
 import type { CreateCatDto } from './stubs/dto/create-cat.dto.js';
+
+class DummyModule {}
+
+const InternalModule = {} as InternalDynamicModule;
+
+expectTypeOf(DummyModule).toMatchTypeOf<UserImportedModule>();
+
+expectTypeOf(InternalModule).not.toMatchTypeOf<UserImportedModule>();
 
 const env = {
   API_DEV_SERVER_PORT: '5500',
@@ -18,7 +27,7 @@ const env = {
   NODE_ENV: 'test',
   SECRET_KEY: '2622d72669dd194b98cffd9098b0d04b',
   VERBOSE: 'false'
-} satisfies { [K in keyof RuntimeConfig]: string };
+} satisfies { [K in keyof RuntimeConfig]?: string };
 
 describe('AppFactory.createApp', () => {
   const createApp = (options?: Partial<CreateAppOptions>) => {
@@ -43,6 +52,7 @@ describe('AppFactory.createApp', () => {
       await expect(createApp()).rejects.toThrow('Failed to Parse Environment Variables');
       vi.stubEnv('VERBOSE', env.VERBOSE);
     });
+    it('should not register the Throttler');
   });
 
   describe('integration', () => {

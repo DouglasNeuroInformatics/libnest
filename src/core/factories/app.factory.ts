@@ -1,5 +1,5 @@
 import { filterObject } from '@douglasneuroinformatics/libjs';
-import { type DynamicModule, type ModuleMetadata, VersioningType } from '@nestjs/common';
+import { type DynamicModule, type ModuleMetadata, type Provider, VersioningType } from '@nestjs/common';
 import { APP_FILTER, APP_GUARD, APP_PIPE, NestFactory } from '@nestjs/core';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
@@ -20,7 +20,9 @@ import type { internalModuleTag } from './internal-module.factory.js';
 
 type ConfigSchema = z.ZodType<RuntimeConfig, z.ZodTypeDef, { [key: string]: string }>;
 
-type ImportedModule = NonNullable<ModuleMetadata['imports']>[number] & {
+type ImportedModule = NonNullable<ModuleMetadata['imports']>[number];
+
+type UserImportedModule = ImportedModule & {
   [internalModuleTag]?: never;
 };
 
@@ -30,7 +32,7 @@ type CreateAppOptions = {
     config: DocsConfig;
     path: `/${string}.json`;
   };
-  modules: ImportedModule[];
+  modules: UserImportedModule[];
   schema: ConfigSchema;
   version: `${number}`;
 };
@@ -74,48 +76,54 @@ export class AppFactory {
     config: RuntimeConfig;
     modules: ImportedModule[];
   }): DynamicModule {
+    const imports: ImportedModule[] = [
+      ConfigModule.forRoot({ config }),
+      LoggingModule.forRoot(this.getLoggingOptions(config))
+    ];
+    const providers: Provider[] = [
+      {
+        provide: APP_FILTER,
+        useClass: GlobalExceptionFilter
+      },
+      {
+        provide: APP_PIPE,
+        useClass: ValidationPipe
+      },
+      {
+        provide: APP_GUARD,
+        useClass: ThrottlerGuard
+      }
+    ];
+
+    if (config.THROTTLER_ENABLED) {
+      imports.push(
+        ThrottlerModule.forRoot([
+          {
+            limit: 25,
+            name: 'short',
+            ttl: 1000
+          },
+          {
+            limit: 100,
+            name: 'medium',
+            ttl: 10000
+          },
+          {
+            limit: 250,
+            name: 'long',
+            ttl: 60000
+          }
+        ])
+      );
+      providers.push({
+        provide: APP_GUARD,
+        useClass: ThrottlerGuard
+      });
+    }
     return {
-      imports: [
-        ConfigModule.forRoot({ config }),
-        LoggingModule.forRoot(this.getLoggingOptions(config)),
-        ThrottlerModule.forRoot(
-          config.THROTTLER_ENABLED
-            ? [
-                {
-                  limit: 25,
-                  name: 'short',
-                  ttl: 1000
-                },
-                {
-                  limit: 100,
-                  name: 'medium',
-                  ttl: 10000
-                },
-                {
-                  limit: 250,
-                  name: 'long',
-                  ttl: 60000
-                }
-              ]
-            : []
-        ),
-        ...modules
-      ],
+      imports: [...imports, ...modules],
       module: AppModule,
-      providers: [
-        {
-          provide: APP_FILTER,
-          useClass: GlobalExceptionFilter
-        },
-        {
-          provide: APP_PIPE,
-          useClass: ValidationPipe
-        },
-        {
-          provide: APP_GUARD,
-          useClass: ThrottlerGuard
-        }
-      ]
+      providers
     };
   }
 
@@ -141,4 +149,4 @@ export class AppFactory {
   }
 }
 
-export type { CreateAppOptions, ImportedModule };
+export type { CreateAppOptions, ImportedModule, UserImportedModule };
