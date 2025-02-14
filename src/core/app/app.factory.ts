@@ -30,13 +30,13 @@ type CreateAppOptions = {
 };
 
 export class AppFactory {
-  static async createApp({ callback, docs, imports, providers, schema, version }: CreateAppOptions) {
+  static async createApp({ callback, docs, imports = [], providers = [], schema, version }: CreateAppOptions) {
     const config = await this.parseConfig(schema);
     const app = await NestFactory.create<NestExpressApplication>(
       AppModule.create({
         config,
-        imports: imports ?? [],
-        providers: providers ?? []
+        imports,
+        providers
       }),
       {
         bufferLogs: true
