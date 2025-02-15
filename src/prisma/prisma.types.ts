@@ -5,6 +5,10 @@ export interface PrismaClientLike {
   [key: string]: unknown;
 }
 
+/**
+ * Represents the `PrismaClient` for your application. Users should augment
+ * this declaration with their own `PrismaClient`.
+ */
 export interface RuntimePrismaClient extends PrismaClientLike {}
 
 export type PrismaModelName = typeof import('@prisma/client') extends {
