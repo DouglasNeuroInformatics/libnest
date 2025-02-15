@@ -42,7 +42,7 @@ export type { RuntimePrismaClient } from './prisma/prisma.types.js';
 /**
  * Configuration options for the user-defined settings in the `libnest` CLI.
  */
-export interface UserConfigOptions {
+export interface ConfigOptions {
   /**
    * The entry point for the `libnest` CLI.
    *
@@ -57,10 +57,10 @@ export interface UserConfigOptions {
 }
 
 /**
- * Defines user configuration options with type safety.
+ * Defines configuration options with type safety.
  * @param config - The configuration options for the application.
  * @returns The same configuration options
  */
-export function defineUserConfig(config: UserConfigOptions) {
+export function defineConfig(config: ConfigOptions) {
   return config;
 }

@@ -4,9 +4,9 @@ import * as path from 'node:path';
 import { err, ok, Result, ResultAsync } from 'neverthrow';
 import { z } from 'zod';
 
-import type { UserConfigOptions } from '../user-config.js';
+import type { ConfigOptions } from '../config.js';
 
-const $ConfigOptions: z.ZodType<UserConfigOptions> = z.object({
+const $ConfigOptions: z.ZodType<ConfigOptions> = z.object({
   entry: z.string().min(1),
   globals: z.record(z.unknown()).optional()
 });

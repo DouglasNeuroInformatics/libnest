@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 
 import { ConfigService } from '../config.service.js';
 
-import type { RuntimeConfig } from '../../../user-config.js';
+import type { RuntimeConfig } from '../../../config.js';
 
 describe('ConfigService', () => {
   let configService: ConfigService;

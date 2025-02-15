@@ -8,7 +8,7 @@ import { $BaseRuntimeConfig } from '../../schemas/config.schema.js';
 import { AppFactory } from '../app.factory.js';
 import { CatsModule } from './stubs/cats.module.js';
 
-import type { RuntimeConfig } from '../../../user-config.js';
+import type { RuntimeConfig } from '../../../config.js';
 import type { CreateAppOptions } from '../app.factory.js';
 import type { CreateCatDto } from './stubs/dto/create-cat.dto.js';
 

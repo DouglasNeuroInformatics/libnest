@@ -6,7 +6,7 @@ import { z } from 'zod';
 
 import { importDefault, importModule, resolveAbsoluteImportPath, resolveBootstrapFunction, runDev } from '../lib.js';
 
-import type { UserConfigOptions } from '../../user-config.js';
+import type { ConfigOptions } from '../../config.js';
 
 const configFile = 'libnest.config.ts';
 const entryFile = 'src/main.ts';
@@ -154,7 +154,7 @@ describe('resolveBootstrapFunction', () => {
     vi.doMock(resolvedConfigFile, () => ({
       default: {
         entry: entryFile
-      } satisfies UserConfigOptions
+      } satisfies ConfigOptions
     }));
     vi.doMock(resolvedEntryFile, () => ({ default: 0 }));
     const result = await resolveBootstrapFunction(configFile);
@@ -170,7 +170,7 @@ describe('resolveBootstrapFunction', () => {
         globals: {
           __TEST__: true
         }
-      } satisfies UserConfigOptions
+      } satisfies ConfigOptions
     }));
     vi.doMock(resolvedEntryFile, () => ({ default: vi.fn() }));
     expect(Reflect.get(global, '__TEST__')).toBe(undefined);
@@ -192,7 +192,7 @@ describe('runDev', () => {
     vi.doMock(resolvedConfigFile, () => ({
       default: {
         entry: entryFile
-      } satisfies UserConfigOptions
+      } satisfies ConfigOptions
     }));
     vi.doMock(resolvedEntryFile, () => ({ default: bootstrap }));
     const result = await runDev(configFile);

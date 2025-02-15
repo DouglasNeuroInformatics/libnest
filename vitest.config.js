@@ -29,7 +29,7 @@ export default defineConfig({
   ],
   test: {
     coverage: {
-      exclude: ['src/**/?(*.)index.ts', 'src/**/*.test-d.ts', 'src/user-config.ts'],
+      exclude: ['src/**/?(*.)index.ts', 'src/**/*.test-d.ts', 'src/config.ts'],
       include: ['src/**/*'],
       provider: 'v8',
       skipFull: true,
