@@ -1,5 +1,5 @@
 import type { Class } from 'type-fest';
-import type { z } from 'zod';
+import { z } from 'zod';
 
 export const VALIDATION_SCHEMA_METADATA_KEY = 'LIBNEST_VALIDATION_SCHEMA';
 
@@ -13,6 +13,22 @@ export function applyValidationSchema<T extends z.ZodType<{ [key: string]: unkno
   schema: T
 ) {
   Reflect.defineMetadata(VALIDATION_SCHEMA_METADATA_KEY, schema, target);
+}
+
+/**
+ * Retrieves the validation schema associated with a given class using metadata reflection.
+ *
+ * @param target - The class constructor for which the validation schema should be retrieved.
+ * @returns The Zod validation schema associated with the provided class.
+ */
+export function getValidationSchema<T extends Class<{ [key: string]: unknown }>>(target: T): z.ZodTypeAny {
+  const schema: unknown = Reflect.getMetadata(VALIDATION_SCHEMA_METADATA_KEY, target);
+  if (!schema) {
+    throw new Error(`Schema for '${target.name}' must be defined!`);
+  } else if (!(schema instanceof z.ZodType)) {
+    throw new Error(`Schema for '${target.name}' must be instance of ZodType`);
+  }
+  return schema;
 }
 
 /**
