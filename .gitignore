@@ -133,4 +133,4 @@ dist
 /docs/
 
 # local scripts for linking
-bin/_*.*
+local/
