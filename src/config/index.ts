@@ -1,11 +1,10 @@
 /**
- * This module provides a helper function to setup for the `libnest` CLI. It also
- * exports interfaces that users can augment in their application.
+ * This module provides a helper function to setup a `libnest` application.
  * @module config
  */
 
 /**
- * Configuration options for the user-defined settings in the `libnest` CLI.
+ * Configuration options for a `libnest` application.
  */
 export interface ConfigOptions {
   /**
