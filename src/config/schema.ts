@@ -45,7 +45,7 @@ export type BaseRuntimeConfig = z.infer<typeof $BaseRuntimeConfig>;
  *
  * ### Example:
  * ```typescript
- * declare module '@douglasneuroinformatics/libnest/user-config' {
+ * declare module '@douglasneuroinformatics/libnest/config' {
  *   export interface RuntimeConfig {
  *     foo: string;
  *   }
