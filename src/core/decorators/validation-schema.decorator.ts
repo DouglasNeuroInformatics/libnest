@@ -21,7 +21,7 @@ export function applyValidationSchema<T extends z.ZodType<{ [key: string]: unkno
  * @param target - The class constructor for which the validation schema should be retrieved.
  * @returns The Zod validation schema associated with the provided class.
  */
-export function getValidationSchema<T extends Class<{ [key: string]: unknown }>>(target: T): z.ZodTypeAny {
+export function getValidationSchema<T>(target: Class<T>): z.ZodTypeAny {
   const schema: unknown = Reflect.getMetadata(VALIDATION_SCHEMA_METADATA_KEY, target);
   if (!schema) {
     throw new Error(`Schema for '${target.name}' must be defined!`);
