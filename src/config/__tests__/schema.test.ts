@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { $BaseRuntimeConfig } from '../config.schema.js';
+import { $BaseRuntimeConfig } from '../schema.js';
 
 describe('$BaseRuntimeConfig', () => {
   it('should parse and validate a correct configuration', () => {

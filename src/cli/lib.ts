@@ -4,7 +4,7 @@ import * as path from 'node:path';
 import { err, ok, Result, ResultAsync } from 'neverthrow';
 import { z } from 'zod';
 
-import type { ConfigOptions } from '../config.js';
+import type { ConfigOptions } from '../config/index.js';
 
 const $ConfigOptions: z.ZodType<ConfigOptions> = z.object({
   entry: z.string().min(1),

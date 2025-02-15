@@ -11,7 +11,7 @@ import { JSONLogger } from '../logging/json.logger.js';
 import { AppModule } from './app.module.js';
 import { DocsFactory } from './docs.factory.js';
 
-import type { RuntimeConfig } from '../../config.js';
+import type { RuntimeConfig } from '../../config/schema.js';
 import type { DocsConfig } from './docs.factory.js';
 
 type ConfigSchema = z.ZodType<RuntimeConfig, z.ZodTypeDef, { [key: string]: string }>;

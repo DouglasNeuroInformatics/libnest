@@ -4,11 +4,11 @@ import type { NestExpressApplication } from '@nestjs/platform-express';
 import request from 'supertest';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 
-import { $BaseRuntimeConfig } from '../../schemas/config.schema.js';
+import { $BaseRuntimeConfig } from '../../../config/schema.js';
 import { AppFactory } from '../app.factory.js';
 import { CatsModule } from './stubs/cats.module.js';
 
-import type { RuntimeConfig } from '../../../config.js';
+import type { RuntimeConfig } from '../../../config/schema.js';
 import type { CreateAppOptions } from '../app.factory.js';
 import type { CreateCatDto } from './stubs/dto/create-cat.dto.js';
 

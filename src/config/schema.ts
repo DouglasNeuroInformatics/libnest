@@ -8,7 +8,7 @@ import { z } from 'zod';
  * can extend this schema to include additional configuration parameters.
  *
  * @see {@link BaseRuntimeConfig}
- * @see {@link user-config!RuntimeConfig | RuntimeConfig}
+ * @see {@link RuntimeConfig}
  */
 export const $BaseRuntimeConfig = z.object({
   API_DEV_SERVER_PORT: $NumberLike.pipe(z.number().int().nonnegative()),
@@ -34,6 +34,22 @@ export const $BaseRuntimeConfig = z.object({
  * Any extended schema must have, as it's output, a type that is assignable to this type.
  *
  * @see {@link $BaseRuntimeConfig}
- * @see {@link user-config!RuntimeConfig | RuntimeConfig}
+ * @see {@link RuntimeConfig}
  */
 export type BaseRuntimeConfig = z.infer<typeof $BaseRuntimeConfig>;
+
+/**
+ * Represents the parsed environment variables available at runtime.
+ *
+ * This type should be augmented by users to include additional configuration properties in their schema.
+ *
+ * ### Example:
+ * ```typescript
+ * declare module '@douglasneuroinformatics/libnest/user-config' {
+ *   export interface RuntimeConfig {
+ *     foo: string;
+ *   }
+ * }
+ * ```
+ */
+export interface RuntimeConfig extends BaseRuntimeConfig {}

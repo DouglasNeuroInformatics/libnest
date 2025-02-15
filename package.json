@@ -16,8 +16,8 @@
   },
   "exports": {
     "./config": {
-      "types": "./dist/config.d.ts",
-      "import": "./dist/config.js"
+      "types": "./dist/config/index.d.ts",
+      "import": "./dist/config/index.js"
     },
     "./core": {
       "types": "./dist/core/index.d.ts",

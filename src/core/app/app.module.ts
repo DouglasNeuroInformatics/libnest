@@ -13,7 +13,7 @@ import { ValidationPipe } from '../pipes/validation.pipe.js';
 import { ConfigService } from '../services/config.service.js';
 import { CryptoService } from '../services/crypto.service.js';
 
-import type { RuntimeConfig } from '../../config.js';
+import type { RuntimeConfig } from '../../config/schema.js';
 
 export type ImportedModule = NonNullable<ModuleMetadata['imports']>[number];
 
