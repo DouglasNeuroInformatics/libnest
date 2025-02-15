@@ -4,11 +4,11 @@ import type { NestExpressApplication } from '@nestjs/platform-express';
 import request from 'supertest';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 
-import { $BaseRuntimeConfig } from '../../../config/schema.js';
+import { $BaseEnv } from '../../../config/schema.js';
 import { AppFactory } from '../app.factory.js';
 import { CatsModule } from './stubs/cats.module.js';
 
-import type { RuntimeConfig } from '../../../config/schema.js';
+import type { BaseEnv } from '../../../config/schema.js';
 import type { CreateAppOptions } from '../app.factory.js';
 import type { CreateCatDto } from './stubs/dto/create-cat.dto.js';
 
@@ -19,14 +19,14 @@ const env = {
   NODE_ENV: 'test',
   SECRET_KEY: '2622d72669dd194b98cffd9098b0d04b',
   VERBOSE: 'false'
-} satisfies { [K in keyof RuntimeConfig]?: string };
+} satisfies { [K in keyof BaseEnv]?: string };
 
 describe('AppFactory.createApp', () => {
   const createApp = (options?: Partial<CreateAppOptions>) => {
     return AppFactory.createApp({
       callback: vi.fn(),
       imports: [CatsModule],
-      schema: $BaseRuntimeConfig,
+      schema: $BaseEnv,
       version: '1',
       ...options
     });

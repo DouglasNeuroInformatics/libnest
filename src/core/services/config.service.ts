@@ -1,18 +1,18 @@
 import { Injectable } from '@nestjs/common';
 
-import type { RuntimeConfig } from '../../config/schema.js';
+import type { RuntimeEnv } from '../../config/schema.js';
 
 @Injectable()
 export class ConfigService {
   /** @hidden */
-  constructor(private readonly config: RuntimeConfig) {}
+  constructor(private readonly config: RuntimeEnv) {}
 
   /**
    * Retrieves a configuration value by key.
    * @param key The key of the configuration value to retrieve.
    * @returns The configuration value
    */
-  get<TKey extends Extract<keyof RuntimeConfig, string>>(key: TKey): RuntimeConfig[TKey] {
+  get<TKey extends Extract<keyof RuntimeEnv, string>>(key: TKey): RuntimeEnv[TKey] {
     return this.config[key];
   }
 
@@ -22,11 +22,11 @@ export class ConfigService {
    * @returns The configuration value.
    * @throws Error if the configuration value is undefined.
    */
-  getOrThrow<TKey extends Extract<keyof RuntimeConfig, string>>(key: TKey): Exclude<RuntimeConfig[TKey], undefined> {
+  getOrThrow<TKey extends Extract<keyof RuntimeEnv, string>>(key: TKey): Exclude<RuntimeEnv[TKey], undefined> {
     const value = this.config[key];
     if (value === undefined) {
       throw new Error(`Property '${key}' is undefined`);
     }
-    return value as Exclude<RuntimeConfig[TKey], undefined>;
+    return value as Exclude<RuntimeEnv[TKey], undefined>;
   }
 }

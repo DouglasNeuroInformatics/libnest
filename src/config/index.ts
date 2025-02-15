@@ -31,5 +31,5 @@ export function defineConfig(config: ConfigOptions) {
 }
 
 export type { RuntimePrismaClient } from '../prisma/prisma.types.js';
-export { $BaseRuntimeConfig } from './schema.js';
-export type { BaseRuntimeConfig, RuntimeConfig } from './schema.js';
+export { $BaseEnv } from './schema.js';
+export type { BaseEnv, RuntimeEnv } from './schema.js';

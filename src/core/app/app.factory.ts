@@ -11,15 +11,15 @@ import { JSONLogger } from '../logging/json.logger.js';
 import { AppModule } from './app.module.js';
 import { DocsFactory } from './docs.factory.js';
 
-import type { RuntimeConfig } from '../../config/schema.js';
+import type { RuntimeEnv } from '../../config/schema.js';
 import type { DocsConfig } from './docs.factory.js';
 
-type ConfigSchema = z.ZodType<RuntimeConfig, z.ZodTypeDef, { [key: string]: string }>;
+type ConfigSchema = z.ZodType<RuntimeEnv, z.ZodTypeDef, { [key: string]: string }>;
 
 type ImportedModule = NonNullable<ModuleMetadata['imports']>[number];
 
 type CreateAppOptions = {
-  callback: (app: NestExpressApplication, config: RuntimeConfig, logger: JSONLogger) => Promisable<void>;
+  callback: (app: NestExpressApplication, config: RuntimeEnv, logger: JSONLogger) => Promisable<void>;
   docs?: {
     config: Omit<DocsConfig, 'version'>;
     path: `/${string}.json`;
@@ -65,7 +65,7 @@ export class AppFactory {
     return callback(app, config, logger);
   }
 
-  private static async parseConfig(schema: ConfigSchema): Promise<RuntimeConfig> {
+  private static async parseConfig(schema: ConfigSchema): Promise<RuntimeEnv> {
     const input = filterObject(process.env, (value) => value !== '');
     const result = await schema.safeParseAsync(input);
     if (!result.success) {

@@ -2,15 +2,15 @@ import { $BooleanLike, $NumberLike } from '@douglasneuroinformatics/libjs';
 import { z } from 'zod';
 
 /**
- * Schema definition for the base runtime configuration.
+ * Schema definition for the base environment options.
  *
  * This schema validates and transforms environment variables used in the application. Users
  * can extend this schema to include additional configuration parameters.
  *
- * @see {@link BaseRuntimeConfig}
- * @see {@link RuntimeConfig}
+ * @see {@link BaseEnv}
+ * @see {@link RuntimeEnv}
  */
-export const $BaseRuntimeConfig = z.object({
+export const $BaseEnv = z.object({
   API_DEV_SERVER_PORT: $NumberLike.pipe(z.number().int().nonnegative()),
   API_PROD_SERVER_PORT: $NumberLike.pipe(z.number().int().nonnegative()).default(80),
   API_RESPONSE_DELAY: $NumberLike.pipe(z.number().positive().int()).optional(),
@@ -28,15 +28,15 @@ export const $BaseRuntimeConfig = z.object({
 });
 
 /**
- * Type representing the base runtime configuration.
+ * Type representing the runtime environment configuration.
  *
- * Users can extend the {@link $BaseRuntimeConfig} schema in their application.
- * Any extended schema must have, as it's output, a type that is assignable to this type.
+ * Users can extend the {@link $BaseEnv} schema in their application. Any extended
+ * schema must have, as it's output, a type that is assignable to this type.
  *
- * @see {@link $BaseRuntimeConfig}
- * @see {@link RuntimeConfig}
+ * @see {@link $BaseEnv}
+ * @see {@link RuntimeEnv}
  */
-export type BaseRuntimeConfig = z.infer<typeof $BaseRuntimeConfig>;
+export type BaseEnv = z.infer<typeof $BaseEnv>;
 
 /**
  * Represents the parsed environment variables available at runtime.
@@ -46,10 +46,10 @@ export type BaseRuntimeConfig = z.infer<typeof $BaseRuntimeConfig>;
  * ### Example:
  * ```typescript
  * declare module '@douglasneuroinformatics/libnest/config' {
- *   export interface RuntimeConfig {
+ *   export interface RuntimeEnv {
  *     foo: string;
  *   }
  * }
  * ```
  */
-export interface RuntimeConfig extends BaseRuntimeConfig {}
+export interface RuntimeEnv extends BaseEnv {}
