@@ -20,7 +20,7 @@ type ImportedModule = NonNullable<ModuleMetadata['imports']>[number];
 type CreateAppOptions = {
   callback: (app: NestExpressApplication, config: RuntimeConfig, logger: JSONLogger) => Promisable<void>;
   docs?: {
-    config: DocsConfig;
+    config: Omit<DocsConfig, 'version'>;
     path: `/${string}.json`;
   };
   imports?: ImportedModule[];
@@ -54,7 +54,7 @@ export class AppFactory {
     app.use(json({ limit: '50MB' }));
 
     if (docs) {
-      const document = DocsFactory.createDocs(app, docs.config);
+      const document = DocsFactory.createDocs(app, { ...docs.config, version });
       const httpAdapter = app.getHttpAdapter().getInstance();
       httpAdapter.get(docs.path, (_, res) => {
         res.send(document);
