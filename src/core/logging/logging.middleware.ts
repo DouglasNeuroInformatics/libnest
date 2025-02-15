@@ -3,7 +3,9 @@ import type { NestMiddleware } from '@nestjs/common';
 import type { NextFunction, Request, Response } from 'express';
 
 import { JSONLogger } from './json.logger.js';
-import { LOGGING_OPTIONS_TOKEN, type LoggingOptions } from './logging.config.js';
+import { LOGGING_OPTIONS_TOKEN } from './logging.config.js';
+
+import type { LoggingOptions } from './logging.config.js';
 
 @Injectable()
 export class LoggingMiddleware implements NestMiddleware {

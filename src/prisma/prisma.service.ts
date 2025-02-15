@@ -6,7 +6,7 @@ import { PRISMA_CLIENT_TOKEN } from './prisma.config.js';
 import type { RuntimePrismaClient } from './prisma.types.js';
 
 @Injectable()
-export class PrismaService implements OnModuleInit, OnApplicationShutdown {
+export class PrismaService implements OnApplicationShutdown, OnModuleInit {
   constructor(@Inject(PRISMA_CLIENT_TOKEN) public readonly client: RuntimePrismaClient) {}
 
   async dropDatabase() {

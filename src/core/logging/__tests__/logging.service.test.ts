@@ -2,8 +2,10 @@ import { INQUIRER } from '@nestjs/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { LOGGING_OPTIONS_TOKEN, type LoggingOptions } from '../logging.config.js';
+import { LOGGING_OPTIONS_TOKEN } from '../logging.config.js';
 import { LoggingService } from '../logging.service.js';
+
+import type { LoggingOptions } from '../logging.config.js';
 
 const JSONLogger = vi.hoisted(() => vi.fn());
 

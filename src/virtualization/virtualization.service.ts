@@ -6,7 +6,9 @@ import { isErrorLike, serializeError } from 'serialize-error';
 import type { ErrorObject } from 'serialize-error';
 
 import { LoggingService } from '../core/logging/logging.service.js';
-import { VIRTUALIZATION_MODULE_OPTIONS_TOKEN, type VirtualizationModuleOptions } from './virtualization.config.js';
+import { VIRTUALIZATION_MODULE_OPTIONS_TOKEN } from './virtualization.config.js';
+
+import type { VirtualizationModuleOptions } from './virtualization.config.js';
 
 @Injectable()
 export class VirtualizationService<TContext extends vm.Context = vm.Context> {

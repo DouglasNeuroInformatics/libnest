@@ -2,12 +2,15 @@
 /* eslint-disable no-dupe-class-members */
 
 import { isPlainObject } from '@douglasneuroinformatics/libjs';
-import { Inject, Injectable, type LoggerService, type LogLevel, Optional } from '@nestjs/common';
+import { Inject, Injectable, Optional } from '@nestjs/common';
+import type { LoggerService, LogLevel } from '@nestjs/common';
 import chalk from 'chalk';
-import { type ColorName } from 'chalk';
+import type { ColorName } from 'chalk';
 import { isErrorLike, serializeError } from 'serialize-error';
 
-import { LOGGING_OPTIONS_TOKEN, type LoggingOptions } from './logging.config.js';
+import { LOGGING_OPTIONS_TOKEN } from './logging.config.js';
+
+import type { LoggingOptions } from './logging.config.js';
 
 const LOG_COLORS: { [K in LogLevel]: ColorName } = {
   debug: 'green',
@@ -32,7 +35,7 @@ type JSONLoggerType = {
 };
 
 @Injectable()
-export class JSONLogger implements LoggerService, JSONLoggerType {
+export class JSONLogger implements JSONLoggerType, LoggerService {
   debug(message: unknown, ...args: [...additionalMessages: any, context?: string]): void;
   debug(message: unknown, context?: string): void;
   debug(...args: unknown[]): void {
@@ -103,7 +106,7 @@ export class JSONLogger implements LoggerService, JSONLoggerType {
   constructor(
     @Optional()
     private readonly context?: string,
-    @Optional() @Inject(LOGGING_OPTIONS_TOKEN) options?: LoggingOptions
+    @Inject(LOGGING_OPTIONS_TOKEN) @Optional() options?: LoggingOptions
   ) {
     this.options = {
       log: true,

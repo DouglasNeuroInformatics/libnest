@@ -4,8 +4,11 @@ import { beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { delay } from '../../middleware/delay.middleware.js';
 import { ConfigService } from '../../services/config.service.js';
-import { type CryptoOptions, CryptoService } from '../../services/crypto.service.js';
-import { AppModule, type CreateAppModuleOptions } from '../app.module.js';
+import { CryptoService } from '../../services/crypto.service.js';
+import { AppModule } from '../app.module.js';
+
+import type { CryptoOptions } from '../../services/crypto.service.js';
+import type { CreateAppModuleOptions } from '../app.module.js';
 
 vi.mock(import('../../middleware/delay.middleware.js'), async (importOriginal) => {
   const { delay } = await importOriginal();

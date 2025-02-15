@@ -9,9 +9,10 @@ import type { z } from 'zod';
 
 import { JSONLogger } from '../logging/json.logger.js';
 import { AppModule } from './app.module.js';
-import { type DocsConfig, DocsFactory } from './docs.factory.js';
+import { DocsFactory } from './docs.factory.js';
 
 import type { RuntimeConfig } from '../../user-config.js';
+import type { DocsConfig } from './docs.factory.js';
 
 type ConfigSchema = z.ZodType<RuntimeConfig, z.ZodTypeDef, { [key: string]: string }>;
 
