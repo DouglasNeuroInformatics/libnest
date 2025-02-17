@@ -11,7 +11,8 @@ module.register('@swc-node/register/esm', import.meta.url);
 
 const require = module.createRequire(import.meta.url);
 
-const { name, version } = require('../../package.json') as { name: string; version: string };
+/** @type {{ name: string; version: string }} */
+const { name, version } = require('../../package.json');
 
 const program = new Command();
 program.name(name);
@@ -28,7 +29,8 @@ program
     return result.value;
   })
   .action(async function () {
-    const { configFile } = this.opts<{ configFile: string }>();
+    /** @type {{ configFile: string }} */
+    const { configFile } = this.opts();
     await runDev(configFile).mapErr((error) => {
       program.error(error, { exitCode: 1 });
     });
