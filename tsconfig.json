@@ -9,5 +9,5 @@
     "resolveJsonModule": true,
     "strictPropertyInitialization": false
   },
-  "include": ["example/**/*", "src/**/*", "typedoc.config.js", "vitest.config.js"]
+  "include": ["example/**/*", "src/**/*", "libnest.config.ts", "typedoc.config.js", "vitest.config.js"]
 }
