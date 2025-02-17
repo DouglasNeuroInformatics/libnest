@@ -23,15 +23,15 @@ export type DynamicAppModule = DynamicModule & {
 
 export type CreateAppModuleOptions = {
   config: RuntimeEnv;
-  imports: ImportedModule[];
-  providers: Provider[];
+  imports?: ImportedModule[];
+  providers?: Provider[];
 };
 
 export class AppModule implements NestModule {
   @Inject()
   private readonly configService: ConfigService;
 
-  static create({ config, imports, providers }: CreateAppModuleOptions): DynamicAppModule {
+  static create({ config, imports = [], providers = [] }: CreateAppModuleOptions): DynamicAppModule {
     const coreImports: ImportedModule[] = [];
     const coreProviders: Provider[] = [
       {

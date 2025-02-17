@@ -19,13 +19,7 @@ export type CreateAppOptions = Simplify<
 >;
 
 export class AppFactory {
-  static create({
-    docs,
-    imports = [],
-    providers = [],
-    schema,
-    version
-  }: Omit<CreateAppOptions, 'callback'>): AppContainer {
+  static create({ docs, imports = [], providers = [], schema, version }: CreateAppOptions): AppContainer {
     const config = this.parseConfig(schema);
     const module = AppModule.create({ config, imports, providers });
     return new AppContainer({
