@@ -5,7 +5,7 @@ import type { NestExpressApplication } from '@nestjs/platform-express';
 import { json } from 'express';
 
 import { JSONLogger } from '../logging/json.logger.js';
-import { AppModule } from './app.module.js';
+import { AppModuleFactory } from './app.module.factory.js';
 import { DocsFactory } from './docs.factory.js';
 
 import type { RuntimeEnv } from '../../config/schema.js';
@@ -15,7 +15,7 @@ export class AppFactory {
   static async createApp({ callback, docs, imports = [], providers = [], schema, version }: CreateAppOptions) {
     const config = await this.parseConfig(schema);
     const app = await NestFactory.create<NestExpressApplication>(
-      AppModule.create({
+      AppModuleFactory.create({
         config,
         imports,
         providers

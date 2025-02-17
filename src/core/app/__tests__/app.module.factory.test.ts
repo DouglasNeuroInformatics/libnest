@@ -5,10 +5,10 @@ import { beforeAll, describe, expect, it, vi } from 'vitest';
 import { delay } from '../../middleware/delay.middleware.js';
 import { ConfigService } from '../../services/config.service.js';
 import { CryptoService } from '../../services/crypto.service.js';
-import { AppModule } from '../app.module.js';
+import { AppModuleFactory } from '../app.module.factory.js';
 
 import type { CryptoOptions } from '../../services/crypto.service.js';
-import type { CreateAppModuleOptions } from '../app.module.js';
+import type { CreateAppModuleOptions } from '../app.module.factory.js';
 
 vi.mock(import('../../middleware/delay.middleware.js'), async (importOriginal) => {
   const { delay } = await importOriginal();
@@ -25,7 +25,7 @@ vi.mock('../../services/crypto.service.js', async (importOriginal) => {
 });
 
 const createAppModule = ({ config, imports = [], providers = [] }: PartialDeep<CreateAppModuleOptions> = {}) => {
-  return AppModule.create({
+  return AppModuleFactory.create({
     config: {
       API_DEV_SERVER_PORT: 5500,
       API_PROD_SERVER_PORT: 80,
