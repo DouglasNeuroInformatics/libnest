@@ -13,7 +13,13 @@ import type { RuntimeEnv } from '../../config/schema.js';
 import type { ConfigSchema, CreateAppOptions } from './app.types.js';
 
 export class AppFactory {
-  static create({ docs, imports = [], providers = [], schema, version }: CreateAppOptions): AppContainer {
+  static create({
+    docs,
+    imports = [],
+    providers = [],
+    schema,
+    version
+  }: Omit<CreateAppOptions, 'callback'>): AppContainer {
     const config = this.parseConfig(schema);
     const module = AppModuleFactory.create({ config, imports, providers });
     return new AppContainer({
