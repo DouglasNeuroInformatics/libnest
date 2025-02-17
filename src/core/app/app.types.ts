@@ -1,6 +1,6 @@
 import type { DynamicModule, ModuleMetadata, Provider } from '@nestjs/common';
 import type { NestExpressApplication } from '@nestjs/platform-express';
-import type { Promisable } from 'type-fest';
+import type { Promisable, Simplify } from 'type-fest';
 import type { z } from 'zod';
 
 import type { RuntimeEnv } from '../../config/schema.js';
@@ -34,6 +34,13 @@ export type DocsConfig = {
   title: string;
   version?: `${number}`;
 };
+
+export type CreateAppContainerOptions = Simplify<
+  Pick<CreateAppOptions, 'docs' | 'version'> & {
+    config: RuntimeEnv;
+    module: DynamicAppModule;
+  }
+>;
 
 export type CreateAppOptions = {
   callback: (app: NestExpressApplication, config: RuntimeEnv, logger: JSONLogger) => Promisable<void>;
