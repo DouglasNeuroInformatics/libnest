@@ -49,6 +49,7 @@
     "build": "rm -rf dist && tsc -b tsconfig.build.json",
     "docs:build": "typedoc",
     "docs:dev": "concurrently \"typedoc --watch\" \"http-server docs -c-1\"",
+    "example:dev": "./src/cli/bin.js dev -c libnest.config.ts",
     "format": "prettier --write src",
     "knip": "knip",
     "lint": "tsc && eslint --fix src",
