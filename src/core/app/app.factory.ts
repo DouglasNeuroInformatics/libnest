@@ -1,34 +1,15 @@
 import { filterObject } from '@douglasneuroinformatics/libjs';
 import { VersioningType } from '@nestjs/common';
-import type { ModuleMetadata, Provider } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import { json } from 'express';
-import type { Promisable } from 'type-fest';
-import type { z } from 'zod';
 
 import { JSONLogger } from '../logging/json.logger.js';
 import { AppModule } from './app.module.js';
 import { DocsFactory } from './docs.factory.js';
 
 import type { RuntimeEnv } from '../../config/schema.js';
-import type { DocsConfig } from './docs.factory.js';
-
-type ConfigSchema = z.ZodType<RuntimeEnv, z.ZodTypeDef, { [key: string]: string }>;
-
-type ImportedModule = NonNullable<ModuleMetadata['imports']>[number];
-
-type CreateAppOptions = {
-  callback: (app: NestExpressApplication, config: RuntimeEnv, logger: JSONLogger) => Promisable<void>;
-  docs?: {
-    config: Omit<DocsConfig, 'version'>;
-    path: `/${string}.json`;
-  };
-  imports?: ImportedModule[];
-  providers?: Provider[];
-  schema: ConfigSchema;
-  version: `${number}`;
-};
+import type { ConfigSchema, CreateAppOptions } from './app.types.js';
 
 export class AppFactory {
   static async createApp({ callback, docs, imports = [], providers = [], schema, version }: CreateAppOptions) {
@@ -79,4 +60,4 @@ export class AppFactory {
   }
 }
 
-export type { CreateAppOptions, ImportedModule };
+export type { CreateAppOptions };

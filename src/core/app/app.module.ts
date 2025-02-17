@@ -1,5 +1,5 @@
 import { Inject } from '@nestjs/common';
-import type { DynamicModule, MiddlewareConsumer, ModuleMetadata, NestModule, Provider } from '@nestjs/common';
+import type { DynamicModule, MiddlewareConsumer, NestModule, Provider } from '@nestjs/common';
 import { APP_FILTER, APP_GUARD, APP_PIPE } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 
@@ -14,8 +14,7 @@ import { ConfigService } from '../services/config.service.js';
 import { CryptoService } from '../services/crypto.service.js';
 
 import type { RuntimeEnv } from '../../config/schema.js';
-
-export type ImportedModule = NonNullable<ModuleMetadata['imports']>[number];
+import type { ImportedModule } from './app.types.js';
 
 export type CreateAppModuleOptions = {
   config: RuntimeEnv;
