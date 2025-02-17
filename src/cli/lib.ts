@@ -104,12 +104,4 @@ function runDev(configFile: string): ResultAsync<void, string> {
   });
 }
 
-export {
-  $BootstrapFunction,
-  $ConfigOptions,
-  importDefault,
-  importModule,
-  resolveAbsoluteImportPath,
-  resolveBootstrapFunction,
-  runDev
-};
+export { importDefault, importModule, resolveAbsoluteImportPath, resolveBootstrapFunction, runDev };
