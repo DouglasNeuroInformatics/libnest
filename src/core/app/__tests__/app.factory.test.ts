@@ -2,7 +2,6 @@ import { beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { $BaseEnv } from '../../../config/schema.js';
 import { AppFactory } from '../app.factory.js';
-import { CatsModule } from './stubs/cats.module.js';
 
 import type { BaseEnv } from '../../../config/schema.js';
 import type { CreateAppOptions } from '../app.factory.js';
@@ -20,7 +19,6 @@ describe('AppFactory', () => {
   describe('create', () => {
     const createApp = (options?: Partial<CreateAppOptions>) => {
       return AppFactory.create({
-        imports: [CatsModule],
         schema: $BaseEnv,
         version: '1',
         ...options
