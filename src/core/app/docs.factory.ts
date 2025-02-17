@@ -1,6 +1,8 @@
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
+export type AppVersion = `${number}`;
+
 export type DocsConfig = {
   contact?: {
     email: string;
@@ -18,7 +20,7 @@ export type DocsConfig = {
   };
   tags?: string[];
   title: string;
-  version?: `${number}`;
+  version?: AppVersion;
 };
 
 export class DocsFactory {

@@ -7,7 +7,18 @@ import { JSONLogger } from '../logging/json.logger.js';
 import { DocsFactory } from './docs.factory.js';
 
 import type { RuntimeEnv } from '../../config/schema.js';
-import type { CreateAppContainerOptions, DocsConfig, DynamicAppModule } from './app.types.js';
+import type { DynamicAppModule } from './app.module.js';
+import type { AppVersion, DocsConfig } from './docs.factory.js';
+
+type CreateAppContainerOptions = {
+  config: RuntimeEnv;
+  docs?: {
+    config: Omit<DocsConfig, 'version'>;
+    path: `/${string}.json`;
+  };
+  module: DynamicAppModule;
+  version: AppVersion;
+};
 
 export class AppContainer {
   readonly #config: RuntimeEnv;
@@ -16,7 +27,7 @@ export class AppContainer {
     path: `/${string}.json`;
   };
   readonly #module: DynamicAppModule;
-  readonly #version: `${number}`;
+  readonly #version: AppVersion;
 
   constructor({ config, docs, module, version }: CreateAppContainerOptions) {
     this.#config = config;
@@ -55,3 +66,5 @@ export class AppContainer {
     logger.log(`Application is running on: ${url}`);
   }
 }
+
+export type { CreateAppContainerOptions };

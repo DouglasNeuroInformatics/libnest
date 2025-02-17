@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 
 import { AppContainer } from '../app.container.js';
 
-import type { DynamicAppModule } from '../app.types.js';
+import type { DynamicAppModule } from '../app.module.js';
 
 describe('AppContainer', () => {
   let appContainer: AppContainer;

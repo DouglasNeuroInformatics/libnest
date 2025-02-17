@@ -3,7 +3,6 @@
  */
 
 export { AppFactory } from './app/app.factory.js';
-export { AppModuleFactory } from './app/app.module.factory.js';
 export { CurrentUser } from './decorators/current-user.decorator.js';
 export { getValidationSchema, ValidationSchema } from './decorators/validation-schema.decorator.js';
 export { LoggingService } from './logging/logging.service.js';
