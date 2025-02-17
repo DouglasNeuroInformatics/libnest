@@ -6,11 +6,12 @@ import { json } from 'express';
 import { JSONLogger } from '../logging/json.logger.js';
 import { DocsFactory } from './docs.factory.js';
 
+import type { AppContainerLike } from '../../cli/lib.js';
 import type { RuntimeEnv } from '../../config/schema.js';
 import type { DynamicAppModule } from './app.module.js';
 import type { AppVersion, DocsConfig } from './docs.factory.js';
 
-type CreateAppContainerOptions = {
+export type CreateAppContainerOptions = {
   config: RuntimeEnv;
   docs?: {
     config: Omit<DocsConfig, 'version'>;
@@ -20,7 +21,11 @@ type CreateAppContainerOptions = {
   version: AppVersion;
 };
 
-export class AppContainer {
+export type AppContainerType = {
+  bootstrap: () => Promise<void>;
+};
+
+export class AppContainer implements AppContainerLike {
   readonly #config: RuntimeEnv;
   readonly #docs?: {
     config: Omit<DocsConfig, 'version'>;
@@ -66,5 +71,3 @@ export class AppContainer {
     logger.log(`Application is running on: ${url}`);
   }
 }
-
-export type { CreateAppContainerOptions };
