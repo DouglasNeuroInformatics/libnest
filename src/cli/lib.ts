@@ -4,15 +4,14 @@ import * as path from 'node:path';
 import { err, ok, Result, ResultAsync } from 'neverthrow';
 import { z } from 'zod';
 
+import { AppContainer } from '../core/app/app.container.js';
+
 import type { ConfigOptions } from '../config/index.js';
 
 const $ConfigOptions: z.ZodType<ConfigOptions> = z.object({
   entry: z.string().min(1),
   globals: z.record(z.unknown()).optional()
 });
-
-type BootstrapFunction = z.infer<typeof $BootstrapFunction>;
-const $BootstrapFunction = z.function().returns(z.promise(z.void()));
 
 /**
  * Resolves an import path to an absolute file path and validates that it exists and is a valid file.
@@ -73,35 +72,35 @@ function importDefault<TSchema extends z.ZodTypeAny>(
 }
 
 /**
- * Resolves the bootstrap function from a config file.
+ * Resolves the app container and config options from a config file.
  * @param configFile The path to the config file.
- * @returns A `ResultAsync` containing the bootstrap function on success, or an error message on failure.
+ * @returns A `ResultAsync` containing the app container and config options on success, or an error message on failure.
  */
-function resolveBootstrapFunction(configFile: string): ResultAsync<BootstrapFunction, string> {
-  return importDefault(configFile, $ConfigOptions).andThen(({ entry, globals }) =>
-    importDefault(entry, $BootstrapFunction).map((bootstrap) => {
-      if (globals) {
-        Object.entries(globals).forEach(([key, value]) => {
-          Object.defineProperty(globalThis, key, {
-            value,
-            writable: false
-          });
-        });
-      }
-      return bootstrap;
+function loadConfig(configFile: string): ResultAsync<{ appContainer: AppContainer; config: ConfigOptions }, string> {
+  return importDefault(configFile, $ConfigOptions).andThen((config) =>
+    importDefault(config.entry, z.instanceof(AppContainer)).map((appContainer) => {
+      return { appContainer, config };
     })
   );
 }
 
 /**
- * Runs the dev server using the bootstrap function from a config file.
+ * Runs the dev server using the app container from a config file.
  * @param configFile The path to the config file.
  * @returns A `ResultAsync` containing void on success, or an error message on failure.
  */
 function runDev(configFile: string): ResultAsync<void, string> {
-  return resolveBootstrapFunction(configFile).map(async (bootstrap) => {
-    await bootstrap();
+  return loadConfig(configFile).map(async ({ appContainer, config }) => {
+    if (config.globals) {
+      Object.entries(config.globals).forEach(([key, value]) => {
+        Object.defineProperty(globalThis, key, {
+          value,
+          writable: false
+        });
+      });
+    }
+    await appContainer.bootstrap();
   });
 }
 
-export { importDefault, importModule, resolveAbsoluteImportPath, resolveBootstrapFunction, runDev };
+export { importDefault, importModule, loadConfig, resolveAbsoluteImportPath, runDev };

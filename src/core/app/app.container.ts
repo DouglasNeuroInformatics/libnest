@@ -9,4 +9,8 @@ export class AppContainer {
     this.config = config;
     this.module = module;
   }
+
+  async bootstrap() {
+    return Promise.resolve();
+  }
 }

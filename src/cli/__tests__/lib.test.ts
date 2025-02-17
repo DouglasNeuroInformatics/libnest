@@ -4,7 +4,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Mock } from 'vitest';
 import { z } from 'zod';
 
-import { importDefault, importModule, resolveAbsoluteImportPath, resolveBootstrapFunction, runDev } from '../lib.js';
+import { AppContainer } from '../../core/app/app.container.js';
+import { importDefault, importModule, loadConfig, resolveAbsoluteImportPath, runDev } from '../lib.js';
 
 import type { ConfigOptions } from '../../config/index.js';
 
@@ -137,7 +138,7 @@ describe('importDefault', () => {
   });
 });
 
-describe('resolveBootstrapFunction', () => {
+describe('loadConfig', () => {
   beforeEach(() => {
     vi.spyOn(fs, 'existsSync').mockReturnValue(true);
     vi.spyOn(fs, 'lstatSync').mockReturnValue({ isFile: () => true } as any);
@@ -145,7 +146,7 @@ describe('resolveBootstrapFunction', () => {
 
   it('should return an error if importing the config file fails', async () => {
     vi.doMock(resolvedConfigFile, () => ({ default: 0 }));
-    await expect(resolveBootstrapFunction(configFile)).resolves.toMatchObject({
+    await expect(loadConfig(configFile)).resolves.toMatchObject({
       error: `Invalid default export in module: ${resolvedConfigFile}`
     });
   });
@@ -157,27 +158,10 @@ describe('resolveBootstrapFunction', () => {
       } satisfies ConfigOptions
     }));
     vi.doMock(resolvedEntryFile, () => ({ default: 0 }));
-    const result = await resolveBootstrapFunction(configFile);
+    const result = await loadConfig(configFile);
     expect(result).toMatchObject({
       error: `Invalid default export in module: ${resolvedEntryFile}`
     });
-  });
-
-  it('should assign properties to the global object if specified', async () => {
-    vi.doMock(resolvedConfigFile, () => ({
-      default: {
-        entry: entryFile,
-        globals: {
-          __TEST__: true
-        }
-      } satisfies ConfigOptions
-    }));
-    vi.doMock(resolvedEntryFile, () => ({ default: vi.fn() }));
-    expect(Reflect.get(global, '__TEST__')).toBe(undefined);
-    const result = await resolveBootstrapFunction(configFile);
-    expect(Reflect.get(global, '__TEST__')).toBe(true);
-    expect(result.isOk()).toBe(true);
-    expect(result.unwrapOr(null)).toBeTypeOf('function');
   });
 });
 
@@ -187,16 +171,28 @@ describe('runDev', () => {
     vi.spyOn(fs, 'lstatSync').mockReturnValue({ isFile: () => true } as any);
   });
 
-  it('should call the bootstrap function', async () => {
-    const bootstrap = vi.fn();
+  it('should call the bootstrap function on the app container and allow accessing global variables', async () => {
+    const appContainer: { bootstrap: Mock } = Object.create(AppContainer.prototype, {
+      bootstrap: {
+        value: vi.fn(() => {
+          // @ts-expect-error - this is defined in the config
+          if (typeof __TEST__ === 'undefined') {
+            throw new Error("Expected global variable '__TEST__' to be defined");
+          }
+        })
+      }
+    });
     vi.doMock(resolvedConfigFile, () => ({
       default: {
-        entry: entryFile
+        entry: entryFile,
+        globals: {
+          __TEST__: true
+        }
       } satisfies ConfigOptions
     }));
-    vi.doMock(resolvedEntryFile, () => ({ default: bootstrap }));
+    vi.doMock(resolvedEntryFile, () => ({ default: appContainer }));
     const result = await runDev(configFile);
     expect(result.isOk()).toBe(true);
-    expect(bootstrap).toHaveBeenCalledOnce();
+    expect(appContainer.bootstrap).toHaveBeenCalledOnce();
   });
 });
