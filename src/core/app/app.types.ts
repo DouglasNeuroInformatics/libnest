@@ -1,10 +1,15 @@
-import type { ModuleMetadata, Provider } from '@nestjs/common';
+import type { DynamicModule, ModuleMetadata, Provider } from '@nestjs/common';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import type { Promisable } from 'type-fest';
 import type { z } from 'zod';
 
 import type { RuntimeEnv } from '../../config/schema.js';
 import type { JSONLogger } from '../logging/json.logger.js';
+import type { AppModule } from './app.module.js';
+
+export type DynamicAppModule = DynamicModule & {
+  module: typeof AppModule;
+};
 
 export type ConfigSchema = z.ZodType<RuntimeEnv, z.ZodTypeDef, { [key: string]: string }>;
 

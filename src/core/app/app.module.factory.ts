@@ -1,4 +1,4 @@
-import type { DynamicModule, Provider } from '@nestjs/common';
+import type { Provider } from '@nestjs/common';
 import { APP_FILTER, APP_GUARD, APP_PIPE } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 
@@ -12,7 +12,7 @@ import { CryptoService } from '../services/crypto.service.js';
 import { AppModule } from './app.module.js';
 
 import type { RuntimeEnv } from '../../config/schema.js';
-import type { ImportedModule } from './app.types.js';
+import type { DynamicAppModule, ImportedModule } from './app.types.js';
 
 export type CreateAppModuleOptions = {
   config: RuntimeEnv;
@@ -21,7 +21,7 @@ export type CreateAppModuleOptions = {
 };
 
 export class AppModuleFactory {
-  static create({ config, imports, providers }: CreateAppModuleOptions): DynamicModule {
+  static create({ config, imports, providers }: CreateAppModuleOptions): DynamicAppModule {
     const coreImports: ImportedModule[] = [];
     const coreProviders: Provider[] = [
       {
