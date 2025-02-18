@@ -32,20 +32,33 @@ describe('AppErrorClass', () => {
     expectTypeOf(new TestError()).toMatchTypeOf<Error>();
   });
 
-  // it('should allow creating an error with additional details', () => {
-  //   const TestError = AppErrorClass<{ details: { code: number } }>('TestError');
-  //   const error = new TestError('This is a test', { details: { code: 0 } });
-  //   expect(error.details.code).toBe(0);
-  //   type T = ConstructorParameters<typeof TestError>;
-  //   expectTypeOf<ConstructorParameters<typeof TestError>>().toEqualTypeOf<
-  //     [
-  //       message: string,
-  //       options: {
-  //         details: {
-  //           code: number;
-  //         };
-  //       }
-  //     ]
-  //   >();
-  // });
+  it('should allow creating an error with additional details', () => {
+    const TestError = AppErrorClass<{ details: { code: number } }>('TestError');
+    const error = new TestError('This is a test', { details: { code: 0 } });
+    expect(error.details.code).toBe(0);
+    expectTypeOf<ConstructorParameters<typeof TestError>>().toEqualTypeOf<
+      [
+        message: string,
+        options: {
+          details: {
+            code: number;
+          };
+        }
+      ]
+    >();
+  });
+
+  it('should allow creating an error with a custom cause', () => {
+    const TestError = AppErrorClass<{ cause: Error }>('TestError');
+    const error = new TestError('This is a test', { cause: new Error('Test') });
+    expect(error.cause.message).toBe('Test');
+    expectTypeOf<ConstructorParameters<typeof TestError>>().toEqualTypeOf<
+      [
+        message: string,
+        options: {
+          cause: Error;
+        }
+      ]
+    >();
+  });
 });

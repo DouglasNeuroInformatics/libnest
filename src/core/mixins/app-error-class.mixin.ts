@@ -1,4 +1,5 @@
-import type { Simplify } from 'type-fest';
+import type { RequiredKeys } from '@prisma/client/runtime/library';
+import type { IfNever, Simplify } from 'type-fest';
 
 type AppErrorOptions = Simplify<
   ErrorOptions & {
@@ -6,6 +7,12 @@ type AppErrorOptions = Simplify<
       [key: string]: unknown;
     };
   }
+>;
+
+type AppErrorConstructorArgs<TOptions extends AppErrorOptions> = IfNever<
+  RequiredKeys<TOptions>,
+  [message?: string, options?: TOptions],
+  [message: string, options: TOptions]
 >;
 
 export class BaseAppError<TOptions extends AppErrorOptions> extends Error {
@@ -20,8 +27,9 @@ export class BaseAppError<TOptions extends AppErrorOptions> extends Error {
 
 export function AppErrorClass<TOptions extends AppErrorOptions = AppErrorOptions>(name: `${string}Error`) {
   return class extends BaseAppError<TOptions> {
-    constructor(message?: string, options?: TOptions) {
-      super(message, options);
+    constructor(...args: AppErrorConstructorArgs<TOptions>) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      super(...(args as any[]));
       this.name = name;
     }
   };
