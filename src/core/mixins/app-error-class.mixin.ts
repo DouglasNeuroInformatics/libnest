@@ -1,16 +1,17 @@
 import type { Simplify } from 'type-fest';
 
-export type AppErrorType<TDetails extends undefined | { [key: string]: unknown }> = TDetails extends {
-  [key: string]: unknown;
+type AppErrorOptions = Simplify<
+  ErrorOptions & {
+    details?: {
+      [key: string]: unknown;
+    };
+  }
+>;
+
+type AppErrorType<TOptions extends AppErrorOptions> = TOptions extends {
+  details: infer TDetails extends { [key: string]: unknown };
 }
-  ? new (
-      message: string,
-      options: Simplify<ErrorOptions & { details: TDetails }>
-    ) => Simplify<
-      Error & {
-        details: TDetails;
-      }
-    >
+  ? new (message: string, options: TOptions) => Simplify<Error & { details: TDetails }>
   : new (message?: string, options?: ErrorOptions) => Error;
 
 export class BaseAppError extends Error {
@@ -19,16 +20,13 @@ export class BaseAppError extends Error {
   }
 }
 
-export function AppErrorClass<TDetails extends undefined | { [key: string]: unknown } = undefined>(
-  name: `${string}Error`
-) {
+export function AppErrorClass<TOptions extends AppErrorOptions = ErrorOptions>(name: `${string}Error`) {
   return class extends BaseAppError {
-    details?: TDetails;
-
-    constructor(message?: string, options?: ErrorOptions & { details?: TDetails }) {
+    details?: TOptions['details'];
+    constructor(message?: string, options?: TOptions) {
       super(message, options);
       this.name = name;
       this.details = options?.details;
     }
-  } as unknown as AppErrorType<TDetails>;
+  } as unknown as AppErrorType<TOptions>;
 }

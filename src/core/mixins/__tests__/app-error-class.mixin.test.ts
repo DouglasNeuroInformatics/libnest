@@ -33,14 +33,13 @@ describe('AppErrorClass', () => {
   });
 
   it('should allow creating an error with additional details', () => {
-    const TestError = AppErrorClass<{ code: number }>('TestError');
+    const TestError = AppErrorClass<{ details: { code: number } }>('TestError');
     const error = new TestError('This is a test', { details: { code: 0 } });
     expect(error.details.code).toBe(0);
     expectTypeOf<ConstructorParameters<typeof TestError>>().toEqualTypeOf<
       [
         message: string,
         options: {
-          cause?: unknown;
           details: {
             code: number;
           };
