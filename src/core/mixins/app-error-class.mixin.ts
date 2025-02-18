@@ -21,15 +21,15 @@ export class BaseAppError<TOptions extends AppErrorOptions> extends Error {
 
   constructor(message?: string, options?: TOptions) {
     super(message, options);
+    this.cause = options?.cause;
     this.details = options?.details;
   }
 }
 
 export function AppErrorClass<TOptions extends AppErrorOptions = AppErrorOptions>(name: `${string}Error`) {
   return class extends BaseAppError<TOptions> {
-    constructor(...args: AppErrorConstructorArgs<TOptions>) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-      super(...(args as any[]));
+    constructor(...[message, options]: AppErrorConstructorArgs<TOptions>) {
+      super(message, options);
       this.name = name;
     }
   };
