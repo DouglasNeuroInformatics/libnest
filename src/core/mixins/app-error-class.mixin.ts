@@ -4,10 +4,11 @@ export class BaseAppError extends Error {
   }
 }
 
-export function AppErrorClass() {
+export function AppErrorClass(name: `${string}Error`) {
   return class extends BaseAppError {
     constructor(message: string) {
       super(message);
+      this.name = name;
     }
   };
 }
