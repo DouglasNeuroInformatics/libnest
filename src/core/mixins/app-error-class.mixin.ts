@@ -1,5 +1,4 @@
-import type { RequiredKeys } from '@prisma/client/runtime/library';
-import type { IfNever, Simplify } from 'type-fest';
+import type { IfNever, RequiredKeysOf, Simplify } from 'type-fest';
 
 type AppErrorOptions = Simplify<
   ErrorOptions & {
@@ -10,7 +9,7 @@ type AppErrorOptions = Simplify<
 >;
 
 type AppErrorConstructorArgs<TOptions extends AppErrorOptions> = IfNever<
-  RequiredKeys<TOptions>,
+  RequiredKeysOf<TOptions>,
   [message?: string, options?: TOptions],
   [message: string, options: TOptions]
 >;
