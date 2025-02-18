@@ -27,7 +27,25 @@ describe('AppErrorClass', () => {
   });
 
   it('should have parameters assignable to those of the base error constructor by default', () => {
-    const _TestError = AppErrorClass('TestError');
-    expectTypeOf<ConstructorParameters<typeof _TestError>>().toMatchTypeOf<ConstructorParameters<typeof Error>>();
+    const TestError = AppErrorClass('TestError');
+    expectTypeOf<ConstructorParameters<typeof TestError>>().toMatchTypeOf<ConstructorParameters<typeof Error>>();
+    expectTypeOf(new TestError()).toEqualTypeOf<Error>();
+  });
+
+  it('should allow creating an error with additional details', () => {
+    const TestError = AppErrorClass<{ code: number }>('TestError');
+    const error = new TestError('This is a test', { details: { code: 0 } });
+    expect(error.details.code).toBe(0);
+    expectTypeOf<ConstructorParameters<typeof TestError>>().toEqualTypeOf<
+      [
+        message: string,
+        options: {
+          cause?: unknown;
+          details: {
+            code: number;
+          };
+        }
+      ]
+    >();
   });
 });
