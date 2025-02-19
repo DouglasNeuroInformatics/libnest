@@ -1,4 +1,5 @@
 import type { IfNever, RequiredKeysOf, Simplify } from 'type-fest';
+import { z } from 'zod';
 
 type AppErrorOptions = {
   cause?: unknown;
@@ -9,62 +10,58 @@ type AppErrorOptions = {
 
 type IsAnyOptionDefined<TOptions extends AppErrorOptions> = IfNever<RequiredKeysOf<TOptions>, false, true>;
 
-type AppErrorParams<TOptions extends AppErrorOptions> =
-  IsAnyOptionDefined<TOptions> extends true
-    ? {
-        message: string;
-      }
-    : never;
+type AppErrorParams = {
+  message?: string;
+  name: `${string}Error`;
+  schema?: z.ZodType<AppErrorOptions>;
+};
 
-type AppErrorInstance<TOptions extends AppErrorOptions> = Simplify<
+type AppErrorInstance<TParams extends AppErrorParams, TOptions extends AppErrorOptions> = Simplify<
   Error & {
     cause: TOptions['cause'];
     details: TOptions['details'];
+    name: TParams['name'];
   }
 >;
 
-type AppErrorConstructorArgs<TOptions extends AppErrorOptions, TParams extends AppErrorParams<TOptions>> =
+type AppErrorConstructorArgs<TParams extends AppErrorParams, TOptions extends AppErrorOptions> =
   IsAnyOptionDefined<TOptions> extends true
-    ? IfNever<TParams, [message: string, options: TOptions], [TOptions]>
+    ? TParams extends { message: string }
+      ? [TOptions]
+      : [message: string, options: TOptions]
     : [message?: string, options?: TOptions];
 
-export type AppErrorConstructor<TOptions extends AppErrorOptions, TParams extends AppErrorParams<TOptions>> = new (
-  ...args: AppErrorConstructorArgs<TOptions, TParams>
-) => AppErrorInstance<TOptions>;
+export type AppErrorConstructor<TParams extends AppErrorParams, TOptions extends AppErrorOptions> = new (
+  ...args: AppErrorConstructorArgs<TParams, TOptions>
+) => AppErrorInstance<TParams, TOptions>;
 
-export abstract class BaseAppError<TOptions extends AppErrorOptions>
+export abstract class BaseAppError<TParams extends AppErrorParams, TOptions extends AppErrorOptions>
   extends Error
-  implements AppErrorInstance<TOptions>
+  implements AppErrorInstance<TParams, TOptions>
 {
-  override cause: TOptions['cause'];
-  details: TOptions['details'];
+  public override cause: TOptions['cause'];
+  public details: TOptions['details'];
+  public override name: TParams['name'];
 
-  constructor(...args: AppErrorConstructorArgs<TOptions, never>) {
+  constructor(...args: AppErrorConstructorArgs<TParams, TOptions>) {
     const [message, options] = args;
     super(message);
-    this.name = new.target.name;
+    this.name = new.target.name as TParams['name'];
     this.cause = options?.cause;
     this.details = options?.details;
   }
 }
 
-export function AppErrorClass<TOptions extends AppErrorOptions = AppErrorOptions>(
-  name: `${string}Error`,
-  params: AppErrorParams<TOptions>
-): AppErrorConstructor<TOptions, AppErrorParams<TOptions>>;
-
-export function AppErrorClass<TOptions extends AppErrorOptions = AppErrorOptions>(
-  name: `${string}Error`
-): AppErrorConstructor<TOptions, never>;
-
-export function AppErrorClass<TOptions extends AppErrorOptions = AppErrorOptions>(
-  name: `${string}Error`,
-  params?: AppErrorParams<TOptions>
-) {
-  return class extends BaseAppError<TOptions> {
-    override name = name;
-    constructor(...args: AppErrorConstructorArgs<TOptions, AppErrorParams<TOptions>>) {
-      const [message, options] = (params ? [params.message, args[0]] : args) as [string, TOptions];
+export function AppErrorClass<
+  TParams extends AppErrorParams,
+  TOptions extends NoInfer<TParams> extends { schema: infer TSchema extends z.ZodType<AppErrorOptions> }
+    ? z.TypeOf<TSchema>
+    : AppErrorOptions
+>(params: TParams): AppErrorConstructor<TParams, TOptions> {
+  return class extends BaseAppError<TParams, TOptions> {
+    override name = params.name;
+    constructor(...args: AppErrorConstructorArgs<TParams, TOptions>) {
+      const [message, options] = (params?.message ? [params.message, args[0]] : args) as [string, TOptions];
       super(message, options);
     }
   };
