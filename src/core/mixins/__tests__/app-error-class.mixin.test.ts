@@ -1,6 +1,31 @@
-import { describe, expect, expectTypeOf, it } from 'vitest';
+import type { Simplify } from 'type-fest';
+import { describe, expect, expectTypeOf, it, test } from 'vitest';
 
 import { AppErrorClass, BaseAppError } from '../app-error-class.mixin.js';
+
+import type { AppErrorConstructor } from '../app-error-class.mixin.js';
+
+type ErrorOptionsWithCode = Simplify<ErrorOptions & { details: { code: number } }>;
+type ErrorOptionsWithCause = Simplify<ErrorOptions & { cause: Error }>;
+type ErrorOptionsWithCodeAndCause = Simplify<ErrorOptionsWithCause & ErrorOptionsWithCode>;
+
+test('AppErrorConstructor', () => {
+  expectTypeOf<AppErrorConstructor<ErrorOptions, never>>().toEqualTypeOf<
+    new (message?: string, options?: ErrorOptions) => BaseAppError<ErrorOptions>
+  >();
+  expectTypeOf<AppErrorConstructor<ErrorOptionsWithCode, never>>().toEqualTypeOf<
+    new (message: string, options: ErrorOptionsWithCode) => BaseAppError<ErrorOptionsWithCode>
+  >();
+  expectTypeOf<AppErrorConstructor<ErrorOptionsWithCause, never>>().toEqualTypeOf<
+    new (message: string, options: ErrorOptionsWithCause) => BaseAppError<ErrorOptionsWithCause>
+  >();
+  expectTypeOf<AppErrorConstructor<ErrorOptionsWithCodeAndCause, never>>().toEqualTypeOf<
+    new (message: string, options: ErrorOptionsWithCodeAndCause) => BaseAppError<ErrorOptionsWithCodeAndCause>
+  >();
+  expectTypeOf<AppErrorConstructor<ErrorOptionsWithCodeAndCause, { message: string }>>().toEqualTypeOf<
+    new (options: ErrorOptionsWithCodeAndCause) => BaseAppError<ErrorOptionsWithCodeAndCause>
+  >();
+});
 
 describe('BaseAppError', () => {
   it('should have parameters assignable the base error constructor by default', () => {
@@ -55,6 +80,19 @@ describe('AppErrorClass', () => {
     expectTypeOf<ConstructorParameters<typeof TestError>>().toEqualTypeOf<
       [
         message: string,
+        options: {
+          cause: Error;
+        }
+      ]
+    >();
+  });
+
+  it('should allow creating an error with a default message', () => {
+    const TestError = AppErrorClass<{ cause: Error }>('TestError', { message: 'Custom message' });
+    const error = new TestError({ cause: new Error('Test') });
+    expect(error.message).toBe('Custom message');
+    expectTypeOf<ConstructorParameters<typeof TestError>>().toEqualTypeOf<
+      [
         options: {
           cause: Error;
         }
