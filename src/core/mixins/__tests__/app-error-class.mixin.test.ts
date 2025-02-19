@@ -1,6 +1,5 @@
 import type { Simplify } from 'type-fest';
 import { describe, expect, expectTypeOf, it, test } from 'vitest';
-import { z } from 'zod';
 
 import { AppErrorClass, BaseAppError } from '../app-error-class.mixin.js';
 
@@ -65,14 +64,13 @@ describe('AppErrorClass', () => {
 
   it('should allow creating an error with additional details', () => {
     const TestError = AppErrorClass({
-      name: 'TestError',
-      schema: z.object({
-        details: z.object({
-          code: z.number()
-        })
-      })
+      extendType(infer) {
+        return infer<{ details: { code: number } }>();
+      },
+      name: 'TestError'
     });
     const error = new TestError('This is a test', { details: { code: 0 } });
+
     expect(error.details.code).toBe(0);
     expectTypeOf<ConstructorParameters<typeof TestError>>().toEqualTypeOf<
       [
@@ -88,10 +86,10 @@ describe('AppErrorClass', () => {
 
   it('should allow creating an error with a custom cause', () => {
     const TestError = AppErrorClass({
-      name: 'TestError',
-      schema: z.object({
-        cause: z.instanceof(Error)
-      })
+      extendType(infer) {
+        return infer<{ cause: Error }>();
+      },
+      name: 'TestError'
     });
     const error = new TestError('This is a test', { cause: new Error('Test') });
     expect(error.cause.message).toBe('Test');
@@ -107,11 +105,11 @@ describe('AppErrorClass', () => {
 
   it('should allow creating an error with a default message', () => {
     const TestError = AppErrorClass({
+      extendType(infer) {
+        return infer<{ cause: Error }>();
+      },
       message: 'Custom message',
-      name: 'TestError',
-      schema: z.object({
-        cause: z.instanceof(Error)
-      })
+      name: 'TestError'
     });
     const error = new TestError({ cause: new Error('Test') });
     expect(error.message).toBe('Custom message');

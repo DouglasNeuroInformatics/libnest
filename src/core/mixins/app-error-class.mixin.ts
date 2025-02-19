@@ -1,5 +1,4 @@
 import type { IfNever, RequiredKeysOf, Simplify } from 'type-fest';
-import { z } from 'zod';
 
 type AppErrorOptions = {
   cause?: unknown;
@@ -11,9 +10,9 @@ type AppErrorOptions = {
 type IsAnyOptionDefined<TOptions extends AppErrorOptions> = IfNever<RequiredKeysOf<TOptions>, false, true>;
 
 type AppErrorParams = {
+  extendType?(infer: <TDef extends AppErrorOptions>() => TDef): any;
   message?: string;
   name: `${string}Error`;
-  schema?: z.ZodType<AppErrorOptions>;
 };
 
 type AppErrorInstance<TParams extends AppErrorParams, TOptions extends AppErrorOptions> = Simplify<
@@ -54,8 +53,10 @@ export abstract class BaseAppError<TParams extends AppErrorParams, TOptions exte
 
 export function AppErrorClass<
   TParams extends AppErrorParams,
-  TOptions extends NoInfer<TParams> extends { schema: infer TSchema extends z.ZodType<AppErrorOptions> }
-    ? z.TypeOf<TSchema>
+  TOptions extends NoInfer<TParams> extends {
+    extendType: (...args: any[]) => infer TCustomOptions extends AppErrorOptions;
+  }
+    ? TCustomOptions
     : AppErrorOptions
 >(params: TParams): AppErrorConstructor<TParams, TOptions> {
   return class extends BaseAppError<TParams, TOptions> {
