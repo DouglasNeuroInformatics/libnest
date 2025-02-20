@@ -20,7 +20,8 @@ const $ConfigOptions = z.object({
 
 /** @type {import('zod').ZodType<AppContainerType>} */
 const $AppContainer = z.object({
-  bootstrap: z.function().returns(z.promise(z.void()))
+  bootstrap: z.function().returns(z.promise(z.void())),
+  createNestApplication: z.function().returns(z.promise(z.any()))
 });
 
 /**

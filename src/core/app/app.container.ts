@@ -22,6 +22,7 @@ export type CreateAppContainerOptions = {
 
 export type AppContainerType = {
   bootstrap: () => Promise<void>;
+  createNestApplication: () => Promise<NestExpressApplication>;
 };
 
 export class AppContainer implements AppContainerType {
