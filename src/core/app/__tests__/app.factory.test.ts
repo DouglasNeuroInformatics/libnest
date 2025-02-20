@@ -31,9 +31,10 @@ describe('AppFactory', () => {
       });
     });
 
-    it('should throw an error if it cannot parse the schema', () => {
+    it('should return an error if it cannot parse the schema', () => {
       vi.stubEnv('VERBOSE', '1');
-      expect(() => createApp()).toThrow('Failed to Parse Environment Variables');
+      const result = createApp();
+      expect(result.isErr() && result.error.name === 'EnvironmentSchemaValidationError').toBe(true);
       vi.stubEnv('VERBOSE', env.VERBOSE);
     });
   });
