@@ -1,4 +1,4 @@
-import type { IfNever, RequiredKeysOf, Simplify } from 'type-fest';
+import type { IfNever, RequiredKeysOf } from 'type-fest';
 
 type AppErrorOptions = {
   cause?: unknown;
@@ -15,13 +15,11 @@ type AppErrorParams = {
   name: `${string}Error`;
 };
 
-type AppErrorInstance<TParams extends AppErrorParams, TOptions extends AppErrorOptions> = Simplify<
-  Error & {
-    cause: TOptions['cause'];
-    details: TOptions['details'];
-    name: TParams['name'];
-  }
->;
+type AppErrorInstance<TParams extends AppErrorParams, TOptions extends AppErrorOptions> = Error & {
+  cause: TOptions['cause'];
+  details: TOptions['details'];
+  name: TParams['name'];
+};
 
 type AppErrorConstructorArgs<TParams extends AppErrorParams, TOptions extends AppErrorOptions> =
   IsAnyOptionDefined<TOptions> extends true

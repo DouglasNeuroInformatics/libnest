@@ -1,6 +1,4 @@
 import { filterObject } from '@douglasneuroinformatics/libjs';
-import { err, ok } from 'neverthrow';
-import type { Result } from 'neverthrow';
 import type { Simplify } from 'type-fest';
 import type { z } from 'zod';
 
@@ -22,38 +20,27 @@ export type CreateAppOptions = Simplify<
 >;
 
 export class AppFactory {
-  static create({
-    docs,
-    imports = [],
-    providers = [],
-    schema,
-    version
-  }: CreateAppOptions): Result<AppContainer, InstanceType<typeof EnvironmentSchemaValidationError>> {
-    return this.parseConfig(schema).map((config) => {
-      const module = AppModule.create({ config, imports, providers });
-      return new AppContainer({
-        config,
-        docs,
-        module,
-        version
-      });
+  static create({ docs, imports = [], providers = [], schema, version }: CreateAppOptions): AppContainer {
+    const config = this.parseConfig(schema);
+    const module = AppModule.create({ config, imports, providers });
+    return new AppContainer({
+      config,
+      docs,
+      module,
+      version
     });
   }
 
-  private static parseConfig(
-    schema: EnvSchema
-  ): Result<RuntimeEnv, InstanceType<typeof EnvironmentSchemaValidationError>> {
+  private static parseConfig(schema: EnvSchema): RuntimeEnv {
     const input = filterObject(process.env, (value) => value !== '');
     const result = schema.safeParse(input);
     if (!result.success) {
-      return err(
-        new EnvironmentSchemaValidationError({
-          details: {
-            issues: result.error.issues
-          }
-        })
-      );
+      throw new EnvironmentSchemaValidationError({
+        details: {
+          issues: result.error.issues
+        }
+      });
     }
-    return ok(result.data);
+    return result.data;
   }
 }
