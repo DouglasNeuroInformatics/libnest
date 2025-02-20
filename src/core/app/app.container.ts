@@ -41,6 +41,16 @@ export class AppContainer implements AppContainerType {
   }
 
   async bootstrap() {
+    const app = await this.createNestApplication();
+    const logger = app.get(JSONLogger);
+    const isProduction = this.#config.NODE_ENV === 'production';
+    const port = this.#config[isProduction ? 'API_PROD_SERVER_PORT' : 'API_DEV_SERVER_PORT'];
+    await app.listen(port);
+    const url = await app.getUrl();
+    logger.log(`Application is running on: ${url}`);
+  }
+
+  async createNestApplication() {
     const app = await NestFactory.create<NestExpressApplication>(this.#module, {
       bufferLogs: true
     });
@@ -62,11 +72,6 @@ export class AppContainer implements AppContainerType {
         res.send(document);
       });
     }
-
-    const isProduction = this.#config.NODE_ENV === 'production';
-    const port = this.#config[isProduction ? 'API_PROD_SERVER_PORT' : 'API_DEV_SERVER_PORT'];
-    await app.listen(port);
-    const url = await app.getUrl();
-    logger.log(`Application is running on: ${url}`);
+    return app;
   }
 }
