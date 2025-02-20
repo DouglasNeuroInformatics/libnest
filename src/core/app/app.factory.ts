@@ -1,7 +1,10 @@
 import { filterObject } from '@douglasneuroinformatics/libjs';
+import { err, ok } from 'neverthrow';
+import type { Result } from 'neverthrow';
 import type { Simplify } from 'type-fest';
 import type { z } from 'zod';
 
+import { EnvironmentSchemaValidationError } from '../errors/environment-schema-validation.error.js';
 import { AppContainer } from './app.container.js';
 import { AppModule } from './app.module.js';
 
@@ -19,27 +22,38 @@ export type CreateAppOptions = Simplify<
 >;
 
 export class AppFactory {
-  static create({ docs, imports = [], providers = [], schema, version }: CreateAppOptions): AppContainer {
-    const config = this.parseConfig(schema);
-    const module = AppModule.create({ config, imports, providers });
-    return new AppContainer({
-      config,
-      docs,
-      module,
-      version
+  static create({
+    docs,
+    imports = [],
+    providers = [],
+    schema,
+    version
+  }: CreateAppOptions): Result<AppContainer, InstanceType<typeof EnvironmentSchemaValidationError>> {
+    return this.parseConfig(schema).map((config) => {
+      const module = AppModule.create({ config, imports, providers });
+      return new AppContainer({
+        config,
+        docs,
+        module,
+        version
+      });
     });
   }
 
-  private static parseConfig(schema: EnvSchema): RuntimeEnv {
+  private static parseConfig(
+    schema: EnvSchema
+  ): Result<RuntimeEnv, InstanceType<typeof EnvironmentSchemaValidationError>> {
     const input = filterObject(process.env, (value) => value !== '');
     const result = schema.safeParse(input);
     if (!result.success) {
-      throw new Error('Failed to Parse Environment Variables', {
-        cause: {
-          issues: result.error.issues
-        }
-      });
+      return err(
+        new EnvironmentSchemaValidationError({
+          details: {
+            issues: result.error.issues
+          }
+        })
+      );
     }
-    return result.data;
+    return ok(result.data);
   }
 }
