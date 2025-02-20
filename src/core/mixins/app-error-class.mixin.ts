@@ -15,18 +15,18 @@ type AppErrorParams = {
   name: `${string}Error`;
 };
 
-type AppErrorInstance<TParams extends AppErrorParams, TOptions extends AppErrorOptions> = Error & {
-  cause: TOptions['cause'];
-  details: TOptions['details'];
-  name: TParams['name'];
-};
-
 type AppErrorConstructorArgs<TParams extends AppErrorParams, TOptions extends AppErrorOptions> =
   IsAnyOptionDefined<TOptions> extends true
     ? TParams extends { message: string }
       ? [TOptions]
       : [message: string, options: TOptions]
     : [message?: string, options?: TOptions];
+
+export type AppErrorInstance<TParams extends AppErrorParams, TOptions extends AppErrorOptions> = Error & {
+  cause: TOptions['cause'];
+  details: TOptions['details'];
+  name: TParams['name'];
+};
 
 export type AppErrorConstructor<TParams extends AppErrorParams, TOptions extends AppErrorOptions> = new (
   ...args: AppErrorConstructorArgs<TParams, TOptions>

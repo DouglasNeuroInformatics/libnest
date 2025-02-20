@@ -3,7 +3,7 @@ import { describe, expect, expectTypeOf, it, test } from 'vitest';
 
 import { AppErrorClass, BaseAppError } from '../app-error-class.mixin.js';
 
-import type { AppErrorConstructor } from '../app-error-class.mixin.js';
+import type { AppErrorConstructor, AppErrorInstance } from '../app-error-class.mixin.js';
 
 type ErrorOptionsWithCode = Simplify<ErrorOptions & { details: { code: number } }>;
 type ErrorOptionsWithCause = Simplify<ErrorOptions & { cause: Error }>;
@@ -13,22 +13,24 @@ type ErrorParamsWithMessage = Simplify<ErrorParams & { message: string }>;
 
 test('AppErrorConstructor', () => {
   expectTypeOf<AppErrorConstructor<ErrorParams, ErrorOptions>>().toEqualTypeOf<
-    new (message?: string, options?: ErrorOptions) => BaseAppError<ErrorParams, ErrorOptions>
+    new (message?: string, options?: ErrorOptions) => AppErrorInstance<ErrorParams, ErrorOptions>
   >();
   expectTypeOf<AppErrorConstructor<ErrorParams, ErrorOptionsWithCode>>().toEqualTypeOf<
-    new (message: string, options: ErrorOptionsWithCode) => BaseAppError<ErrorParams, ErrorOptionsWithCode>
+    new (message: string, options: ErrorOptionsWithCode) => AppErrorInstance<ErrorParams, ErrorOptionsWithCode>
   >();
   expectTypeOf<AppErrorConstructor<ErrorParams, ErrorOptionsWithCause>>().toEqualTypeOf<
-    new (message: string, options: ErrorOptionsWithCause) => BaseAppError<ErrorParams, ErrorOptionsWithCause>
+    new (message: string, options: ErrorOptionsWithCause) => AppErrorInstance<ErrorParams, ErrorOptionsWithCause>
   >();
   expectTypeOf<AppErrorConstructor<ErrorParams, ErrorOptionsWithCodeAndCause>>().toEqualTypeOf<
     new (
       message: string,
       options: ErrorOptionsWithCodeAndCause
-    ) => BaseAppError<ErrorParams, ErrorOptionsWithCodeAndCause>
+    ) => AppErrorInstance<ErrorParams, ErrorOptionsWithCodeAndCause>
   >();
   expectTypeOf<AppErrorConstructor<ErrorParamsWithMessage, ErrorOptionsWithCodeAndCause>>().toEqualTypeOf<
-    new (options: ErrorOptionsWithCodeAndCause) => BaseAppError<ErrorParamsWithMessage, ErrorOptionsWithCodeAndCause>
+    new (
+      options: ErrorOptionsWithCodeAndCause
+    ) => AppErrorInstance<ErrorParamsWithMessage, ErrorOptionsWithCodeAndCause>
   >();
 });
 
