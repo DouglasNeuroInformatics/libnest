@@ -39,7 +39,7 @@ describe('e2e (example)', () => {
   });
 
   it('should configure the documentation', async () => {
-    const response = await request(server!).get('/api-docs.json');
+    const response = await request(server!).get('/spec.json');
     expect(response.status).toBe(200);
   });
 
