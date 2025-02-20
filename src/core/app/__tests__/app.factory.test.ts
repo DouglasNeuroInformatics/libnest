@@ -1,6 +1,7 @@
 import { beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { $BaseEnv } from '../../../config/schema.js';
+import { EnvironmentSchemaValidationError } from '../../errors/environment-schema-validation.error.js';
 import { AppFactory } from '../app.factory.js';
 
 import type { BaseEnv } from '../../../config/schema.js';
@@ -33,8 +34,7 @@ describe('AppFactory', () => {
 
     it('should return an error if it cannot parse the schema', () => {
       vi.stubEnv('VERBOSE', '1');
-      const result = createApp();
-      expect(result.isErr() && result.error.name === 'EnvironmentSchemaValidationError').toBe(true);
+      expect(() => createApp()).toThrowError(EnvironmentSchemaValidationError);
       vi.stubEnv('VERBOSE', env.VERBOSE);
     });
   });
