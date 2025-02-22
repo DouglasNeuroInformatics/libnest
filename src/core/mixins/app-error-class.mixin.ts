@@ -25,10 +25,9 @@ export type AppErrorInstance<TParams extends AppErrorParams, TOptions extends Ap
   name: TParams['name'];
 };
 
-export type AppErrorConstructor<TParams extends AppErrorParams, TOptions extends AppErrorOptions> = {
-  new (...args: AppErrorConstructorArgs<TParams, TOptions>): AppErrorInstance<TParams, TOptions>;
-  extendType<TExtendedOptions extends AppErrorOptions>(): AppErrorConstructor<TParams, TExtendedOptions>;
-};
+export type AppErrorConstructor<TParams extends AppErrorParams, TOptions extends AppErrorOptions> = new (
+  ...args: AppErrorConstructorArgs<TParams, TOptions>
+) => AppErrorInstance<TParams, TOptions>;
 
 export abstract class BaseAppError<TParams extends AppErrorParams, TOptions extends AppErrorOptions>
   extends Error
@@ -47,9 +46,7 @@ export abstract class BaseAppError<TParams extends AppErrorParams, TOptions exte
   }
 }
 
-export function AppErrorClass<TParams extends AppErrorParams>(
-  params: TParams
-): AppErrorConstructor<TParams, AppErrorOptions> {
+export function AppErrorClass<TParams extends AppErrorParams>(params: TParams) {
   return class extends BaseAppError<TParams, AppErrorOptions> {
     override name = params.name;
     constructor(...args: AppErrorConstructorArgs<TParams, AppErrorOptions>) {

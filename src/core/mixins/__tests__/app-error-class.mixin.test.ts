@@ -12,22 +12,22 @@ type ErrorParams = { name: 'TestError' };
 type ErrorParamsWithMessage = Simplify<ErrorParams & { message: string }>;
 
 test('AppErrorConstructor', () => {
-  expectTypeOf<AppErrorConstructor<ErrorParams, ErrorOptions>>().toMatchTypeOf<
+  expectTypeOf<AppErrorConstructor<ErrorParams, ErrorOptions>>().toEqualTypeOf<
     new (message?: string, options?: ErrorOptions) => AppErrorInstance<ErrorParams, ErrorOptions>
   >();
-  expectTypeOf<AppErrorConstructor<ErrorParams, ErrorOptionsWithCode>>().toMatchTypeOf<
+  expectTypeOf<AppErrorConstructor<ErrorParams, ErrorOptionsWithCode>>().toEqualTypeOf<
     new (message: string, options: ErrorOptionsWithCode) => AppErrorInstance<ErrorParams, ErrorOptionsWithCode>
   >();
-  expectTypeOf<AppErrorConstructor<ErrorParams, ErrorOptionsWithCause>>().toMatchTypeOf<
+  expectTypeOf<AppErrorConstructor<ErrorParams, ErrorOptionsWithCause>>().toEqualTypeOf<
     new (message: string, options: ErrorOptionsWithCause) => AppErrorInstance<ErrorParams, ErrorOptionsWithCause>
   >();
-  expectTypeOf<AppErrorConstructor<ErrorParams, ErrorOptionsWithCodeAndCause>>().toMatchTypeOf<
+  expectTypeOf<AppErrorConstructor<ErrorParams, ErrorOptionsWithCodeAndCause>>().toEqualTypeOf<
     new (
       message: string,
       options: ErrorOptionsWithCodeAndCause
     ) => AppErrorInstance<ErrorParams, ErrorOptionsWithCodeAndCause>
   >();
-  expectTypeOf<AppErrorConstructor<ErrorParamsWithMessage, ErrorOptionsWithCodeAndCause>>().toMatchTypeOf<
+  expectTypeOf<AppErrorConstructor<ErrorParamsWithMessage, ErrorOptionsWithCodeAndCause>>().toEqualTypeOf<
     new (
       options: ErrorOptionsWithCodeAndCause
     ) => AppErrorInstance<ErrorParamsWithMessage, ErrorOptionsWithCodeAndCause>
