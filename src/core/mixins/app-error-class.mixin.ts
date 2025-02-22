@@ -1,4 +1,4 @@
-import type { IfNever, RequiredKeysOf } from 'type-fest';
+import type { IsNever, RequiredKeysOf } from 'type-fest';
 
 type AppErrorOptions = {
   cause?: unknown;
@@ -7,19 +7,17 @@ type AppErrorOptions = {
   };
 };
 
-type IsAnyOptionDefined<TOptions extends AppErrorOptions> = IfNever<RequiredKeysOf<TOptions>, false, true>;
-
 type AppErrorParams = {
   message?: string;
   name: `${string}Error`;
 };
 
 type AppErrorConstructorArgs<TParams extends AppErrorParams, TOptions extends AppErrorOptions> =
-  IsAnyOptionDefined<TOptions> extends true
-    ? TParams extends { message: string }
+  IsNever<RequiredKeysOf<TOptions>> extends true
+    ? [message?: string, options?: TOptions]
+    : TParams extends { message: string }
       ? [TOptions]
-      : [message: string, options: TOptions]
-    : [message?: string, options?: TOptions];
+      : [message: string, options: TOptions];
 
 export type AppErrorInstance<TParams extends AppErrorParams, TOptions extends AppErrorOptions> = Error & {
   cause: TOptions['cause'];
