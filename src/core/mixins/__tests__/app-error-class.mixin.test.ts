@@ -12,22 +12,22 @@ type ErrorParams = { name: 'TestError' };
 type ErrorParamsWithMessage = Simplify<ErrorParams & { message: string }>;
 
 test('AppErrorConstructor', () => {
-  expectTypeOf<AppErrorConstructor<ErrorParams, ErrorOptions>>().toEqualTypeOf<
+  expectTypeOf<AppErrorConstructor<ErrorParams, ErrorOptions>>().toMatchTypeOf<
     new (message?: string, options?: ErrorOptions) => AppErrorInstance<ErrorParams, ErrorOptions>
   >();
-  expectTypeOf<AppErrorConstructor<ErrorParams, ErrorOptionsWithCode>>().toEqualTypeOf<
+  expectTypeOf<AppErrorConstructor<ErrorParams, ErrorOptionsWithCode>>().toMatchTypeOf<
     new (message: string, options: ErrorOptionsWithCode) => AppErrorInstance<ErrorParams, ErrorOptionsWithCode>
   >();
-  expectTypeOf<AppErrorConstructor<ErrorParams, ErrorOptionsWithCause>>().toEqualTypeOf<
+  expectTypeOf<AppErrorConstructor<ErrorParams, ErrorOptionsWithCause>>().toMatchTypeOf<
     new (message: string, options: ErrorOptionsWithCause) => AppErrorInstance<ErrorParams, ErrorOptionsWithCause>
   >();
-  expectTypeOf<AppErrorConstructor<ErrorParams, ErrorOptionsWithCodeAndCause>>().toEqualTypeOf<
+  expectTypeOf<AppErrorConstructor<ErrorParams, ErrorOptionsWithCodeAndCause>>().toMatchTypeOf<
     new (
       message: string,
       options: ErrorOptionsWithCodeAndCause
     ) => AppErrorInstance<ErrorParams, ErrorOptionsWithCodeAndCause>
   >();
-  expectTypeOf<AppErrorConstructor<ErrorParamsWithMessage, ErrorOptionsWithCodeAndCause>>().toEqualTypeOf<
+  expectTypeOf<AppErrorConstructor<ErrorParamsWithMessage, ErrorOptionsWithCodeAndCause>>().toMatchTypeOf<
     new (
       options: ErrorOptionsWithCodeAndCause
     ) => AppErrorInstance<ErrorParamsWithMessage, ErrorOptionsWithCodeAndCause>
@@ -66,11 +66,8 @@ describe('AppErrorClass', () => {
 
   it('should allow creating an error with additional details', () => {
     const TestError = AppErrorClass({
-      extendType(infer) {
-        return infer<{ details: { code: number } }>();
-      },
       name: 'TestError'
-    });
+    }).extendType<{ details: { code: number } }>();
     const error = new TestError('This is a test', { details: { code: 0 } });
 
     expect(error.details.code).toBe(0);
@@ -88,11 +85,8 @@ describe('AppErrorClass', () => {
 
   it('should allow creating an error with a custom cause', () => {
     const TestError = AppErrorClass({
-      extendType(infer) {
-        return infer<{ cause: Error }>();
-      },
       name: 'TestError'
-    });
+    }).extendType<{ cause: Error }>();
     const error = new TestError('This is a test', { cause: new Error('Test') });
     expect(error.cause.message).toBe('Test');
     expectTypeOf<ConstructorParameters<typeof TestError>>().toEqualTypeOf<
@@ -107,12 +101,9 @@ describe('AppErrorClass', () => {
 
   it('should allow creating an error with a default message', () => {
     const TestError = AppErrorClass({
-      extendType(infer) {
-        return infer<{ cause: Error }>();
-      },
       message: 'Custom message',
       name: 'TestError'
-    });
+    }).extendType<{ cause: Error }>();
     const error = new TestError({ cause: new Error('Test') });
     expect(error.message).toBe('Custom message');
     expectTypeOf<ConstructorParameters<typeof TestError>>().toEqualTypeOf<

@@ -10,7 +10,6 @@ type AppErrorOptions = {
 type IsAnyOptionDefined<TOptions extends AppErrorOptions> = IfNever<RequiredKeysOf<TOptions>, false, true>;
 
 type AppErrorParams = {
-  extendType?(infer: <TDef extends AppErrorOptions>() => TDef): any;
   message?: string;
   name: `${string}Error`;
 };
@@ -28,9 +27,10 @@ export type AppErrorInstance<TParams extends AppErrorParams, TOptions extends Ap
   name: TParams['name'];
 };
 
-export type AppErrorConstructor<TParams extends AppErrorParams, TOptions extends AppErrorOptions> = new (
-  ...args: AppErrorConstructorArgs<TParams, TOptions>
-) => AppErrorInstance<TParams, TOptions>;
+export type AppErrorConstructor<TParams extends AppErrorParams, TOptions extends AppErrorOptions> = {
+  new (...args: AppErrorConstructorArgs<TParams, TOptions>): AppErrorInstance<TParams, TOptions>;
+  extendType<TExtendedOptions extends AppErrorOptions>(): AppErrorConstructor<TParams, TExtendedOptions>;
+};
 
 export abstract class BaseAppError<TParams extends AppErrorParams, TOptions extends AppErrorOptions>
   extends Error
@@ -49,19 +49,17 @@ export abstract class BaseAppError<TParams extends AppErrorParams, TOptions exte
   }
 }
 
-export function AppErrorClass<
-  TParams extends AppErrorParams,
-  TOptions extends NoInfer<TParams> extends {
-    extendType: (...args: any[]) => infer TCustomOptions extends AppErrorOptions;
-  }
-    ? TCustomOptions
-    : AppErrorOptions
->(params: TParams): AppErrorConstructor<TParams, TOptions> {
-  return class extends BaseAppError<TParams, TOptions> {
+export function AppErrorClass<TParams extends AppErrorParams>(
+  params: TParams
+): AppErrorConstructor<TParams, AppErrorOptions> {
+  return class extends BaseAppError<TParams, AppErrorOptions> {
     override name = params.name;
-    constructor(...args: AppErrorConstructorArgs<TParams, TOptions>) {
-      const [message, options] = (params?.message ? [params.message, args[0]] : args) as [string, TOptions];
+    constructor(...args: AppErrorConstructorArgs<TParams, AppErrorOptions>) {
+      const [message, options] = (params?.message ? [params.message, args[0]] : args) as [string, AppErrorOptions];
       super(message, options);
+    }
+    static extendType<TOptions extends AppErrorOptions>() {
+      return this as AppErrorConstructor<TParams, TOptions>;
     }
   };
 }
