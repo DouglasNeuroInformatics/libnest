@@ -8,8 +8,8 @@ importers:
   .:
     dependencies:
       '@douglasneuroinformatics/libjs':
-        specifier: ^1.3.2
-        version: 1.3.2
+        specifier: ^1.5.0
+        version: 1.5.0
       '@nestjs/common':
         specifier: ^11.0.5
         version: 11.0.5(reflect-metadata@0.1.14)(rxjs@7.8.1)
@@ -283,9 +283,9 @@ packages:
       typescript:
         optional: true
 
-  '@douglasneuroinformatics/libjs@1.3.2':
+  '@douglasneuroinformatics/libjs@1.5.0':
     resolution:
-      { integrity: sha512-yY1sU06T1JeRYf7ES/csGfsOilUgoT96uujDrJAik+JPxKPdw1x4Kq7x4l1SOWjlcbSc+QRjFC/bhPFwKrIX3A== }
+      { integrity: sha512-HBm6IeVoFLVGMxudHMNf+CP3STegZ/gFK8rykgM8SMppjA2Nm+0bECF29CuUyTIFoBSdw/abDIVC2F8HnpXNEw== }
 
   '@douglasneuroinformatics/prettier-config@0.0.2':
     resolution:
@@ -5382,7 +5382,7 @@ snapshots:
       - svelte
       - ts-node
 
-  '@douglasneuroinformatics/libjs@1.3.2':
+  '@douglasneuroinformatics/libjs@1.5.0':
     dependencies:
       type-fest: 4.34.1
       zod: 3.24.1
