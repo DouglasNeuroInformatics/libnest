@@ -8,8 +8,8 @@ importers:
   .:
     dependencies:
       '@douglasneuroinformatics/libjs':
-        specifier: ^2.0.0
-        version: 2.0.0
+        specifier: ^2.0.1
+        version: 2.0.1(neverthrow@8.2.0)(zod@3.24.1)
       '@nestjs/common':
         specifier: ^11.0.5
         version: 11.0.5(reflect-metadata@0.1.14)(rxjs@7.8.1)
@@ -50,8 +50,8 @@ importers:
         specifier: ^6.10.0
         version: 6.12.0
       neverthrow:
-        specifier: ^8.1.1
-        version: 8.1.1
+        specifier: ^8.2.0
+        version: 8.2.0
       reflect-metadata:
         specifier: ~0.1.13
         version: 0.1.14
@@ -283,9 +283,12 @@ packages:
       typescript:
         optional: true
 
-  '@douglasneuroinformatics/libjs@2.0.0':
+  '@douglasneuroinformatics/libjs@2.0.1':
     resolution:
-      { integrity: sha512-KxuKnHJ0eCVAOc6nmM+CLmE9bHy7w1aDfWT0n+XYDCBx5bD/NdYK2BegXjZLmGXzma5OQyygRwBXwWAvq/66Pw== }
+      { integrity: sha512-pwYjyMt04Om3ggU1U+rfl4ctbWfTpv9UqdRf/R/kzhM8eC1b5AT+Fd66JQTtFSnvfZzOn4t3pZl3THu2My+/qw== }
+    peerDependencies:
+      neverthrow: ^8.2.0
+      zod: ^3.22.6
 
   '@douglasneuroinformatics/prettier-config@0.0.2':
     resolution:
@@ -3680,11 +3683,6 @@ packages:
     resolution:
       { integrity: sha512-EZSPZB70jiVsivaBLYDCyntd5eH8NTSMOn3rB+HxwdmKThGELLdYv8qVIMWvZEFy9w8ZZpW9h9OB32l1rGtj7g== }
 
-  neverthrow@8.1.1:
-    resolution:
-      { integrity: sha512-DpbZ/UDI0B+TxJB1JysXSfi1++3YK2xLBqQLTlRN0b4zxlZ2MoiB+dKKV8dMRzt1fAFjRKDknXOVJgpl+a4Amw== }
-    engines: { node: '>=18' }
-
   neverthrow@8.2.0:
     resolution:
       { integrity: sha512-kOCT/1MCPAxY5iUV3wytNFUMUolzuwd/VF/1KCx7kf6CutrOsTie+84zTGTpgQycjvfLdBBdvBvFLqFD2c0wkQ== }
@@ -5387,7 +5385,7 @@ snapshots:
       - svelte
       - ts-node
 
-  '@douglasneuroinformatics/libjs@2.0.0':
+  '@douglasneuroinformatics/libjs@2.0.1(neverthrow@8.2.0)(zod@3.24.1)':
     dependencies:
       neverthrow: 8.2.0
       type-fest: 4.34.1
@@ -8301,10 +8299,6 @@ snapshots:
   neo-async@2.6.2: {}
 
   nerf-dart@1.0.0: {}
-
-  neverthrow@8.1.1:
-    optionalDependencies:
-      '@rollup/rollup-linux-x64-gnu': 4.32.0
 
   neverthrow@8.2.0:
     optionalDependencies:
