@@ -34,7 +34,8 @@ describe('AppFactory', () => {
 
     it('should return an error if it cannot parse the schema', () => {
       vi.stubEnv('VERBOSE', '1');
-      expect(() => createApp()).toThrowError(EnvironmentSchemaValidationException);
+      const result = createApp();
+      expect(result.isErr() && result.error).toBeInstanceOf(EnvironmentSchemaValidationException);
       vi.stubEnv('VERBOSE', env.VERBOSE);
     });
   });
