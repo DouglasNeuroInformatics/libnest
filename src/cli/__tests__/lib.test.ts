@@ -1,8 +1,9 @@
 import * as path from 'path';
 
+import { ValueException } from '@douglasneuroinformatics/libjs';
+import { err, ok } from 'neverthrow';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Mock } from 'vitest';
-import { z } from 'zod';
 
 import { AppContainer } from '../../core/app/app.container.js';
 import { importDefault, importModule, loadConfig, resolveAbsoluteImportPath, runDev } from '../lib.js';
@@ -79,13 +80,6 @@ describe('importModule', () => {
 });
 
 describe('importDefault', () => {
-  const schema = z.object({
-    url: z
-      .string()
-      .url()
-      .transform((arg) => new URL(arg))
-  });
-
   beforeEach(() => {
     vi.spyOn(fs, 'existsSync').mockReturnValue(true);
     vi.spyOn(fs, 'lstatSync').mockReturnValue({ isFile: () => true } as any);
@@ -93,13 +87,13 @@ describe('importDefault', () => {
 
   it('should return an error if the module cannot be resolved', async () => {
     vi.spyOn(fs, 'existsSync').mockReturnValueOnce(false);
-    await expect(importDefault(entryFile, schema)).resolves.toMatchObject({
+    await expect(importDefault(entryFile)).resolves.toMatchObject({
       error: `File does not exist: ${resolvedEntryFile}`
     });
   });
 
   it('should fail to import a module that does not exist', async () => {
-    await expect(importDefault(entryFile, schema)).resolves.toMatchObject({
+    await expect(importDefault(entryFile)).resolves.toMatchObject({
       error: `Failed to import module: ${resolvedEntryFile}`
     });
     expect(stderr).toHaveBeenCalledOnce();
@@ -107,32 +101,16 @@ describe('importDefault', () => {
 
   it('should fail to import a module that does not have a default export', async () => {
     vi.doMock(resolvedEntryFile, () => ({ default: undefined }));
-    await expect(importDefault(entryFile, schema)).resolves.toMatchObject({
+    await expect(importDefault(entryFile)).resolves.toMatchObject({
       error: `Missing required default export in module: ${resolvedEntryFile}`
     });
   });
 
-  it('should fail to import a module that has a default export, but which does not respect the schema', async () => {
-    vi.spyOn(console, 'error').mockImplementationOnce(stderr);
-    vi.doMock(resolvedEntryFile, () => ({ default: 0 }));
-    await expect(importDefault(entryFile, schema)).resolves.toMatchObject({
-      error: `Invalid default export in module: ${resolvedEntryFile}`
-    });
-    expect(stderr).toHaveBeenCalledWith([
-      expect.objectContaining({
-        code: 'invalid_type',
-        expected: 'object',
-        path: [],
-        received: 'number'
-      })
-    ]);
-  });
-
   it('should return the parsed default export, if there are no errors', async () => {
     vi.doMock(resolvedEntryFile, () => ({ default: { url: 'https://opendatacapture.org' } }));
-    await expect(importDefault(entryFile, schema)).resolves.toMatchObject({
+    await expect(importDefault(entryFile)).resolves.toMatchObject({
       value: {
-        url: expect.any(URL)
+        url: 'https://opendatacapture.org'
       }
     });
   });
@@ -147,11 +125,11 @@ describe('loadConfig', () => {
   it('should return an error if importing the config file fails', async () => {
     vi.doMock(resolvedConfigFile, () => ({ default: 0 }));
     await expect(loadConfig(configFile)).resolves.toMatchObject({
-      error: `Invalid default export in module: ${resolvedConfigFile}`
+      error: `Invalid format for default export in config file: ${configFile}`
     });
   });
 
-  it('should return an error if the entry file cannot be imported', async () => {
+  it('should return an error if the entry file does not export a result', async () => {
     vi.doMock(resolvedConfigFile, () => ({
       default: {
         entry: entryFile
@@ -160,7 +138,44 @@ describe('loadConfig', () => {
     vi.doMock(resolvedEntryFile, () => ({ default: 0 }));
     const result = await loadConfig(configFile);
     expect(result).toMatchObject({
-      error: `Invalid default export in module: ${resolvedEntryFile}`
+      error: `Invalid default export for entry file '${entryFile}': not a result`
+    });
+  });
+
+  it('should return an error if the entry file exports a known Error', async () => {
+    vi.doMock(resolvedConfigFile, () => ({
+      default: {
+        entry: entryFile
+      } satisfies ConfigOptions
+    }));
+    vi.doMock(resolvedEntryFile, () => ({ default: ValueException.asErr('Invalid value') }));
+    const result = await loadConfig(configFile);
+    expect(result).toMatchObject({
+      error: `Failed to initialize app due to a ValueException`
+    });
+  });
+  it('should return an error if the entry file exports an unknown exception', async () => {
+    vi.doMock(resolvedConfigFile, () => ({
+      default: {
+        entry: entryFile
+      } satisfies ConfigOptions
+    }));
+    vi.doMock(resolvedEntryFile, () => ({ default: err(new Error('An error')) }));
+    const result = await loadConfig(configFile);
+    expect(result).toMatchObject({
+      error: `Failed to initialize app due to a unexpected error`
+    });
+  });
+  it('should return an error if the entry file result is not an app container', async () => {
+    vi.doMock(resolvedConfigFile, () => ({
+      default: {
+        entry: entryFile
+      } satisfies ConfigOptions
+    }));
+    vi.doMock(resolvedEntryFile, () => ({ default: ok({}) }));
+    const result = await loadConfig(configFile);
+    expect(result).toMatchObject({
+      error: `Failed to initialize app: exported result from entry file does not contain valid AppContainer`
     });
   });
 });
@@ -190,7 +205,7 @@ describe('runDev', () => {
         }
       } satisfies ConfigOptions
     }));
-    vi.doMock(resolvedEntryFile, () => ({ default: appContainer }));
+    vi.doMock(resolvedEntryFile, () => ({ default: ok(appContainer) }));
     const result = await runDev(configFile);
     expect(result.isOk()).toBe(true);
     expect(appContainer.bootstrap).toHaveBeenCalledOnce();

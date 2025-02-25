@@ -1,7 +1,8 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 
-import { err, fromAsyncThrowable, ok } from 'neverthrow';
+import { BaseException } from '@douglasneuroinformatics/libjs';
+import { Err, err, fromAsyncThrowable, Ok, ok } from 'neverthrow';
 import { z } from 'zod';
 
 /**
@@ -58,24 +59,17 @@ function importModule(filepath) {
 }
 
 /**
- * Imports the default export from a module and validates it against a schema.
- * @template {import('zod').ZodTypeAny} TSchema
+ * Imports the default export from a module
  * @param {string} filename - The path to the module to import.
- * @param {TSchema} schema - The Zod schema to validate the default export against.
- * @returns {import('neverthrow').ResultAsync<z.infer<TSchema>, string>} A `ResultAsync` containing the validated default export on success, or an error message on failure.
+ * @returns {import('neverthrow').ResultAsync<unknown, string>} A `ResultAsync` containing the validated default export on success, or an error message on failure.
  */
-function importDefault(filename, schema) {
+function importDefault(filename) {
   return resolveAbsoluteImportPath(filename).asyncAndThen((filepath) =>
     importModule(filepath).andThen(({ default: defaultExport }) => {
       if (defaultExport === undefined) {
         return err(`Missing required default export in module: ${filepath}`);
       }
-      const result = schema.safeParse(defaultExport);
-      if (!result.success) {
-        console.error(result.error.issues);
-        return err(`Invalid default export in module: ${filepath}`);
-      }
-      return ok(result.data);
+      return ok(defaultExport);
     })
   );
 }
@@ -86,11 +80,34 @@ function importDefault(filename, schema) {
  * @returns {import('neverthrow').ResultAsync<{ appContainer: AppContainerType; config: ConfigOptions }, string>} A `ResultAsync` containing the app container and config options on success, or an error message on failure.
  */
 function loadConfig(configFile) {
-  return importDefault(configFile, $ConfigOptions).andThen((config) =>
-    importDefault(config.entry, $AppContainer).map((appContainer) => {
-      return { appContainer, config };
+  return importDefault(configFile)
+    .andThen((config) => {
+      const result = $ConfigOptions.safeParse(config);
+      if (!result.success) {
+        console.error(result.error.issues);
+        return err(`Invalid format for default export in config file: ${configFile}`);
+      }
+      return ok(result.data);
     })
-  );
+    .andThen((config) => {
+      return importDefault(config.entry).andThen((exportResult) => {
+        if (!(exportResult instanceof Err || exportResult instanceof Ok)) {
+          return err(`Invalid default export for entry file '${config.entry}': not a result`);
+        } else if (exportResult.isErr()) {
+          if (exportResult.error instanceof BaseException) {
+            console.error(exportResult.error.details);
+            return err(`Failed to initialize app due to a ${exportResult.error.name}`);
+          }
+          console.error(exportResult.error);
+          return err('Failed to initialize app due to a unexpected error');
+        }
+        const validationResult = $AppContainer.safeParse(exportResult.value);
+        if (!validationResult.success) {
+          return err('Failed to initialize app: exported result from entry file does not contain valid AppContainer');
+        }
+        return ok({ appContainer: validationResult.data, config });
+      });
+    });
 }
 
 /**
