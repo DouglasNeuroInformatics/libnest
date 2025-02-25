@@ -8,8 +8,8 @@ importers:
   .:
     dependencies:
       '@douglasneuroinformatics/libjs':
-        specifier: ^1.5.0
-        version: 1.5.0
+        specifier: ^2.0.0
+        version: 2.0.0
       '@nestjs/common':
         specifier: ^11.0.5
         version: 11.0.5(reflect-metadata@0.1.14)(rxjs@7.8.1)
@@ -283,9 +283,9 @@ packages:
       typescript:
         optional: true
 
-  '@douglasneuroinformatics/libjs@1.5.0':
+  '@douglasneuroinformatics/libjs@2.0.0':
     resolution:
-      { integrity: sha512-HBm6IeVoFLVGMxudHMNf+CP3STegZ/gFK8rykgM8SMppjA2Nm+0bECF29CuUyTIFoBSdw/abDIVC2F8HnpXNEw== }
+      { integrity: sha512-KxuKnHJ0eCVAOc6nmM+CLmE9bHy7w1aDfWT0n+XYDCBx5bD/NdYK2BegXjZLmGXzma5OQyygRwBXwWAvq/66Pw== }
 
   '@douglasneuroinformatics/prettier-config@0.0.2':
     resolution:
@@ -3685,6 +3685,11 @@ packages:
       { integrity: sha512-DpbZ/UDI0B+TxJB1JysXSfi1++3YK2xLBqQLTlRN0b4zxlZ2MoiB+dKKV8dMRzt1fAFjRKDknXOVJgpl+a4Amw== }
     engines: { node: '>=18' }
 
+  neverthrow@8.2.0:
+    resolution:
+      { integrity: sha512-kOCT/1MCPAxY5iUV3wytNFUMUolzuwd/VF/1KCx7kf6CutrOsTie+84zTGTpgQycjvfLdBBdvBvFLqFD2c0wkQ== }
+    engines: { node: '>=18' }
+
   node-emoji@2.2.0:
     resolution:
       { integrity: sha512-Z3lTE9pLaJF47NyMhd4ww1yFTAP8YhYI8SleJiHzM46Fgpm5cnNzSl9XfzFNqbaz+VlJrIj3fXQ4DeN1Rjm6cw== }
@@ -5382,8 +5387,9 @@ snapshots:
       - svelte
       - ts-node
 
-  '@douglasneuroinformatics/libjs@1.5.0':
+  '@douglasneuroinformatics/libjs@2.0.0':
     dependencies:
+      neverthrow: 8.2.0
       type-fest: 4.34.1
       zod: 3.24.1
 
@@ -8297,6 +8303,10 @@ snapshots:
   nerf-dart@1.0.0: {}
 
   neverthrow@8.1.1:
+    optionalDependencies:
+      '@rollup/rollup-linux-x64-gnu': 4.32.0
+
+  neverthrow@8.2.0:
     optionalDependencies:
       '@rollup/rollup-linux-x64-gnu': 4.32.0
 

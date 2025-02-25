@@ -1,10 +1,10 @@
 import { ExceptionBuilder } from '@douglasneuroinformatics/libjs';
 import { z } from 'zod';
 
-export const EnvironmentSchemaValidationError = new ExceptionBuilder()
+export const { EnvironmentSchemaValidationException } = new ExceptionBuilder()
   .setParams({
     message: 'Failed to Parse Environment Variables',
-    name: 'EnvironmentSchemaValidationError'
+    name: 'EnvironmentSchemaValidationException'
   })
   .setOptionsType<{ details: { issues: z.ZodIssue[] } }>()
   .build();

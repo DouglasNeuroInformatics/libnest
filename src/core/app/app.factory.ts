@@ -2,7 +2,7 @@ import { filterObject } from '@douglasneuroinformatics/libjs';
 import type { Simplify } from 'type-fest';
 import type { z } from 'zod';
 
-import { EnvironmentSchemaValidationError } from '../errors/environment-schema-validation.error.js';
+import { EnvironmentSchemaValidationException } from '../exceptions/environment-schema-validation.exception.js';
 import { AppContainer } from './app.container.js';
 import { AppModule } from './app.module.js';
 
@@ -35,7 +35,7 @@ export class AppFactory {
     const input = filterObject(process.env, (value) => value !== '');
     const result = schema.safeParse(input);
     if (!result.success) {
-      throw new EnvironmentSchemaValidationError({
+      throw new EnvironmentSchemaValidationException({
         details: {
           issues: result.error.issues
         }
