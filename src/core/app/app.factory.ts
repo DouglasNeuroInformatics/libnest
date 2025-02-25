@@ -1,4 +1,6 @@
 import { filterObject } from '@douglasneuroinformatics/libjs';
+import { ok } from 'neverthrow';
+import type { Result } from 'neverthrow';
 import type { Simplify } from 'type-fest';
 import type { z } from 'zod';
 
@@ -20,27 +22,36 @@ export type CreateAppOptions = Simplify<
 >;
 
 export class AppFactory {
-  static create({ docs, imports = [], providers = [], schema, version }: CreateAppOptions): AppContainer {
-    const config = this.parseConfig(schema);
-    const module = AppModule.create({ config, imports, providers });
-    return new AppContainer({
-      config,
-      docs,
-      module,
-      version
+  static create({
+    docs,
+    imports = [],
+    providers = [],
+    schema,
+    version
+  }: CreateAppOptions): Result<AppContainer, typeof EnvironmentSchemaValidationException.Instance> {
+    return this.parseConfig(schema).map((config) => {
+      const module = AppModule.create({ config, imports, providers });
+      return new AppContainer({
+        config,
+        docs,
+        module,
+        version
+      });
     });
   }
 
-  private static parseConfig(schema: EnvSchema): RuntimeEnv {
+  private static parseConfig(
+    schema: EnvSchema
+  ): Result<RuntimeEnv, typeof EnvironmentSchemaValidationException.Instance> {
     const input = filterObject(process.env, (value) => value !== '');
     const result = schema.safeParse(input);
     if (!result.success) {
-      throw new EnvironmentSchemaValidationException({
+      return EnvironmentSchemaValidationException.asErr({
         details: {
           issues: result.error.issues
         }
       });
     }
-    return result.data;
+    return ok(result.data);
   }
 }

@@ -26,7 +26,7 @@ describe('e2e (example)', () => {
     Object.entries(env).forEach(([key, value]) => {
       vi.stubEnv(key, value);
     });
-    app = await appContainer.createNestApplication();
+    app = await appContainer._unsafeUnwrap().createNestApplication();
     await app.init();
     server = app.getHttpServer();
   });
