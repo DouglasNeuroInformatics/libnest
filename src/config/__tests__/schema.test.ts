@@ -18,6 +18,9 @@ describe('$BaseEnv', () => {
       API_DEV_SERVER_PORT: 3000,
       API_PROD_SERVER_PORT: 80,
       DEBUG: true,
+      MONGO_URI: expect.objectContaining({
+        href: 'mongodb://localhost:27017'
+      }),
       THROTTLER_ENABLED: true,
       VERBOSE: true
     });

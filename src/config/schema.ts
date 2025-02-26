@@ -1,4 +1,4 @@
-import { $BooleanLike, $NumberLike } from '@douglasneuroinformatics/libjs';
+import { $BooleanLike, $NumberLike, $UrlLike } from '@douglasneuroinformatics/libjs';
 import { z } from 'zod';
 
 /**
@@ -19,7 +19,7 @@ export const $BaseEnv = z.object({
   MONGO_DIRECT_CONNECTION: $BooleanLike.optional(),
   MONGO_REPLICA_SET: z.enum(['rs0']).optional(),
   MONGO_RETRY_WRITES: $BooleanLike.optional(),
-  MONGO_URI: z.string().url(),
+  MONGO_URI: $UrlLike,
   MONGO_WRITE_CONCERN: z.enum(['majority']).optional(),
   NODE_ENV: z.enum(['development', 'production', 'test']),
   SECRET_KEY: z.string().min(16),
