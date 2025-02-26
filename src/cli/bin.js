@@ -5,9 +5,9 @@ import * as process from 'node:process';
 
 import { Command, InvalidArgumentError } from 'commander';
 
-import { resolveAbsoluteImportPath, runDev } from './lib.js';
-
 module.register('@swc-node/register/esm', import.meta.url);
+
+const { resolveAbsoluteImportPath, runDev } = await import('./lib.js');
 
 const require = module.createRequire(import.meta.url);
 

@@ -2,35 +2,25 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 
 import { BaseException, RuntimeException } from '@douglasneuroinformatics/libjs';
-import { Err, fromAsyncThrowable, Ok, ok } from 'neverthrow';
+import { Err, fromAsyncThrowable, Ok, ok, Result, ResultAsync } from 'neverthrow';
 import { z } from 'zod';
 
-/**
- * We cannot use `instanceof` here, since we cannot import TypeScript from JavaScript files.
- * @see https://github.com/vitest-dev/vitest/issues/5999
- * @typedef {import('../core/app/app.container.js').AppContainerType} AppContainerType
- */
+import { AppContainer } from '../core/app/app.container.js';
 
-/** @typedef {import('../config/index.js').ConfigOptions} ConfigOptions */
+import type { ConfigOptions } from '../config/index.js';
+import type { NodeEnv } from '../config/schema.js';
 
-/** @type {import('zod').ZodType<ConfigOptions>} */
-const $ConfigOptions = z.object({
+const $ConfigOptions: z.ZodType<ConfigOptions> = z.object({
   entry: z.string().min(1),
   globals: z.record(z.unknown()).optional()
 });
 
-/** @type {import('zod').ZodType<AppContainerType>} */
-const $AppContainer = z.object({
-  bootstrap: z.function().returns(z.promise(z.void())),
-  createNestApplication: z.function().returns(z.promise(z.any()))
-});
-
 /**
  * Resolves an import path to an absolute file path and validates that it exists and is a valid file.
- * @param {string} filename - The import path to resolve.
- * @returns {import('neverthrow').Result<string, typeof RuntimeException.Instance>} A `Result` containing the absolute file path on success, or an error message on failure.
+ * @param filename - The import path to resolve.
+ * @returns A `Result` containing the absolute file path on success, or an error message on failure.
  */
-function resolveAbsoluteImportPath(filename) {
+function resolveAbsoluteImportPath(filename: string): Result<string, typeof RuntimeException.Instance> {
   const filepath = path.resolve(process.cwd(), filename);
   const extension = path.extname(filepath);
   if (!fs.existsSync(filepath)) {
@@ -45,12 +35,12 @@ function resolveAbsoluteImportPath(filename) {
 
 /**
  * Imports a module from a given file path.
- * @param {string} filepath - The path to the module to import.
- * @returns {import('neverthrow').ResultAsync<Record<string, unknown>, typeof RuntimeException.Instance>} A `ResultAsync` containing the imported module on success, or an error message on failure.
+ * @param filepath - The path to the module to import.
+ * @returns A `ResultAsync` containing the imported module on success, or an error message on failure.
  */
-function importModule(filepath) {
+function importModule(filepath: string): ResultAsync<{ [key: string]: unknown }, typeof RuntimeException.Instance> {
   return fromAsyncThrowable(
-    () => import(filepath),
+    async () => import(filepath) as Promise<{ [key: string]: unknown }>,
     (error) => {
       return new RuntimeException(`Failed to import module: ${filepath}`, {
         cause: error
@@ -61,10 +51,10 @@ function importModule(filepath) {
 
 /**
  * Imports the default export from a module
- * @param {string} filename - The path to the module to import.
- * @returns {import('neverthrow').ResultAsync<unknown, typeof RuntimeException.Instance>} A `ResultAsync` containing the validated default export on success, or an error message on failure.
+ * @param filename - The path to the module to import.
+ * @returns A `ResultAsync` containing the validated default export on success, or an error message on failure.
  */
-function importDefault(filename) {
+function importDefault(filename: string): ResultAsync<unknown, typeof RuntimeException.Instance> {
   return resolveAbsoluteImportPath(filename).asyncAndThen((filepath) => {
     return importModule(filepath).andThen(({ default: defaultExport }) => {
       if (defaultExport === undefined) {
@@ -78,9 +68,11 @@ function importDefault(filename) {
 /**
  * Resolves the app container and config options from a config file.
  * @param {string} configFile - The path to the config file.
- * @returns {import('neverthrow').ResultAsync<{ appContainer: AppContainerType; config: ConfigOptions }, typeof RuntimeException.Instance>} A `ResultAsync` containing the app container and config options on success, or an error message on failure.
+ * @returns A `ResultAsync` containing the app container and config options on success, or an error message on failure.
  */
-function loadConfig(configFile) {
+function loadConfig(
+  configFile: string
+): ResultAsync<{ appContainer: AppContainer; config: ConfigOptions }, typeof RuntimeException.Instance> {
   return importDefault(configFile)
     .andThen((config) => {
       const result = $ConfigOptions.safeParse(config);
@@ -105,27 +97,25 @@ function loadConfig(configFile) {
           }
           return RuntimeException.asAsyncErr('Failed to initialize app due to a unexpected error');
         }
-        const validationResult = $AppContainer.safeParse(exportResult.value);
-        if (!validationResult.success) {
+        const appContainer: unknown = exportResult.value;
+        if (!(appContainer instanceof AppContainer)) {
           return RuntimeException.asAsyncErr(
             'Failed to initialize app: exported result from entry file does not contain valid AppContainer'
           );
         }
-        return ok({ appContainer: validationResult.data, config });
+        return ok({ appContainer, config });
       });
     });
 }
 
 /**
  * Runs the dev server using the app container from a config file.
- * @param {string} configFile - The path to the config file.
- * @returns {import('neverthrow').ResultAsync<void, typeof RuntimeException.Instance>} A `ResultAsync` containing void on success, or an error message on failure.
+ * @param configFile - The path to the config file.
+ * @returns A `ResultAsync` containing void on success, or an error message on failure.
  */
-function runDev(configFile) {
+function runDev(configFile: string): ResultAsync<void, typeof RuntimeException.Instance> {
   if (!process.env.NODE_ENV) {
-    /** @type {import('../config/schema.js').NodeEnv} */
-    const nodeEnv = 'development';
-    process.env.NODE_ENV = nodeEnv;
+    process.env.NODE_ENV = 'development' satisfies NodeEnv;
   }
   return loadConfig(configFile).map(async ({ appContainer, config }) => {
     if (config.globals) {
