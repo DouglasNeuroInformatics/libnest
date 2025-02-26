@@ -52,8 +52,9 @@ function importModule(filepath) {
   return fromAsyncThrowable(
     () => import(filepath),
     (error) => {
-      console.error(error);
-      return new RuntimeException(`Failed to import module: ${filepath}`);
+      return new RuntimeException(`Failed to import module: ${filepath}`, {
+        cause: error
+      });
     }
   )();
 }
@@ -84,8 +85,11 @@ function loadConfig(configFile) {
     .andThen((config) => {
       const result = $ConfigOptions.safeParse(config);
       if (!result.success) {
-        console.error(result.error.issues);
-        return RuntimeException.asAsyncErr(`Invalid format for default export in config file: ${configFile}`);
+        return RuntimeException.asAsyncErr(`Invalid format for default export in config file: ${configFile}`, {
+          details: {
+            issues: result.error.issues
+          }
+        });
       }
       return ok(result.data);
     })
@@ -95,10 +99,10 @@ function loadConfig(configFile) {
           return RuntimeException.asAsyncErr(`Invalid default export for entry file '${config.entry}': not a result`);
         } else if (exportResult.isErr()) {
           if (exportResult.error instanceof BaseException) {
-            console.error(exportResult.error.details);
-            return RuntimeException.asAsyncErr(`Failed to initialize app due to a ${exportResult.error.name}`);
+            return RuntimeException.asAsyncErr(`Failed to initialize application`, {
+              cause: exportResult.error
+            });
           }
-          console.error(exportResult.error);
           return RuntimeException.asAsyncErr('Failed to initialize app due to a unexpected error');
         }
         const validationResult = $AppContainer.safeParse(exportResult.value);

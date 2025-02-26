@@ -24,7 +24,7 @@ program
   .requiredOption('-c, --config-file <path>', 'path to the config file', (filename) => {
     const result = resolveAbsoluteImportPath(filename);
     if (result.isErr()) {
-      throw new InvalidArgumentError(result.error);
+      throw new InvalidArgumentError(result.error.message);
     }
     return result.value;
   })
@@ -32,7 +32,7 @@ program
     /** @type {{ configFile: string }} */
     const { configFile } = this.opts();
     await runDev(configFile).mapErr((error) => {
-      program.error(error, { exitCode: 1 });
+      program.error(error.toString(), { exitCode: 1 });
     });
   });
 

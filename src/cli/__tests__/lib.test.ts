@@ -106,7 +106,6 @@ describe('importDefault', () => {
         message: `Failed to import module: ${resolvedEntryFile}`
       }
     });
-    expect(stderr).toHaveBeenCalledOnce();
   });
 
   it('should fail to import a module that does not have a default export', async () => {
@@ -168,7 +167,7 @@ describe('loadConfig', () => {
     const result = await loadConfig(configFile);
     expect(result).toMatchObject({
       error: {
-        message: `Failed to initialize app due to a ValueException`
+        message: `Failed to initialize application`
       }
     });
   });
