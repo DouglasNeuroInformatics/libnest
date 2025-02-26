@@ -1,3 +1,5 @@
+import { defineToken } from '../../utils/token.utils.js';
+
 export type LoggingOptions = {
   debug?: boolean;
   log?: boolean;
@@ -5,4 +7,4 @@ export type LoggingOptions = {
   warn?: boolean;
 };
 
-export const LOGGING_OPTIONS_TOKEN = 'LIBNEST_LOGGING_OPTIONS';
+export const { LIBNEST_LOGGING_MODULE_OPTIONS_TOKEN } = defineToken('LIBNEST_LOGGING_MODULE_OPTIONS_TOKEN');

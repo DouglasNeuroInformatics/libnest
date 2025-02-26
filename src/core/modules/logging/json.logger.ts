@@ -8,7 +8,7 @@ import chalk from 'chalk';
 import type { ColorName } from 'chalk';
 import { isErrorLike, serializeError } from 'serialize-error';
 
-import { LOGGING_OPTIONS_TOKEN } from './logging.config.js';
+import { LIBNEST_LOGGING_MODULE_OPTIONS_TOKEN } from './logging.config.js';
 
 import type { LoggingOptions } from './logging.config.js';
 
@@ -106,7 +106,7 @@ export class JSONLogger implements JSONLoggerType, LoggerService {
   constructor(
     @Optional()
     private readonly context?: string,
-    @Inject(LOGGING_OPTIONS_TOKEN) @Optional() options?: LoggingOptions
+    @Inject(LIBNEST_LOGGING_MODULE_OPTIONS_TOKEN) @Optional() options?: LoggingOptions
   ) {
     this.options = {
       log: true,
