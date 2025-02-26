@@ -37,21 +37,27 @@ describe('resolveAbsoluteImportPath', () => {
   it('should return an error if the path does not exist', () => {
     vi.spyOn(fs, 'existsSync').mockReturnValueOnce(false);
     expect(resolveAbsoluteImportPath('src/main.ts')).toMatchObject({
-      error: expect.stringContaining('File does not exist')
+      error: {
+        message: expect.stringContaining('File does not exist')
+      }
     });
   });
   it('should return an error if the path exists, but is not a file', () => {
     vi.spyOn(fs, 'existsSync').mockReturnValueOnce(true);
     vi.spyOn(fs, 'lstatSync').mockReturnValueOnce({ isFile: () => false } as any);
     expect(resolveAbsoluteImportPath('src/main.ts')).toMatchObject({
-      error: expect.stringContaining('Not a file')
+      error: {
+        message: expect.stringContaining('Not a file')
+      }
     });
   });
   it('should return an error if the file has an invalid extension', () => {
     vi.spyOn(fs, 'existsSync').mockReturnValueOnce(true);
     vi.spyOn(fs, 'lstatSync').mockReturnValueOnce({ isFile: () => true } as any);
     expect(resolveAbsoluteImportPath('src/main.txt')).toMatchObject({
-      error: expect.stringContaining("Unexpected file extension '.txt'")
+      error: {
+        message: expect.stringContaining("Unexpected file extension '.txt'")
+      }
     });
   });
 
@@ -75,7 +81,7 @@ describe('importModule', () => {
   it('should return an error if the module does not exist', async () => {
     const filepath = '/dev/null/foo.js';
     const result = await importModule(filepath);
-    expect(result.isErr() && result.error === `Failed to import module: ${filepath}`).toBe(true);
+    expect(result.isErr() && result.error.message === `Failed to import module: ${filepath}`).toBe(true);
   });
 });
 
@@ -88,13 +94,17 @@ describe('importDefault', () => {
   it('should return an error if the module cannot be resolved', async () => {
     vi.spyOn(fs, 'existsSync').mockReturnValueOnce(false);
     await expect(importDefault(entryFile)).resolves.toMatchObject({
-      error: `File does not exist: ${resolvedEntryFile}`
+      error: {
+        message: `File does not exist: ${resolvedEntryFile}`
+      }
     });
   });
 
   it('should fail to import a module that does not exist', async () => {
     await expect(importDefault(entryFile)).resolves.toMatchObject({
-      error: `Failed to import module: ${resolvedEntryFile}`
+      error: {
+        message: `Failed to import module: ${resolvedEntryFile}`
+      }
     });
     expect(stderr).toHaveBeenCalledOnce();
   });
@@ -102,7 +112,9 @@ describe('importDefault', () => {
   it('should fail to import a module that does not have a default export', async () => {
     vi.doMock(resolvedEntryFile, () => ({ default: undefined }));
     await expect(importDefault(entryFile)).resolves.toMatchObject({
-      error: `Missing required default export in module: ${resolvedEntryFile}`
+      error: {
+        message: `Missing required default export in module: ${resolvedEntryFile}`
+      }
     });
   });
 
@@ -125,7 +137,9 @@ describe('loadConfig', () => {
   it('should return an error if importing the config file fails', async () => {
     vi.doMock(resolvedConfigFile, () => ({ default: 0 }));
     await expect(loadConfig(configFile)).resolves.toMatchObject({
-      error: `Invalid format for default export in config file: ${configFile}`
+      error: {
+        message: `Invalid format for default export in config file: ${configFile}`
+      }
     });
   });
 
@@ -138,7 +152,9 @@ describe('loadConfig', () => {
     vi.doMock(resolvedEntryFile, () => ({ default: 0 }));
     const result = await loadConfig(configFile);
     expect(result).toMatchObject({
-      error: `Invalid default export for entry file '${entryFile}': not a result`
+      error: {
+        message: `Invalid default export for entry file '${entryFile}': not a result`
+      }
     });
   });
 
@@ -151,7 +167,9 @@ describe('loadConfig', () => {
     vi.doMock(resolvedEntryFile, () => ({ default: ValueException.asErr('Invalid value') }));
     const result = await loadConfig(configFile);
     expect(result).toMatchObject({
-      error: `Failed to initialize app due to a ValueException`
+      error: {
+        message: `Failed to initialize app due to a ValueException`
+      }
     });
   });
   it('should return an error if the entry file exports an unknown exception', async () => {
@@ -163,7 +181,9 @@ describe('loadConfig', () => {
     vi.doMock(resolvedEntryFile, () => ({ default: err(new Error('An error')) }));
     const result = await loadConfig(configFile);
     expect(result).toMatchObject({
-      error: `Failed to initialize app due to a unexpected error`
+      error: {
+        message: 'Failed to initialize app due to a unexpected error'
+      }
     });
   });
   it('should return an error if the entry file result is not an app container', async () => {
@@ -175,7 +195,9 @@ describe('loadConfig', () => {
     vi.doMock(resolvedEntryFile, () => ({ default: ok({}) }));
     const result = await loadConfig(configFile);
     expect(result).toMatchObject({
-      error: `Failed to initialize app: exported result from entry file does not contain valid AppContainer`
+      error: {
+        message: 'Failed to initialize app: exported result from entry file does not contain valid AppContainer'
+      }
     });
   });
 });
