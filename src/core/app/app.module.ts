@@ -8,10 +8,7 @@ import { delay } from '../middleware/delay.middleware.js';
 import { ConfigModule } from '../modules/config/config.module.js';
 import { ConfigService } from '../modules/config/config.service.js';
 import { CryptoModule } from '../modules/crypto/crypto.module.js';
-import { JSONLogger } from '../modules/logging/json.logger.js';
-import { LOGGING_OPTIONS_TOKEN } from '../modules/logging/logging.config.js';
-import { LoggingMiddleware } from '../modules/logging/logging.middleware.js';
-import { LoggingService } from '../modules/logging/logging.service.js';
+import { LoggingModule } from '../modules/logging/logging.module.js';
 import { ValidationPipe } from '../pipes/validation.pipe.js';
 
 import type { RuntimeEnv } from '../../config/schema.js';
@@ -33,18 +30,12 @@ export class AppModule implements NestModule {
   private readonly configService: ConfigService;
 
   static create({ config, imports = [], providers = [] }: CreateAppModuleOptions): DynamicAppModule {
-    const coreImports: ImportedModule[] = [ConfigModule.forRoot({ config }), CryptoModule.forRoot()];
+    const coreImports: ImportedModule[] = [
+      ConfigModule.forRoot({ config }),
+      CryptoModule.forRoot(),
+      LoggingModule.forRoot()
+    ];
     const coreProviders: Provider[] = [
-      {
-        provide: LOGGING_OPTIONS_TOKEN,
-        useValue: {
-          debug: config.DEBUG,
-          log: config.NODE_ENV !== 'test',
-          verbose: config.VERBOSE
-        }
-      },
-      JSONLogger,
-      LoggingService,
       {
         provide: APP_FILTER,
         useClass: GlobalExceptionFilter
@@ -91,7 +82,6 @@ export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     const isProd = this.configService.get('NODE_ENV') === 'production';
     const responseDelay = this.configService.get('API_RESPONSE_DELAY');
-    consumer.apply(LoggingMiddleware).forRoutes('*');
     if (!isProd && responseDelay) {
       consumer.apply(delay({ responseDelay })).forRoutes('*');
     }
