@@ -20,12 +20,7 @@ export type CreateAppContainerOptions = {
   version: AppVersion;
 };
 
-export type AppContainerType = {
-  bootstrap: () => Promise<void>;
-  createNestApplication: () => Promise<NestExpressApplication>;
-};
-
-export class AppContainer implements AppContainerType {
+export class AppContainer {
   readonly #config: RuntimeEnv;
   readonly #docs?: {
     config: Omit<DocsConfig, 'version'>;
