@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import type { PartialDeep } from 'type-fest';
+import type { OmitDeep, PartialDeep } from 'type-fest';
 import { beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { delay } from '../../middleware/delay.middleware.js';
-import { ConfigService } from '../../services/config.service.js';
+import { ConfigService } from '../../modules/config/config.service.js';
 import { CryptoService } from '../../services/crypto.service.js';
 import { AppModule } from '../app.module.js';
 
@@ -24,13 +24,17 @@ vi.mock('../../services/crypto.service.js', async (importOriginal) => {
   };
 });
 
-const createAppModule = ({ config, imports = [], providers = [] }: PartialDeep<CreateAppModuleOptions> = {}) => {
+const createAppModule = ({
+  config,
+  imports = [],
+  providers = []
+}: PartialDeep<OmitDeep<CreateAppModuleOptions, 'config.MONGO_URI'>> = {}) => {
   return AppModule.create({
     config: {
       API_DEV_SERVER_PORT: 5500,
       API_PROD_SERVER_PORT: 80,
       DEBUG: false,
-      MONGO_URI: 'mongodb://localhost:27017',
+      MONGO_URI: new URL('mongodb://localhost:27017'),
       NODE_ENV: 'test',
       SECRET_KEY: '2622d72669dd194b98cffd9098b0d04b',
       THROTTLER_ENABLED: true,
