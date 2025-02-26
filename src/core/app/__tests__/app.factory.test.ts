@@ -35,7 +35,10 @@ describe('AppFactory', () => {
     it('should return an error if it cannot parse the schema', () => {
       vi.stubEnv('VERBOSE', '1');
       const result = createApp();
-      expect(result.isErr() && result.error).toBeInstanceOf(ValidationException);
+      expect(result.isErr() && result.error).toMatchObject({
+        cause: expect.any(ValidationException),
+        message: 'Failed to parse environment config'
+      });
       vi.stubEnv('VERBOSE', env.VERBOSE);
     });
   });

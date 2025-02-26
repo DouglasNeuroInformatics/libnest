@@ -1,4 +1,5 @@
-import { filterObject, safeParse, ValidationException } from '@douglasneuroinformatics/libjs';
+import { filterObject, RuntimeException, safeParse, ValidationException } from '@douglasneuroinformatics/libjs';
+import { ok } from 'neverthrow';
 import type { Result } from 'neverthrow';
 import type { Simplify } from 'type-fest';
 import type { z } from 'zod';
@@ -26,16 +27,25 @@ export class AppFactory {
     providers = [],
     schema,
     version
-  }: CreateAppOptions): Result<AppContainer, typeof ValidationException.Instance> {
-    return this.parseConfig(schema).map((config) => {
-      const module = AppModule.create({ config, imports, providers });
-      return new AppContainer({
-        config,
-        docs,
-        module,
-        version
-      });
-    });
+  }: CreateAppOptions): Result<AppContainer, typeof RuntimeException.Instance> {
+    return this.parseConfig(schema).match(
+      (config) => {
+        const module = AppModule.create({ config, imports, providers });
+        return ok(
+          new AppContainer({
+            config,
+            docs,
+            module,
+            version
+          })
+        );
+      },
+      (err) => {
+        return RuntimeException.asErr('Failed to parse environment config', {
+          cause: err
+        });
+      }
+    );
   }
 
   private static parseConfig($Schema: EnvSchema): Result<RuntimeEnv, typeof ValidationException.Instance> {
