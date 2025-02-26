@@ -7,4 +7,4 @@ export type LoggingOptions = {
   warn?: boolean;
 };
 
-export const { LIBNEST_LOGGING_MODULE_OPTIONS_TOKEN } = defineToken('LIBNEST_LOGGING_MODULE_OPTIONS_TOKEN');
+export const { LOGGING_MODULE_OPTIONS_TOKEN } = defineToken('LOGGING_MODULE_OPTIONS_TOKEN');

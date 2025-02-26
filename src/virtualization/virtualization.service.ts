@@ -6,7 +6,7 @@ import { isErrorLike, serializeError } from 'serialize-error';
 import type { ErrorObject } from 'serialize-error';
 
 import { LoggingService } from '../core/modules/logging/logging.service.js';
-import { LIBNEST_VIRTUALIZATION_MODULE_OPTIONS_TOKEN } from './virtualization.config.js';
+import { VIRTUALIZATION_MODULE_OPTIONS_TOKEN } from './virtualization.config.js';
 
 import type { VirtualizationModuleOptions } from './virtualization.config.js';
 
@@ -15,7 +15,7 @@ export class VirtualizationService<TContext extends vm.Context = vm.Context> {
   private context: TContext;
 
   constructor(
-    @Inject(LIBNEST_VIRTUALIZATION_MODULE_OPTIONS_TOKEN) { context }: VirtualizationModuleOptions<TContext>,
+    @Inject(VIRTUALIZATION_MODULE_OPTIONS_TOKEN) { context }: VirtualizationModuleOptions<TContext>,
     private readonly loggingService: LoggingService
   ) {
     this.context = context;

@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 import { defineToken } from '../utils/token.utils.js';
 
-export const { LIBNEST_VALIDATION_SCHEMA_METADATA_KEY } = defineToken('LIBNEST_VALIDATION_SCHEMA_METADATA_KEY');
+export const { VALIDATION_SCHEMA_METADATA_KEY } = defineToken('VALIDATION_SCHEMA_METADATA_KEY');
 
 /**
  * Applies a Zod validation schema to a target class using Reflect metadata.
@@ -14,7 +14,7 @@ export function applyValidationSchema<T extends z.ZodType<{ [key: string]: unkno
   target: Class<z.TypeOf<T>>,
   schema: T
 ) {
-  Reflect.defineMetadata(LIBNEST_VALIDATION_SCHEMA_METADATA_KEY, schema, target);
+  Reflect.defineMetadata(VALIDATION_SCHEMA_METADATA_KEY, schema, target);
 }
 
 /**
@@ -24,7 +24,7 @@ export function applyValidationSchema<T extends z.ZodType<{ [key: string]: unkno
  * @returns The Zod validation schema associated with the provided class.
  */
 export function getValidationSchema<T>(target: Class<T>): z.ZodTypeAny {
-  const schema: unknown = Reflect.getMetadata(LIBNEST_VALIDATION_SCHEMA_METADATA_KEY, target);
+  const schema: unknown = Reflect.getMetadata(VALIDATION_SCHEMA_METADATA_KEY, target);
   if (!schema) {
     throw new Error(`Schema for '${target.name}' must be defined!`);
   } else if (!(schema instanceof z.ZodType)) {

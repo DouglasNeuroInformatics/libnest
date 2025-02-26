@@ -4,7 +4,7 @@ import type { DynamicModule, MiddlewareConsumer, NestModule } from '@nestjs/comm
 import { ConfigModule } from '../config/config.module.js';
 import { ConfigService } from '../config/config.service.js';
 import { JSONLogger } from './json.logger.js';
-import { LIBNEST_LOGGING_MODULE_OPTIONS_TOKEN } from './logging.config.js';
+import { LOGGING_MODULE_OPTIONS_TOKEN } from './logging.config.js';
 import { LoggingMiddleware } from './logging.middleware.js';
 import { LoggingService } from './logging.service.js';
 
@@ -19,7 +19,7 @@ export class LoggingModule implements NestModule {
       providers: [
         {
           inject: [ConfigService],
-          provide: LIBNEST_LOGGING_MODULE_OPTIONS_TOKEN,
+          provide: LOGGING_MODULE_OPTIONS_TOKEN,
           useFactory: (configService: ConfigService) => {
             return {
               debug: configService.get('DEBUG'),

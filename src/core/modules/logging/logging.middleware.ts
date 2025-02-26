@@ -3,7 +3,7 @@ import type { NestMiddleware } from '@nestjs/common';
 import type { NextFunction, Request, Response } from 'express';
 
 import { JSONLogger } from './json.logger.js';
-import { LIBNEST_LOGGING_MODULE_OPTIONS_TOKEN } from './logging.config.js';
+import { LOGGING_MODULE_OPTIONS_TOKEN } from './logging.config.js';
 
 import type { LoggingOptions } from './logging.config.js';
 
@@ -11,7 +11,7 @@ import type { LoggingOptions } from './logging.config.js';
 export class LoggingMiddleware implements NestMiddleware {
   private readonly logger: JSONLogger;
 
-  constructor(@Inject(LIBNEST_LOGGING_MODULE_OPTIONS_TOKEN) options: LoggingOptions) {
+  constructor(@Inject(LOGGING_MODULE_OPTIONS_TOKEN) options: LoggingOptions) {
     this.logger = new JSONLogger('HTTP', options);
   }
 

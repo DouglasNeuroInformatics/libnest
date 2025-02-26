@@ -2,7 +2,7 @@ import { INQUIRER } from '@nestjs/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { LIBNEST_LOGGING_MODULE_OPTIONS_TOKEN } from '../logging.config.js';
+import { LOGGING_MODULE_OPTIONS_TOKEN } from '../logging.config.js';
 import { LoggingService } from '../logging.service.js';
 
 import type { LoggingOptions } from '../logging.config.js';
@@ -27,7 +27,7 @@ describe('LoggingService', () => {
       providers: [
         LoggingService,
         { provide: INQUIRER, useValue: mockParentClass },
-        { provide: LIBNEST_LOGGING_MODULE_OPTIONS_TOKEN, useValue: mockOptions }
+        { provide: LOGGING_MODULE_OPTIONS_TOKEN, useValue: mockOptions }
       ]
     }).compile();
 
