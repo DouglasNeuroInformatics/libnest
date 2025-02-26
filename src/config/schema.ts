@@ -38,6 +38,8 @@ export const $BaseEnv = z.object({
  */
 export type BaseEnv = z.infer<typeof $BaseEnv>;
 
+export type NodeEnv = BaseEnv['NODE_ENV'];
+
 /**
  * Represents the parsed environment variables available at runtime.
  *

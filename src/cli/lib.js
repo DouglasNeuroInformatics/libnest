@@ -123,6 +123,11 @@ function loadConfig(configFile) {
  */
 function runDev(configFile) {
   return loadConfig(configFile).map(async ({ appContainer, config }) => {
+    if (!process.env.NODE_ENV) {
+      /** @type {import('../config/schema.js').NodeEnv} */
+      const nodeEnv = 'development';
+      process.env.NODE_ENV = nodeEnv;
+    }
     if (config.globals) {
       Object.entries(config.globals).forEach(([key, value]) => {
         Object.defineProperty(globalThis, key, {

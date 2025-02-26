@@ -15,7 +15,6 @@ const entryFile = 'src/main.ts';
 const rootDir = '/root';
 const resolvedConfigFile = path.join(rootDir, configFile);
 const resolvedEntryFile = path.join(rootDir, entryFile);
-const stderr: Mock<typeof console.error> = vi.fn();
 
 const fs = vi.hoisted(() => ({
   existsSync: vi.fn(),
@@ -26,7 +25,6 @@ vi.mock('node:fs', () => fs);
 
 beforeEach(() => {
   vi.spyOn(process, 'cwd').mockReturnValue(rootDir);
-  vi.spyOn(console, 'error').mockImplementation(stderr);
 });
 
 afterEach(() => {
@@ -230,5 +228,27 @@ describe('runDev', () => {
     const result = await runDev(configFile);
     expect(result.isOk()).toBe(true);
     expect(appContainer.bootstrap).toHaveBeenCalledOnce();
+  });
+
+  it('should set the NODE_ENV to development, unless it has been explicitly set to something else', async () => {
+    vi.stubEnv('NODE_ENV', undefined);
+    vi.doMock(resolvedConfigFile, () => ({
+      default: {
+        entry: entryFile
+      } satisfies ConfigOptions
+    }));
+    vi.doMock(resolvedEntryFile, () => ({
+      default: ok(
+        Object.create(AppContainer.prototype, {
+          bootstrap: {
+            value: vi.fn()
+          }
+        })
+      )
+    }));
+    const result = await runDev(configFile);
+    expect(result.isOk()).toBe(true);
+    expect(process.env.NODE_ENV).toBe('development');
+    vi.unstubAllEnvs();
   });
 });
