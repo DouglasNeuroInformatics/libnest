@@ -1,7 +1,7 @@
+import { ValidationException } from '@douglasneuroinformatics/libjs';
 import { beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { $BaseEnv } from '../../../config/schema.js';
-import { EnvironmentSchemaValidationException } from '../../exceptions/environment-schema-validation.exception.js';
 import { AppFactory } from '../app.factory.js';
 
 import type { BaseEnv } from '../../../config/schema.js';
@@ -35,7 +35,7 @@ describe('AppFactory', () => {
     it('should return an error if it cannot parse the schema', () => {
       vi.stubEnv('VERBOSE', '1');
       const result = createApp();
-      expect(result.isErr() && result.error).toBeInstanceOf(EnvironmentSchemaValidationException);
+      expect(result.isErr() && result.error).toBeInstanceOf(ValidationException);
       vi.stubEnv('VERBOSE', env.VERBOSE);
     });
   });
