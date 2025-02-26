@@ -5,6 +5,7 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 
 import { GlobalExceptionFilter } from '../filters/global-exception.filter.js';
 import { delay } from '../middleware/delay.middleware.js';
+import { ConfigModule } from '../modules/config/config.module.js';
 import { ConfigService } from '../modules/config/config.service.js';
 import { CryptoService } from '../modules/crypto/crypto.service.js';
 import { JSONLogger } from '../modules/logging/json.logger.js';
@@ -32,12 +33,8 @@ export class AppModule implements NestModule {
   private readonly configService: ConfigService;
 
   static create({ config, imports = [], providers = [] }: CreateAppModuleOptions): DynamicAppModule {
-    const coreImports: ImportedModule[] = [];
+    const coreImports: ImportedModule[] = [ConfigModule.forRoot({ config })];
     const coreProviders: Provider[] = [
-      {
-        provide: ConfigService,
-        useValue: new ConfigService(config)
-      },
       {
         provide: CryptoService,
         useValue: new CryptoService({
