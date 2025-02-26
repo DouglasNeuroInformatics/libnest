@@ -7,7 +7,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Mock } from 'vitest';
 
 import { MockFactory } from '../../../testing/factories/mock.factory.js';
-import { LoggingService } from '../../logging/logging.service.js';
+import { LoggingService } from '../../modules/logging/logging.service.js';
 import { GlobalExceptionFilter } from '../global-exception.filter.js';
 
 import type { MockedInstance } from '../../../testing/factories/mock.factory.js';

@@ -3,7 +3,7 @@ import { NestFactory } from '@nestjs/core';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import { json } from 'express';
 
-import { JSONLogger } from '../logging/json.logger.js';
+import { JSONLogger } from '../modules/logging/json.logger.js';
 import { DocsFactory } from './docs.factory.js';
 
 import type { RuntimeEnv } from '../../config/schema.js';

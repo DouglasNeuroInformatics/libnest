@@ -5,7 +5,7 @@ import { HttpAdapterHost } from '@nestjs/core';
 import type { ExpressAdapter } from '@nestjs/platform-express';
 import type { Response } from 'express';
 
-import { LoggingService } from '../logging/logging.service.js';
+import { LoggingService } from '../modules/logging/logging.service.js';
 
 export type ExceptionResponseBody = {
   [key: string]: unknown;
