@@ -122,12 +122,12 @@ function loadConfig(configFile) {
  * @returns {import('neverthrow').ResultAsync<void, typeof RuntimeException.Instance>} A `ResultAsync` containing void on success, or an error message on failure.
  */
 function runDev(configFile) {
+  if (!process.env.NODE_ENV) {
+    /** @type {import('../config/schema.js').NodeEnv} */
+    const nodeEnv = 'development';
+    process.env.NODE_ENV = nodeEnv;
+  }
   return loadConfig(configFile).map(async ({ appContainer, config }) => {
-    if (!process.env.NODE_ENV) {
-      /** @type {import('../config/schema.js').NodeEnv} */
-      const nodeEnv = 'development';
-      process.env.NODE_ENV = nodeEnv;
-    }
     if (config.globals) {
       Object.entries(config.globals).forEach(([key, value]) => {
         Object.defineProperty(globalThis, key, {
