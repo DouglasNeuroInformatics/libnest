@@ -8,5 +8,5 @@ export { getValidationSchema, ValidationSchema } from './decorators/validation-s
 export { LoggingService } from './logging/logging.service.js';
 export { DataTransferObject } from './mixins/data-transfer-object.mixin.js';
 export { ConfigService } from './modules/config/config.service.js';
+export { CryptoService } from './modules/crypto/crypto.service.js';
 export { ParseSchemaPipe } from './pipes/parse-schema.pipe.js';
-export { CryptoService } from './services/crypto.service.js';

@@ -10,8 +10,8 @@ import { LoggingMiddleware } from '../logging/logging.middleware.js';
 import { LoggingService } from '../logging/logging.service.js';
 import { delay } from '../middleware/delay.middleware.js';
 import { ConfigService } from '../modules/config/config.service.js';
+import { CryptoService } from '../modules/crypto/crypto.service.js';
 import { ValidationPipe } from '../pipes/validation.pipe.js';
-import { CryptoService } from '../services/crypto.service.js';
 
 import type { RuntimeEnv } from '../../config/schema.js';
 

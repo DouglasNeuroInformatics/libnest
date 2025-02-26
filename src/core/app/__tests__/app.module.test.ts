@@ -4,10 +4,10 @@ import { beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { delay } from '../../middleware/delay.middleware.js';
 import { ConfigService } from '../../modules/config/config.service.js';
-import { CryptoService } from '../../services/crypto.service.js';
+import { CryptoService } from '../../modules/crypto/crypto.service.js';
 import { AppModule } from '../app.module.js';
 
-import type { CryptoOptions } from '../../services/crypto.service.js';
+import type { CryptoOptions } from '../../modules/crypto/crypto.service.js';
 import type { CreateAppModuleOptions } from '../app.module.js';
 
 vi.mock(import('../../middleware/delay.middleware.js'), async (importOriginal) => {
@@ -17,8 +17,8 @@ vi.mock(import('../../middleware/delay.middleware.js'), async (importOriginal) =
   };
 });
 
-vi.mock('../../services/crypto.service.js', async (importOriginal) => {
-  const { CryptoService } = await importOriginal<typeof import('../../services/crypto.service.js')>();
+vi.mock('../../modules/crypto/crypto.service.js', async (importOriginal) => {
+  const { CryptoService } = await importOriginal<typeof import('../../modules/crypto/crypto.service.js')>();
   return {
     CryptoService: vi.fn((options: CryptoOptions) => new CryptoService(options))
   };
