@@ -7,7 +7,7 @@ import { GlobalExceptionFilter } from '../filters/global-exception.filter.js';
 import { delay } from '../middleware/delay.middleware.js';
 import { ConfigModule } from '../modules/config/config.module.js';
 import { ConfigService } from '../modules/config/config.service.js';
-import { CryptoService } from '../modules/crypto/crypto.service.js';
+import { CryptoModule } from '../modules/crypto/crypto.module.js';
 import { JSONLogger } from '../modules/logging/json.logger.js';
 import { LOGGING_OPTIONS_TOKEN } from '../modules/logging/logging.config.js';
 import { LoggingMiddleware } from '../modules/logging/logging.middleware.js';
@@ -33,17 +33,8 @@ export class AppModule implements NestModule {
   private readonly configService: ConfigService;
 
   static create({ config, imports = [], providers = [] }: CreateAppModuleOptions): DynamicAppModule {
-    const coreImports: ImportedModule[] = [ConfigModule.forRoot({ config })];
+    const coreImports: ImportedModule[] = [ConfigModule.forRoot({ config }), CryptoModule.forRoot()];
     const coreProviders: Provider[] = [
-      {
-        provide: CryptoService,
-        useValue: new CryptoService({
-          pbkdf2Params: {
-            iterations: config.DANGEROUSLY_DISABLE_PBKDF2_ITERATION ? 1 : 100_000
-          },
-          secretKey: config.SECRET_KEY
-        })
-      },
       {
         provide: LOGGING_OPTIONS_TOKEN,
         useValue: {
