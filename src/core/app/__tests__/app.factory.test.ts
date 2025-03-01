@@ -2,6 +2,7 @@ import { ValidationException } from '@douglasneuroinformatics/libjs';
 import { beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { $BaseEnv } from '../../../config/schema.js';
+import { MockPrismaClient } from '../../../testing/mocks/prisma.client.mock.js';
 import { AppFactory } from '../app.factory.js';
 
 import type { BaseEnv } from '../../../config/schema.js';
@@ -20,7 +21,11 @@ describe('AppFactory', () => {
   describe('create', () => {
     const createApp = (options?: Partial<CreateAppOptions>) => {
       return AppFactory.create({
-        schema: $BaseEnv,
+        envSchema: $BaseEnv,
+        prisma: {
+          client: new MockPrismaClient({ modelNames: [] }),
+          modelNames: []
+        },
         version: '1',
         ...options
       });

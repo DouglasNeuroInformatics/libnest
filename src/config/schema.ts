@@ -1,6 +1,8 @@
 import { $BooleanLike, $NumberLike, $UrlLike } from '@douglasneuroinformatics/libjs';
 import { z } from 'zod';
 
+import type { UserConfig } from './index.js';
+
 /**
  * Schema definition for the base environment options.
  *
@@ -40,18 +42,4 @@ export type BaseEnv = z.infer<typeof $BaseEnv>;
 
 export type NodeEnv = BaseEnv['NODE_ENV'];
 
-/**
- * Represents the parsed environment variables available at runtime.
- *
- * This type should be augmented by users to include additional configuration properties in their schema.
- *
- * ### Example:
- * ```typescript
- * declare module '@douglasneuroinformatics/libnest/config' {
- *   export interface RuntimeEnv {
- *     foo: string;
- *   }
- * }
- * ```
- */
-export interface RuntimeEnv extends BaseEnv {}
+export type RuntimeEnv = UserConfig extends { RuntimeEnv: infer TRuntimeEnv extends BaseEnv } ? TRuntimeEnv : BaseEnv;

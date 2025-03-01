@@ -11,15 +11,10 @@ import type { ConfigOptions } from '../config/index.js';
 import type { NodeEnv } from '../config/schema.js';
 
 const $ConfigOptions: z.ZodType<ConfigOptions> = z.object({
-  entry: z.string().min(1),
+  entry: z.function().returns(z.promise(z.record(z.unknown()))),
   globals: z.record(z.unknown()).optional()
 });
 
-/**
- * Resolves an import path to an absolute file path and validates that it exists and is a valid file.
- * @param filename - The import path to resolve.
- * @returns A `Result` containing the absolute file path on success, or an error message on failure.
- */
 function resolveAbsoluteImportPath(filename: string): Result<string, typeof RuntimeException.Instance> {
   const filepath = path.resolve(process.cwd(), filename);
   const extension = path.extname(filepath);
@@ -33,47 +28,44 @@ function resolveAbsoluteImportPath(filename: string): Result<string, typeof Runt
   return ok(filepath);
 }
 
-/**
- * Imports a module from a given file path.
- * @param filepath - The path to the module to import.
- * @returns A `ResultAsync` containing the imported module on success, or an error message on failure.
- */
-function importModule(filepath: string): ResultAsync<{ [key: string]: unknown }, typeof RuntimeException.Instance> {
+function importDefault(filepath: string): ResultAsync<unknown, typeof RuntimeException.Instance>;
+function importDefault(
+  importFn: () => Promise<{ [key: string]: unknown }>
+): ResultAsync<unknown, typeof RuntimeException.Instance>;
+function importDefault(
+  argument: (() => Promise<{ [key: string]: unknown }>) | string
+): ResultAsync<unknown, typeof RuntimeException.Instance> {
+  let importFn: () => Promise<{ [key: string]: unknown }>;
+  let context: string;
+  if (typeof argument === 'function') {
+    importFn = argument;
+    context = `module inferred as return value from function '${importFn.name || 'anonymous'}'`;
+  } else {
+    importFn = () => import(argument);
+    context = argument;
+  }
   return fromAsyncThrowable(
-    async () => import(filepath) as Promise<{ [key: string]: unknown }>,
-    (error) => {
-      return new RuntimeException(`Failed to import module: ${filepath}`, {
+    importFn,
+    (error) =>
+      new RuntimeException(`Failed to import module: ${context}`, {
         cause: error
-      });
+      })
+  )().andThen(({ default: defaultExport }) => {
+    if (defaultExport === undefined) {
+      return RuntimeException.asErr(`Missing required default export in module: ${context}`);
     }
-  )();
-}
-
-/**
- * Imports the default export from a module
- * @param filename - The path to the module to import.
- * @returns A `ResultAsync` containing the validated default export on success, or an error message on failure.
- */
-function importDefault(filename: string): ResultAsync<unknown, typeof RuntimeException.Instance> {
-  return resolveAbsoluteImportPath(filename).asyncAndThen((filepath) => {
-    return importModule(filepath).andThen(({ default: defaultExport }) => {
-      if (defaultExport === undefined) {
-        return RuntimeException.asErr(`Missing required default export in module: ${filepath}`);
-      }
-      return ok(defaultExport);
-    });
+    return ok(defaultExport);
   });
 }
 
 /**
  * Resolves the app container and config options from a config file.
- * @param {string} configFile - The path to the config file.
- * @returns A `ResultAsync` containing the app container and config options on success, or an error message on failure.
+ * @param configFile - The path to the config file.
+ * @returns A `ResultAsync` containing the config options on success, or an error message on failure.
  */
-function loadConfig(
-  configFile: string
-): ResultAsync<{ appContainer: AppContainer; config: ConfigOptions }, typeof RuntimeException.Instance> {
-  return importDefault(configFile)
+function loadConfig(configFile: string): ResultAsync<ConfigOptions, typeof RuntimeException.Instance> {
+  return resolveAbsoluteImportPath(configFile)
+    .asyncAndThen(importDefault)
     .andThen((config) => {
       const result = $ConfigOptions.safeParse(config);
       if (!result.success) {
@@ -84,27 +76,41 @@ function loadConfig(
         });
       }
       return ok(result.data);
-    })
-    .andThen((config) => {
-      return importDefault(config.entry).andThen((exportResult) => {
-        if (!(exportResult instanceof Err || exportResult instanceof Ok)) {
-          return RuntimeException.asAsyncErr(`Invalid default export for entry file '${config.entry}': not a result`);
-        } else if (exportResult.isErr()) {
-          if (exportResult.error instanceof BaseException) {
-            return RuntimeException.asAsyncErr(`Failed to initialize application`, {
-              cause: exportResult.error
-            });
-          }
-          return RuntimeException.asAsyncErr('Failed to initialize app due to a unexpected error');
-        }
-        const appContainer: unknown = exportResult.value;
-        if (!(appContainer instanceof AppContainer)) {
-          return RuntimeException.asAsyncErr(
-            'Failed to initialize app: exported result from entry file does not contain valid AppContainer'
-          );
-        }
-        return ok({ appContainer, config });
+    });
+}
+
+/**
+ * Resolves the app container from a user config
+ * @param config - The user config
+ * @returns A `ResultAsync` containing the app container on success, or an error message on failure.
+ */
+function loadAppContainer(config: ConfigOptions): ResultAsync<AppContainer, typeof RuntimeException.Instance> {
+  return importDefault(config.entry)
+    .mapErr((err) => {
+      return new RuntimeException('Entry function in config failed to resolve', {
+        cause: err
       });
+    })
+    .andThen((exportResult) => {
+      if (!(exportResult instanceof Err || exportResult instanceof Ok)) {
+        return RuntimeException.asAsyncErr(`Invalid default export from entry module: not a result`, {
+          details: {
+            received: exportResult
+          }
+        });
+      } else if (exportResult.isErr()) {
+        if (exportResult.error instanceof BaseException) {
+          return RuntimeException.asAsyncErr(`Failed to initialize application`, {
+            cause: exportResult.error
+          });
+        }
+        return RuntimeException.asAsyncErr('Failed to initialize app due to a unexpected error');
+      } else if (!(exportResult.value instanceof AppContainer)) {
+        return RuntimeException.asAsyncErr(
+          'Failed to initialize app: result from entry module does not contain valid AppContainer'
+        );
+      }
+      return ok(exportResult.value satisfies AppContainer);
     });
 }
 
@@ -117,17 +123,19 @@ function runDev(configFile: string): ResultAsync<void, typeof RuntimeException.I
   if (!process.env.NODE_ENV) {
     process.env.NODE_ENV = 'development' satisfies NodeEnv;
   }
-  return loadConfig(configFile).map(async ({ appContainer, config }) => {
-    if (config.globals) {
-      Object.entries(config.globals).forEach(([key, value]) => {
-        Object.defineProperty(globalThis, key, {
-          value,
-          writable: false
+  return loadConfig(configFile).andThen((config) => {
+    return loadAppContainer(config).map(async (appContainer) => {
+      if (config.globals) {
+        Object.entries(config.globals).forEach(([key, value]) => {
+          Object.defineProperty(globalThis, key, {
+            value,
+            writable: false
+          });
         });
-      });
-    }
-    await appContainer.bootstrap();
+      }
+      await appContainer.bootstrap();
+    });
   });
 }
 
-export { importDefault, importModule, loadConfig, resolveAbsoluteImportPath, runDev };
+export { importDefault, loadAppContainer, loadConfig, resolveAbsoluteImportPath, runDev };

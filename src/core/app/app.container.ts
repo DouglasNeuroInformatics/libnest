@@ -6,12 +6,12 @@ import { json } from 'express';
 import { JSONLogger } from '../modules/logging/json.logger.js';
 import { DocsFactory } from './docs.factory.js';
 
-import type { RuntimeEnv } from '../../config/schema.js';
+import type { BaseEnv } from '../../config/schema.js';
 import type { DynamicAppModule } from './app.module.js';
 import type { AppVersion, DocsConfig } from './docs.factory.js';
 
 export type CreateAppContainerOptions = {
-  config: RuntimeEnv;
+  config: BaseEnv;
   docs?: {
     config: Omit<DocsConfig, 'version'>;
     path: `/${string}.json`;
@@ -21,7 +21,7 @@ export type CreateAppContainerOptions = {
 };
 
 export class AppContainer {
-  readonly #config: RuntimeEnv;
+  readonly #config: BaseEnv;
   readonly #docs?: {
     config: Omit<DocsConfig, 'version'>;
     path: `/${string}.json`;

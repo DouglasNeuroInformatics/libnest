@@ -3,6 +3,10 @@
  * @module config
  */
 
+import type { z } from 'zod';
+
+import type { PrismaClientLike } from '../core/modules/prisma/prisma.types.js';
+
 /**
  * Configuration options for a `libnest` application.
  */
@@ -12,7 +16,7 @@ export interface ConfigOptions {
    *
    * This should be a module whose default export is a function that initializes the application.
    */
-  entry: string;
+  entry: () => Promise<{ [key: string]: unknown }>;
 
   /**
    * Optional global variables that should be defined at runtime.
@@ -20,15 +24,36 @@ export interface ConfigOptions {
   globals?: { [key: string]: unknown };
 }
 
+export type InferredConfigType<T extends ConfigOptions> = T extends {
+  entry: () => Promise<{
+    default: {
+      _inferOptions: {
+        envSchema: infer TSchema extends z.ZodTypeAny;
+        prisma: {
+          client: infer TPrismaClient extends PrismaClientLike;
+        };
+      };
+    };
+  }>;
+}
+  ? {
+      RuntimeEnv: z.TypeOf<TSchema>;
+      RuntimePrismaClient: TPrismaClient;
+    }
+  : never;
+
 /**
  * Defines configuration options with type safety.
  * @param config - The configuration options for the application.
  * @returns The same configuration options
  */
-export function defineConfig(config: ConfigOptions) {
-  return config;
+export function defineConfig<T extends ConfigOptions>(config: T) {
+  return config as T & {
+    infer: InferredConfigType<T>;
+  };
 }
 
-export type { RuntimePrismaClient } from '../prisma/prisma.types.js';
+export interface UserConfig {}
+
 export { $BaseEnv } from './schema.js';
-export type { BaseEnv, RuntimeEnv } from './schema.js';
+export type { BaseEnv } from './schema.js';

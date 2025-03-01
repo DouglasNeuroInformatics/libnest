@@ -3,6 +3,8 @@ import type { Class } from 'type-fest';
 import { vi } from 'vitest';
 import type { Mock } from 'vitest';
 
+import { MockPrismaModel } from '../mocks/prisma.model.mock.js';
+
 export type MockedInstance<T extends object> = {
   [K in keyof T as T[K] extends (...args: any[]) => any ? K : never]: Mock;
 };
@@ -19,27 +21,7 @@ export class MockFactory {
   static createForModelToken(token: string): Provider {
     return {
       provide: token,
-      useValue: {
-        aggregate: vi.fn(),
-        aggregateRaw: vi.fn(),
-        count: vi.fn(),
-        create: vi.fn(),
-        createMany: vi.fn(),
-        delete: vi.fn(),
-        deleteMany: vi.fn(),
-        exists: vi.fn(),
-        fields: vi.fn(),
-        findFirst: vi.fn(),
-        findFirstOrThrow: vi.fn(),
-        findMany: vi.fn(),
-        findRaw: vi.fn(),
-        findUnique: vi.fn(),
-        findUniqueOrThrow: vi.fn(),
-        groupBy: vi.fn(),
-        update: vi.fn(),
-        updateMany: vi.fn(),
-        upsert: vi.fn()
-      }
+      useValue: new MockPrismaModel()
     };
   }
 

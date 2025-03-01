@@ -9,7 +9,16 @@ export default AppFactory.create({
     },
     path: '/spec.json'
   },
+  envSchema: $BaseEnv,
   imports: [CatsModule],
-  schema: $BaseEnv,
+  prisma: {
+    client: {
+      $connect: () => Promise.resolve(),
+      $disconnect: () => Promise.resolve(),
+      $runCommandRaw: () => Promise.resolve({}),
+      cat: {}
+    },
+    modelNames: ['Cat']
+  },
   version: '1'
 });

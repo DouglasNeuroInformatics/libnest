@@ -9,9 +9,11 @@ import { ConfigModule } from '../modules/config/config.module.js';
 import { ConfigService } from '../modules/config/config.service.js';
 import { CryptoModule } from '../modules/crypto/crypto.module.js';
 import { LoggingModule } from '../modules/logging/logging.module.js';
+import { PrismaModule } from '../modules/prisma/prisma.module.js';
 import { ValidationPipe } from '../pipes/validation.pipe.js';
 
 import type { RuntimeEnv } from '../../config/schema.js';
+import type { PrismaModuleOptions } from '../modules/prisma/prisma.config.js';
 
 export type ImportedModule = NonNullable<ModuleMetadata['imports']>[number];
 
@@ -22,6 +24,7 @@ export type DynamicAppModule = DynamicModule & {
 export type CreateAppModuleOptions = {
   config: RuntimeEnv;
   imports?: ImportedModule[];
+  prisma: PrismaModuleOptions;
   providers?: Provider[];
 };
 
@@ -29,11 +32,12 @@ export class AppModule implements NestModule {
   @Inject()
   private readonly configService: ConfigService;
 
-  static create({ config, imports = [], providers = [] }: CreateAppModuleOptions): DynamicAppModule {
+  static create({ config, imports = [], prisma, providers = [] }: CreateAppModuleOptions): DynamicAppModule {
     const coreImports: ImportedModule[] = [
       ConfigModule.forRoot({ config }),
       CryptoModule.forRoot(),
-      LoggingModule.forRoot()
+      LoggingModule.forRoot(),
+      PrismaModule.forRoot(prisma)
     ];
     const coreProviders: Provider[] = [
       {

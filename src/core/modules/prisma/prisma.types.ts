@@ -1,15 +1,17 @@
+import type { UserConfig } from '../../../config/index.js';
+
 export interface PrismaClientLike {
   $connect(): Promise<void>;
   $disconnect(): Promise<void>;
   $runCommandRaw(command: { [key: string]: unknown }): Promise<{ [key: string]: unknown }>;
-  [key: string]: unknown;
+  [key: string]: any;
 }
 
-/**
- * Represents the `PrismaClient` for your application. Users should augment
- * this declaration with their own `PrismaClient`.
- */
-export interface RuntimePrismaClient extends PrismaClientLike {}
+export type RuntimePrismaClient = UserConfig extends {
+  RuntimePrismaClient: infer TPrismaClient extends PrismaClientLike;
+}
+  ? TPrismaClient
+  : PrismaClientLike;
 
 export type PrismaModelName = typeof import('@prisma/client') extends {
   Prisma: {

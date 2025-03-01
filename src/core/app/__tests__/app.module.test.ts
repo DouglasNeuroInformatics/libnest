@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import type { OmitDeep, PartialDeep } from 'type-fest';
 import { beforeAll, describe, expect, it, vi } from 'vitest';
 
+import { MockPrismaClient } from '../../../testing/mocks/prisma.client.mock.js';
 import { delay } from '../../middleware/delay.middleware.js';
 import { ConfigService } from '../../modules/config/config.service.js';
 import { CryptoService } from '../../modules/crypto/crypto.service.js';
@@ -42,6 +43,10 @@ const createAppModule = ({
       ...config
     },
     imports,
+    prisma: {
+      client: new MockPrismaClient({ modelNames: [] }),
+      modelNames: []
+    },
     providers
   });
 };

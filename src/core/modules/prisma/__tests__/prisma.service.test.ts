@@ -1,6 +1,7 @@
 import { InternalServerErrorException } from '@nestjs/common';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { MockPrismaClient } from '../../../../testing/mocks/prisma.client.mock.js';
 import { PrismaService } from '../prisma.service.js';
 
 describe('PrismaService', () => {
@@ -8,11 +9,7 @@ describe('PrismaService', () => {
   let prismaService: PrismaService;
 
   beforeEach(() => {
-    prismaClientMock = {
-      $connect: vi.fn().mockResolvedValue(undefined),
-      $disconnect: vi.fn().mockResolvedValue(undefined),
-      $runCommandRaw: vi.fn()
-    };
+    prismaClientMock = new MockPrismaClient({ modelNames: [] });
     prismaService = new PrismaService(prismaClientMock);
   });
 

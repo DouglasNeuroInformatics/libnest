@@ -1,3 +1,5 @@
+import { uncapitalize } from '@douglasneuroinformatics/libjs';
+
 import type { PrismaModelName } from './prisma.types.js';
 
 /**
@@ -7,4 +9,9 @@ import type { PrismaModelName } from './prisma.types.js';
  */
 export function getModelToken<T extends PrismaModelName>(modelName: T) {
   return modelName + 'PrismaModel';
+}
+
+/** return the key for a given model name on the prisma client */
+export function getModelRef<T extends PrismaModelName>(modelName: T) {
+  return uncapitalize(modelName);
 }

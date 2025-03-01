@@ -7,30 +7,38 @@ import type { z } from 'zod';
 import { AppContainer } from './app.container.js';
 import { AppModule } from './app.module.js';
 
-import type { RuntimeEnv } from '../../config/schema.js';
+import type { BaseEnv } from '../../config/schema.js';
 import type { CreateAppContainerOptions } from './app.container.js';
 import type { CreateAppModuleOptions } from './app.module.js';
 
-type EnvSchema = z.ZodType<RuntimeEnv, z.ZodTypeDef, { [key: string]: string }>;
+type EnvSchema = z.ZodType<BaseEnv, z.ZodTypeDef, { [key: string]: string }>;
 
 export type CreateAppOptions = Simplify<
   Omit<CreateAppModuleOptions, 'config'> &
     Pick<CreateAppContainerOptions, 'docs' | 'version'> & {
-      schema: EnvSchema;
+      envSchema: EnvSchema;
     }
 >;
 
+export type CreateAppContainerResult<TOptions extends CreateAppOptions> = Result<
+  AppContainer,
+  typeof RuntimeException.Instance
+> & {
+  _inferOptions: TOptions;
+};
+
 export class AppFactory {
-  static create({
+  static create<TOptions extends CreateAppOptions>({
     docs,
+    envSchema,
     imports = [],
+    prisma,
     providers = [],
-    schema,
     version
-  }: CreateAppOptions): Result<AppContainer, typeof RuntimeException.Instance> {
-    return this.parseConfig(schema).match(
+  }: TOptions): CreateAppContainerResult<TOptions> {
+    return this.parseConfig(envSchema).match(
       (config) => {
-        const module = AppModule.create({ config, imports, providers });
+        const module = AppModule.create({ config, imports, prisma, providers });
         return ok(
           new AppContainer({
             config,
@@ -45,13 +53,13 @@ export class AppFactory {
           cause: err
         });
       }
-    );
+    ) satisfies Result<AppContainer, typeof RuntimeException.Instance> as CreateAppContainerResult<TOptions>;
   }
 
-  private static parseConfig($Schema: EnvSchema): Result<RuntimeEnv, typeof ValidationException.Instance> {
+  private static parseConfig(envSchema: EnvSchema): Result<BaseEnv, typeof ValidationException.Instance> {
     return safeParse(
       filterObject(process.env, (value) => value !== ''),
-      $Schema
+      envSchema
     );
   }
 }
