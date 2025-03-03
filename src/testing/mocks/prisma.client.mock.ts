@@ -10,26 +10,36 @@ type MockPrismaClientOptions = {
   modelNames: string[];
 };
 
-type MockPrismaClientType = new <const TOptions extends MockPrismaClientOptions>(
-  options: TOptions
-) => {
+type MockPrismaClientInstance<TOptions extends MockPrismaClientOptions = MockPrismaClientOptions> = {
   [K in TOptions['modelNames'][number] as Uncapitalize<K>]: MockPrismaModel;
 } & {
   $connect: Mock;
   $disconnect: Mock;
   $runCommandRaw: Mock;
   [key: string]: unknown;
+  __isMockPrismaClient: true;
 };
 
-export const MockPrismaClient = class<const TOptions extends MockPrismaClientOptions> implements PrismaClientLike {
-  [key: string]: unknown;
+type MockPrismaClientConstructor = new <const TOptions extends MockPrismaClientOptions>(
+  options: TOptions
+) => MockPrismaClientInstance<TOptions>;
+
+export const MockPrismaClient = class<const TOptions extends MockPrismaClientOptions>
+  implements Partial<PrismaClientLike>
+{
+  [key: PropertyKey]: any;
   $connect = vi.fn();
   $disconnect = vi.fn();
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  $extends = vi.fn().mockReturnThis() as any;
   $runCommandRaw = vi.fn();
+  __isMockPrismaClient = true;
 
   constructor({ modelNames }: TOptions) {
     modelNames.forEach((modelName) => {
       this[getModelRef(modelName)] = new MockPrismaModel();
     });
   }
-} as MockPrismaClientType;
+} as MockPrismaClientConstructor;
+
+export type { MockPrismaClientInstance };

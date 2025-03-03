@@ -11,14 +11,6 @@ export default AppFactory.create({
   },
   envSchema: $BaseEnv,
   imports: [CatsModule],
-  prisma: {
-    client: {
-      $connect: () => Promise.resolve(),
-      $disconnect: () => Promise.resolve(),
-      $runCommandRaw: () => Promise.resolve({}),
-      cat: {}
-    },
-    modelNames: ['Cat']
-  },
+  prisma: {},
   version: '1'
 });

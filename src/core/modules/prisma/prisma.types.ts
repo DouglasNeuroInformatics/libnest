@@ -1,24 +1,16 @@
-import type { UserConfig } from '../../../config/index.js';
+import type { SingleKeyMap } from '@douglasneuroinformatics/libjs';
+import type { Prisma, PrismaClient } from '@prisma/client';
+import type { IfNever, Simplify } from 'type-fest';
 
-export interface PrismaClientLike {
-  $connect(): Promise<void>;
-  $disconnect(): Promise<void>;
-  $runCommandRaw(command: { [key: string]: unknown }): Promise<{ [key: string]: unknown }>;
+import type { PrismaFactory } from './prisma.factory.js';
+
+export type PrismaClientLike = PrismaClient & {
   [key: string]: any;
-}
+};
 
-export type RuntimePrismaClient = UserConfig extends {
-  RuntimePrismaClient: infer TPrismaClient extends PrismaClientLike;
-}
-  ? TPrismaClient
-  : PrismaClientLike;
+export type RuntimePrismaClient = Simplify<ReturnType<PrismaFactory['createClient']>>;
 
-export type PrismaModelName = typeof import('@prisma/client') extends {
-  Prisma: {
-    ModelName: infer TModelName;
-  };
-}
-  ? keyof TModelName
-  : string;
+export type PrismaModelName = IfNever<Prisma.ModelName, string, Prisma.ModelName>;
 
-export type Model<T extends PrismaModelName> = RuntimePrismaClient[`${Uncapitalize<T>}`];
+export type Model<T extends PrismaModelName> =
+  RuntimePrismaClient extends SingleKeyMap<`${Uncapitalize<T>}`, infer U> ? U : never;

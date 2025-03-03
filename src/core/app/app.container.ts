@@ -11,27 +11,27 @@ import type { DynamicAppModule } from './app.module.js';
 import type { AppVersion, DocsConfig } from './docs.factory.js';
 
 export type CreateAppContainerOptions = {
-  config: BaseEnv;
   docs?: {
     config: Omit<DocsConfig, 'version'>;
     path: `/${string}.json`;
   };
+  envConfig: BaseEnv;
   module: DynamicAppModule;
   version: AppVersion;
 };
 
 export class AppContainer {
-  readonly #config: BaseEnv;
   readonly #docs?: {
     config: Omit<DocsConfig, 'version'>;
     path: `/${string}.json`;
   };
+  readonly #envConfig: BaseEnv;
   readonly #module: DynamicAppModule;
   readonly #version: AppVersion;
 
-  constructor({ config, docs, module, version }: CreateAppContainerOptions) {
-    this.#config = config;
+  constructor({ docs, envConfig, module, version }: CreateAppContainerOptions) {
     this.#docs = docs;
+    this.#envConfig = envConfig;
     this.#module = module;
     this.#version = version;
   }
@@ -39,8 +39,8 @@ export class AppContainer {
   async bootstrap() {
     const app = await this.createNestApplication();
     const logger = app.get(JSONLogger);
-    const isProduction = this.#config.NODE_ENV === 'production';
-    const port = this.#config[isProduction ? 'API_PROD_SERVER_PORT' : 'API_DEV_SERVER_PORT'];
+    const isProduction = this.#envConfig.NODE_ENV === 'production';
+    const port = this.#envConfig[isProduction ? 'API_PROD_SERVER_PORT' : 'API_DEV_SERVER_PORT'];
     await app.listen(port);
     const url = await app.getUrl();
     logger.log(`Application is running on: ${url}`);

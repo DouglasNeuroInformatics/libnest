@@ -14,7 +14,7 @@ import type { CreateAppModuleOptions } from './app.module.js';
 type EnvSchema = z.ZodType<BaseEnv, z.ZodTypeDef, { [key: string]: string }>;
 
 export type CreateAppOptions = Simplify<
-  Omit<CreateAppModuleOptions, 'config'> &
+  Omit<CreateAppModuleOptions, 'envConfig'> &
     Pick<CreateAppContainerOptions, 'docs' | 'version'> & {
       envSchema: EnvSchema;
     }
@@ -36,13 +36,13 @@ export class AppFactory {
     providers = [],
     version
   }: TOptions): CreateAppContainerResult<TOptions> {
-    return this.parseConfig(envSchema).match(
-      (config) => {
-        const module = AppModule.create({ config, imports, prisma, providers });
+    return this.parseEnv(envSchema).match(
+      (envConfig) => {
+        const module = AppModule.create({ envConfig, imports, prisma, providers });
         return ok(
           new AppContainer({
-            config,
             docs,
+            envConfig,
             module,
             version
           })
@@ -56,7 +56,7 @@ export class AppFactory {
     ) satisfies Result<AppContainer, typeof RuntimeException.Instance> as CreateAppContainerResult<TOptions>;
   }
 
-  private static parseConfig(envSchema: EnvSchema): Result<BaseEnv, typeof ValidationException.Instance> {
+  private static parseEnv(envSchema: EnvSchema): Result<BaseEnv, typeof ValidationException.Instance> {
     return safeParse(
       filterObject(process.env, (value) => value !== ''),
       envSchema

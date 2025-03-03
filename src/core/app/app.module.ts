@@ -22,7 +22,7 @@ export type DynamicAppModule = DynamicModule & {
 };
 
 export type CreateAppModuleOptions = {
-  config: RuntimeEnv;
+  envConfig: RuntimeEnv;
   imports?: ImportedModule[];
   prisma: PrismaModuleOptions;
   providers?: Provider[];
@@ -32,9 +32,9 @@ export class AppModule implements NestModule {
   @Inject()
   private readonly configService: ConfigService;
 
-  static create({ config, imports = [], prisma, providers = [] }: CreateAppModuleOptions): DynamicAppModule {
+  static create({ envConfig, imports = [], prisma, providers = [] }: CreateAppModuleOptions): DynamicAppModule {
     const coreImports: ImportedModule[] = [
-      ConfigModule.forRoot({ config }),
+      ConfigModule.forRoot({ envConfig }),
       CryptoModule.forRoot(),
       LoggingModule.forRoot(),
       PrismaModule.forRoot(prisma)
@@ -50,7 +50,7 @@ export class AppModule implements NestModule {
       }
     ];
 
-    if (config.THROTTLER_ENABLED) {
+    if (envConfig.THROTTLER_ENABLED) {
       coreImports.push(
         ThrottlerModule.forRoot([
           {

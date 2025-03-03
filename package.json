@@ -54,6 +54,7 @@
     "knip": "knip",
     "lint": "tsc && eslint --fix src",
     "prepare": "husky",
+    "prisma:generate": "prisma generate --allow-no-models",
     "test": "vitest",
     "test:coverage": "vitest --coverage"
   },
@@ -100,6 +101,7 @@
     "husky": "^9.1.7",
     "knip": "^5.44.1",
     "prettier": "^3.4.2",
+    "prisma": "^6.4.1",
     "supertest": "^7.0.0",
     "typedoc": "^0.27.6",
     "typedoc-material-theme": "^1.3.0",

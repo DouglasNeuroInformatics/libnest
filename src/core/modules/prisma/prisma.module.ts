@@ -1,37 +1,47 @@
 import { Module } from '@nestjs/common';
-import type { DynamicModule } from '@nestjs/common';
+import type { DynamicModule, FactoryProvider } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 
 import { PRISMA_CLIENT_TOKEN } from './prisma.config.js';
+import { PrismaFactory } from './prisma.factory.js';
 import { PrismaService } from './prisma.service.js';
 import { getModelRef, getModelToken } from './prisma.utils.js';
 
 import type { PrismaModuleOptions } from './prisma.config.js';
-import type { PrismaClientLike, PrismaModelName } from './prisma.types.js';
+import type { PrismaClientLike } from './prisma.types.js';
 
 @Module({})
 export class PrismaModule {
-  static forRoot({ client, modelNames }: PrismaModuleOptions): DynamicModule {
-    const modelProviders = this.getModelProviders(client, modelNames);
+  static forRoot(_options: PrismaModuleOptions): DynamicModule {
+    const modelProviders = this.getModelProviders();
+    const modelTokens = modelProviders.map((provider) => provider.provide);
     return {
-      exports: [PRISMA_CLIENT_TOKEN, PrismaService, ...modelProviders.map((provider) => provider.provide)],
+      exports: [PRISMA_CLIENT_TOKEN, PrismaService, ...modelTokens],
       global: true,
       module: PrismaModule,
       providers: [
         {
+          inject: [PrismaFactory],
           provide: PRISMA_CLIENT_TOKEN,
-          useValue: client
+          useFactory: (prismaFactory: PrismaFactory) => {
+            return prismaFactory.createClient();
+          }
         },
+        PrismaFactory,
         PrismaService,
         ...modelProviders
       ]
     };
   }
 
-  private static getModelProviders(client: PrismaClientLike, modelNames: PrismaModelName[]) {
-    return modelNames.map((modelName) => {
+  private static getModelProviders(): FactoryProvider[] {
+    return Object.keys(Prisma.ModelName).map((modelName) => {
       return {
+        inject: [PRISMA_CLIENT_TOKEN],
         provide: getModelToken(modelName),
-        useValue: client[getModelRef(modelName)] as unknown
+        useFactory: (prismaClient: PrismaClientLike) => {
+          return prismaClient[getModelRef(modelName)] as unknown;
+        }
       };
     });
   }

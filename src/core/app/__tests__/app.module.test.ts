@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import type { OmitDeep, PartialDeep } from 'type-fest';
 import { beforeAll, describe, expect, it, vi } from 'vitest';
 
-import { MockPrismaClient } from '../../../testing/mocks/prisma.client.mock.js';
+import { mockEnvConfig } from '../../../testing/mocks/env-config.mock.js';
 import { delay } from '../../middleware/delay.middleware.js';
 import { ConfigService } from '../../modules/config/config.service.js';
 import { CryptoService } from '../../modules/crypto/crypto.service.js';
@@ -26,27 +26,17 @@ vi.mock('../../modules/crypto/crypto.service.js', async (importOriginal) => {
 });
 
 const createAppModule = ({
-  config,
+  envConfig,
   imports = [],
   providers = []
-}: PartialDeep<OmitDeep<CreateAppModuleOptions, 'config.MONGO_URI'>> = {}) => {
+}: PartialDeep<OmitDeep<CreateAppModuleOptions, 'envConfig.MONGO_URI'>> = {}) => {
   return AppModule.create({
-    config: {
-      API_DEV_SERVER_PORT: 5500,
-      API_PROD_SERVER_PORT: 80,
-      DEBUG: false,
-      MONGO_URI: new URL('mongodb://localhost:27017'),
-      NODE_ENV: 'test',
-      SECRET_KEY: '2622d72669dd194b98cffd9098b0d04b',
-      THROTTLER_ENABLED: true,
-      VERBOSE: false,
-      ...config
+    envConfig: {
+      ...mockEnvConfig,
+      ...envConfig
     },
     imports,
-    prisma: {
-      client: new MockPrismaClient({ modelNames: [] }),
-      modelNames: []
-    },
+    prisma: {},
     providers
   });
 };
@@ -91,7 +81,7 @@ describe('AppModule', () => {
 
       beforeAll(async () => {
         moduleRef = await createModuleRef({
-          config: {
+          envConfig: {
             API_RESPONSE_DELAY: 10,
             DANGEROUSLY_DISABLE_PBKDF2_ITERATION: true,
             NODE_ENV: 'development'

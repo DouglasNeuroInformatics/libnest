@@ -5,7 +5,7 @@ import type { RuntimeEnv } from '../../../config/schema.js';
 @Injectable()
 export class ConfigService {
   /** @hidden */
-  constructor(private readonly config: RuntimeEnv) {}
+  constructor(private readonly envConfig: RuntimeEnv) {}
 
   /**
    * Retrieves a configuration value by key.
@@ -13,7 +13,7 @@ export class ConfigService {
    * @returns The configuration value
    */
   get<TKey extends Extract<keyof RuntimeEnv, string>>(key: TKey): RuntimeEnv[TKey] {
-    return this.config[key];
+    return this.envConfig[key];
   }
 
   /**
@@ -23,7 +23,7 @@ export class ConfigService {
    * @throws Error if the configuration value is undefined.
    */
   getOrThrow<TKey extends Extract<keyof RuntimeEnv, string>>(key: TKey): Exclude<RuntimeEnv[TKey], undefined> {
-    const value = this.config[key];
+    const value = this.envConfig[key];
     if (value === undefined) {
       throw new Error(`Property '${key}' is undefined`);
     }

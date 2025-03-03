@@ -7,7 +7,7 @@ import type { RuntimeEnv } from '../../../config/schema.js';
 
 @Module({})
 export class ConfigModule {
-  static forRoot({ config }: { config: RuntimeEnv }): DynamicModule {
+  static forRoot({ envConfig }: { envConfig: RuntimeEnv }): DynamicModule {
     return {
       exports: [ConfigService],
       global: true,
@@ -15,7 +15,7 @@ export class ConfigModule {
       providers: [
         {
           provide: ConfigService,
-          useValue: new ConfigService(config)
+          useValue: new ConfigService(envConfig)
         }
       ]
     };

@@ -5,8 +5,6 @@
 
 import type { z } from 'zod';
 
-import type { PrismaClientLike } from '../core/modules/prisma/prisma.types.js';
-
 /**
  * Configuration options for a `libnest` application.
  */
@@ -29,16 +27,12 @@ export type InferredConfigType<T extends ConfigOptions> = T extends {
     default: {
       _inferOptions: {
         envSchema: infer TSchema extends z.ZodTypeAny;
-        prisma: {
-          client: infer TPrismaClient extends PrismaClientLike;
-        };
       };
     };
   }>;
 }
   ? {
       RuntimeEnv: z.TypeOf<TSchema>;
-      RuntimePrismaClient: TPrismaClient;
     }
   : never;
 

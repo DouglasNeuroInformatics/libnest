@@ -1,56 +1,27 @@
+import { Test } from '@nestjs/testing';
+import type { TestingModule } from '@nestjs/testing';
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { MockPrismaClient } from '../../../../testing/mocks/prisma.client.mock.js';
+import { mockEnvConfig } from '../../../../testing/mocks/env-config.mock.js';
+import { ConfigModule } from '../../config/config.module.js';
 import { PRISMA_CLIENT_TOKEN } from '../prisma.config.js';
 import { PrismaModule } from '../prisma.module.js';
 
+import type { MockPrismaClientInstance } from '../../../../testing/mocks/prisma.client.mock.js';
+
 describe('PrismaModule', () => {
-  let client: any;
-
-  beforeEach(() => {
-    client = new MockPrismaClient({ modelNames: ['User'] });
-  });
-
   describe('forRoot', () => {
-    it('should register the PRISMA_CLIENT_TOKEN', () => {
-      const module = PrismaModule.forRoot({ client, modelNames: [] });
-      expect(module.module).toBe(PrismaModule);
-      expect(module.providers).toBeDefined();
-      expect(module.providers).toContainEqual({
-        provide: PRISMA_CLIENT_TOKEN,
-        useValue: client
-      });
+    let prismaClient: MockPrismaClientInstance;
+
+    beforeEach(async () => {
+      const module: TestingModule = await Test.createTestingModule({
+        imports: [ConfigModule.forRoot({ envConfig: mockEnvConfig }), PrismaModule.forRoot({})]
+      }).compile();
+      prismaClient = module.get(PRISMA_CLIENT_TOKEN);
+    });
+
+    it('should provide the correct PrismaClient', () => {
+      expect(prismaClient.__isMockPrismaClient).toBe(true);
     });
   });
-
-  // describe('forFeature', () => {
-  //   it('should register a model provider', () => {
-  //     const modelName = 'User';
-  //     const modelToken = getModelToken(modelName);
-
-  //     const module = PrismaModule.forFeature(modelName);
-  //     expect(module.module).toBe(PrismaModule);
-  //     expect(module.providers).toBeDefined();
-
-  //     const provider: any = module.providers?.find((p: any) => p.provide === modelToken);
-  //     expect(provider).toBeDefined();
-  //     expect(provider?.useFactory).toBeInstanceOf(Function);
-
-  //     const modelInstance = provider?.useFactory(prismaClientMock);
-  //     expect(modelInstance).toBe(prismaClientMock.user);
-  //   });
-  // });
-
-  // describe('forRootAsync', () => {
-  //   it('should register PrismaService and PRISMA_CLIENT_TOKEN asynchronously', () => {
-  //     const module = PrismaModule.forRootAsync({
-  //       inject: [],
-  //       useFactory: () => Promise.resolve(prismaClientMock)
-  //     });
-  //     expect(module.module).toBe(PrismaModule);
-  //     expect(module.providers).toBeDefined();
-  //     expect(module.exports).toContain(PrismaService);
-  //     expect(module.exports).toContain(PRISMA_CLIENT_TOKEN);
-  //   });
-  // });
 });
