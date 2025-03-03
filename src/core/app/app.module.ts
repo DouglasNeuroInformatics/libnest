@@ -1,7 +1,9 @@
+import { isObjectLike } from '@douglasneuroinformatics/libjs';
 import { Inject } from '@nestjs/common';
-import type { DynamicModule, MiddlewareConsumer, ModuleMetadata, NestModule, Provider } from '@nestjs/common';
+import type { DynamicModule, MiddlewareConsumer, NestModule, Provider, Type } from '@nestjs/common';
 import { APP_FILTER, APP_GUARD, APP_PIPE } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import type { ConditionalKeys } from 'type-fest';
 
 import { GlobalExceptionFilter } from '../filters/global-exception.filter.js';
 import { delay } from '../middleware/delay.middleware.js';
@@ -15,7 +17,18 @@ import { ValidationPipe } from '../pipes/validation.pipe.js';
 import type { RuntimeEnv } from '../../config/schema.js';
 import type { PrismaModuleOptions } from '../modules/prisma/prisma.config.js';
 
-export type ImportedModule = NonNullable<ModuleMetadata['imports']>[number];
+type ImportedModule = DynamicModule | Type<any>;
+
+type ConditionalImport = {
+  module: ImportedModule;
+  when: ConditionalKeys<RuntimeEnv, boolean | undefined>;
+};
+
+const isConditionalImport = (value: { [key: string]: any }): value is ConditionalImport => {
+  return isObjectLike(value.module) && typeof value.when === 'string';
+};
+
+type Import = ConditionalImport | ImportedModule;
 
 export type DynamicAppModule = DynamicModule & {
   module: typeof AppModule;
@@ -23,7 +36,7 @@ export type DynamicAppModule = DynamicModule & {
 
 export type CreateAppModuleOptions = {
   envConfig: RuntimeEnv;
-  imports?: ImportedModule[];
+  imports?: Import[];
   prisma: PrismaModuleOptions;
   providers?: Provider[];
 };
@@ -77,7 +90,19 @@ export class AppModule implements NestModule {
     }
 
     return {
-      imports: [...coreImports, ...imports],
+      imports: [
+        ...coreImports,
+        ...imports
+          .map((value) => {
+            if (!isConditionalImport(value)) {
+              return value;
+            } else if (envConfig[value.when]) {
+              return value.module;
+            }
+            return null;
+          })
+          .filter((value) => value !== null)
+      ],
       module: AppModule,
       providers: [...coreProviders, ...providers]
     };
