@@ -12,7 +12,7 @@ import type { VirtualizationModuleOptions } from './virtualization.config.js';
 
 @Injectable()
 export class VirtualizationService<TContext extends vm.Context = vm.Context> {
-  private context: TContext;
+  readonly context: TContext;
 
   constructor(
     @Inject(VIRTUALIZATION_MODULE_OPTIONS_TOKEN) { context }: VirtualizationModuleOptions<TContext>,
