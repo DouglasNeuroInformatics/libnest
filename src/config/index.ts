@@ -25,9 +25,7 @@ export interface ConfigOptions {
 export type InferredConfigType<T extends ConfigOptions> = T extends {
   entry: () => Promise<{
     default: {
-      _inferOptions: {
-        envSchema: infer TSchema extends z.ZodTypeAny;
-      };
+      __inferredEnvSchema: infer TSchema extends z.ZodTypeAny;
     };
   }>;
 }

@@ -13,29 +13,29 @@ import type { CreateAppModuleOptions } from './app.module.js';
 
 type EnvSchema = z.ZodType<BaseEnv, z.ZodTypeDef, { [key: string]: string }>;
 
-export type CreateAppOptions = Simplify<
+export type CreateAppOptions<TEnvSchema extends EnvSchema = EnvSchema> = Simplify<
   Omit<CreateAppModuleOptions, 'envConfig'> &
     Pick<CreateAppContainerOptions, 'docs' | 'version'> & {
-      envSchema: EnvSchema;
+      envSchema: TEnvSchema;
     }
 >;
 
-export type CreateAppContainerResult<TOptions extends CreateAppOptions> = Result<
+export type CreateAppContainerResult<TEnvSchema extends EnvSchema> = Result<
   AppContainer,
   typeof RuntimeException.Instance
 > & {
-  _inferOptions: TOptions;
+  __inferredEnvSchema: TEnvSchema;
 };
 
 export class AppFactory {
-  static create<TOptions extends CreateAppOptions>({
+  static create<TEnvSchema extends EnvSchema>({
     docs,
     envSchema,
     imports = [],
     prisma,
     providers = [],
     version
-  }: TOptions): CreateAppContainerResult<TOptions> {
+  }: CreateAppOptions<TEnvSchema>): CreateAppContainerResult<TEnvSchema> {
     return this.parseEnv(envSchema).match(
       (envConfig) => {
         const module = AppModule.create({ envConfig, imports, prisma, providers });
@@ -53,7 +53,7 @@ export class AppFactory {
           cause: err
         });
       }
-    ) satisfies Result<AppContainer, typeof RuntimeException.Instance> as CreateAppContainerResult<TOptions>;
+    ) satisfies Result<AppContainer, typeof RuntimeException.Instance> as CreateAppContainerResult<TEnvSchema>;
   }
 
   private static parseEnv(envSchema: EnvSchema): Result<BaseEnv, typeof ValidationException.Instance> {
