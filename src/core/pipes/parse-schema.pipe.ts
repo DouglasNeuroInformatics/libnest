@@ -1,12 +1,13 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import type { PipeTransform } from '@nestjs/common';
+import type { z } from 'zod';
 
 @Injectable()
 export class ParseSchemaPipe<T> implements PipeTransform<T> {
   isOptional: boolean;
   schema: Zod.ZodType<T>;
 
-  constructor(options: { isOptional?: boolean; schema: Zod.ZodType<T> }) {
+  constructor(options: { isOptional?: boolean; schema: z.ZodType<T> }) {
     this.isOptional = options.isOptional ?? false;
     this.schema = options.schema;
   }
