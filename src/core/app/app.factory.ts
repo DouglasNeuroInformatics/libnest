@@ -14,7 +14,7 @@ import type { CreateAppModuleOptions } from './app.module.js';
 type EnvSchema = z.ZodType<BaseEnv, z.ZodTypeDef, { [key: string]: string }>;
 
 export type CreateAppOptions<TEnvSchema extends EnvSchema = EnvSchema> = Simplify<
-  Omit<CreateAppModuleOptions, 'envConfig'> &
+  Omit<CreateAppModuleOptions<z.TypeOf<TEnvSchema>>, 'envConfig'> &
     Pick<CreateAppContainerOptions, 'docs' | 'version'> & {
       envSchema: TEnvSchema;
     }

@@ -14,29 +14,23 @@ import { LoggingModule } from '../modules/logging/logging.module.js';
 import { PrismaModule } from '../modules/prisma/prisma.module.js';
 import { ValidationPipe } from '../pipes/validation.pipe.js';
 
-import type { RuntimeEnv } from '../../config/schema.js';
+import type { BaseEnv } from '../../config/schema.js';
 import type { PrismaModuleOptions } from '../modules/prisma/prisma.config.js';
 
 type ImportedModule = DynamicModule | Type<any>;
 
-type ConditionalImport = {
+type ConditionalImport<TEnv extends BaseEnv = BaseEnv> = {
   module: ImportedModule;
-  when: ConditionalKeys<RuntimeEnv, boolean | undefined>;
+  when: ConditionalKeys<TEnv, boolean | undefined>;
 };
-
-const isConditionalImport = (value: { [key: string]: any }): value is ConditionalImport => {
-  return isObjectLike(value.module) && typeof value.when === 'string';
-};
-
-type Import = ConditionalImport | ImportedModule;
 
 export type DynamicAppModule = DynamicModule & {
   module: typeof AppModule;
 };
 
-export type CreateAppModuleOptions = {
-  envConfig: RuntimeEnv;
-  imports?: Import[];
+export type CreateAppModuleOptions<TEnv extends BaseEnv = BaseEnv> = {
+  envConfig: TEnv;
+  imports?: (ConditionalImport<TEnv> | ImportedModule)[];
   prisma: PrismaModuleOptions;
   providers?: Provider[];
 };
@@ -45,7 +39,12 @@ export class AppModule implements NestModule {
   @Inject()
   private readonly configService: ConfigService;
 
-  static create({ envConfig, imports = [], prisma, providers = [] }: CreateAppModuleOptions): DynamicAppModule {
+  static create<TEnv extends BaseEnv>({
+    envConfig,
+    imports: imports_ = [],
+    prisma,
+    providers = []
+  }: CreateAppModuleOptions<TEnv>): DynamicAppModule {
     const coreImports: ImportedModule[] = [
       ConfigModule.forRoot({ envConfig }),
       CryptoModule.forRoot(),
@@ -89,20 +88,19 @@ export class AppModule implements NestModule {
       });
     }
 
+    const imports: ImportedModule[] = [];
+    for (const import_ of imports_ as { [key: string]: any }[]) {
+      if (isObjectLike(import_.module) && typeof import_.when === 'string') {
+        if (envConfig[import_.when as keyof typeof envConfig]) {
+          imports.push(import_.module as ImportedModule);
+        }
+      } else {
+        imports.push(import_ as ImportedModule);
+      }
+    }
+
     return {
-      imports: [
-        ...coreImports,
-        ...imports
-          .map((value) => {
-            if (!isConditionalImport(value)) {
-              return value;
-            } else if (envConfig[value.when]) {
-              return value.module;
-            }
-            return null;
-          })
-          .filter((value) => value !== null)
-      ],
+      imports: [...coreImports, ...imports],
       module: AppModule,
       providers: [...coreProviders, ...providers]
     };
