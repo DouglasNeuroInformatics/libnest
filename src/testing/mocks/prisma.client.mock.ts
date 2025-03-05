@@ -1,7 +1,7 @@
 import { vi } from 'vitest';
 import type { Mock } from 'vitest';
 
-import { getModelRef } from '../../core/modules/prisma/prisma.utils.js';
+import { getModelKey } from '../../core/modules/prisma/prisma.utils.js';
 import { MockPrismaModel } from './prisma.model.mock.js';
 
 import type { PrismaClientLike } from '../../core/modules/prisma/prisma.types.js';
@@ -37,7 +37,7 @@ export const MockPrismaClient = class<const TOptions extends MockPrismaClientOpt
 
   constructor({ modelNames }: TOptions) {
     modelNames.forEach((modelName) => {
-      this[getModelRef(modelName)] = new MockPrismaModel();
+      this[getModelKey(modelName)] = new MockPrismaModel();
     });
   }
 } as MockPrismaClientConstructor;

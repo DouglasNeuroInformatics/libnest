@@ -5,7 +5,7 @@ import { Prisma } from '@prisma/client';
 import { PRISMA_CLIENT_TOKEN } from './prisma.config.js';
 import { PrismaFactory } from './prisma.factory.js';
 import { PrismaService } from './prisma.service.js';
-import { getModelRef, getModelToken } from './prisma.utils.js';
+import { getModelKey, getModelToken } from './prisma.utils.js';
 
 import type { PrismaModuleOptions } from './prisma.config.js';
 import type { PrismaClientLike } from './prisma.types.js';
@@ -40,7 +40,7 @@ export class PrismaModule {
         inject: [PRISMA_CLIENT_TOKEN],
         provide: getModelToken(modelName),
         useFactory: (prismaClient: PrismaClientLike) => {
-          return prismaClient[getModelRef(modelName)] as unknown;
+          return prismaClient[getModelKey(modelName)] as unknown;
         }
       };
     });

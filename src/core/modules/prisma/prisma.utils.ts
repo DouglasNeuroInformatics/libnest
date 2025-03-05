@@ -12,6 +12,6 @@ export function getModelToken<T extends PrismaModelName>(modelName: T) {
 }
 
 /** return the key for a given model name on the prisma client */
-export function getModelRef<T extends PrismaModelName>(modelName: T) {
+export function getModelKey<T extends PrismaModelName>(modelName: T) {
   return uncapitalize(modelName);
 }
