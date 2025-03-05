@@ -5,10 +5,12 @@ import type {
   DynamicClientExtensionThis,
   ExtensionArgs,
   InternalArgs,
-  MergeExtArgs
+  MergeExtArgs,
+  ResultFieldDefinition
 } from '@prisma/client/runtime/library';
 
 import { ConfigService } from '../config/config.service.js';
+import { getModelKey } from './prisma.utils.js';
 
 const EXTENSION_ARGS = {
   model: {
@@ -63,6 +65,16 @@ export class PrismaFactory {
         url.searchParams.append(key, String(value));
       }
     }
-    return new PrismaClient({ datasourceUrl: url.href }).$extends(EXTENSION_ARGS);
+    return new PrismaClient({ datasourceUrl: url.href }).$extends(EXTENSION_ARGS).$extends((client) => {
+      const result: { [key: string]: { __modelName: Pick<ResultFieldDefinition, 'compute'> } } = {};
+      Object.keys(Prisma.ModelName).forEach((modelName) => {
+        result[getModelKey(modelName)] = {
+          __modelName: {
+            compute: () => modelName
+          }
+        };
+      });
+      return client.$extends({ result });
+    });
   }
 }
