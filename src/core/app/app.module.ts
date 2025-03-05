@@ -1,4 +1,3 @@
-import { isObjectLike } from '@douglasneuroinformatics/libjs';
 import { Inject } from '@nestjs/common';
 import type { DynamicModule, MiddlewareConsumer, NestModule, Provider, Type } from '@nestjs/common';
 import { APP_FILTER, APP_GUARD, APP_PIPE } from '@nestjs/core';
@@ -90,7 +89,7 @@ export class AppModule implements NestModule {
 
     const imports: ImportedModule[] = [];
     for (const import_ of imports_ as { [key: string]: any }[]) {
-      if (isObjectLike(import_.module) && typeof import_.when === 'string') {
+      if (import_.module && typeof import_.when === 'string') {
         if (envConfig[import_.when as keyof typeof envConfig]) {
           imports.push(import_.module as ImportedModule);
         }
