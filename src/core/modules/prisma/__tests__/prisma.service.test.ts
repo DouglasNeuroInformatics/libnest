@@ -47,6 +47,10 @@ describe('PrismaService', () => {
       await expect(prismaService.getDbName()).resolves.toBe('test_db');
       expect(prismaClientMock.$runCommandRaw).toHaveBeenCalledWith({ dbStats: 1 });
     });
+    it('should throw an InternalServerError if the command returns an unexpected structure', async () => {
+      prismaClientMock.$runCommandRaw = vi.fn().mockResolvedValue(null);
+      await expect(prismaService.getDbName()).rejects.toThrow(InternalServerErrorException);
+    });
   });
 
   describe('getDbStats', () => {
