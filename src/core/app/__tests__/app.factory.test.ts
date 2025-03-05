@@ -21,7 +21,9 @@ describe('AppFactory', () => {
     const createApp = (options?: Partial<CreateAppOptions>) => {
       return AppFactory.create({
         envSchema: $BaseEnv,
-        prisma: {},
+        prisma: {
+          dbPrefix: null
+        },
         version: '1',
         ...options
       });

@@ -15,7 +15,12 @@ describe('PrismaModule', () => {
 
     beforeEach(async () => {
       const module: TestingModule = await Test.createTestingModule({
-        imports: [ConfigModule.forRoot({ envConfig: mockEnvConfig }), PrismaModule.forRoot({})]
+        imports: [
+          ConfigModule.forRoot({ envConfig: mockEnvConfig }),
+          PrismaModule.forRoot({
+            dbPrefix: null
+          })
+        ]
       }).compile();
       prismaClient = module.get(PRISMA_CLIENT_TOKEN);
     });

@@ -11,6 +11,8 @@ export default AppFactory.create({
   },
   envSchema: $BaseEnv,
   imports: [CatsModule],
-  prisma: {},
+  prisma: {
+    dbPrefix: null
+  },
   version: '1'
 });

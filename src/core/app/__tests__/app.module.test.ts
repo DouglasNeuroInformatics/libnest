@@ -36,7 +36,9 @@ const createAppModule = ({
       ...envConfig
     },
     imports,
-    prisma: {},
+    prisma: {
+      dbPrefix: null
+    },
     providers
   });
 };

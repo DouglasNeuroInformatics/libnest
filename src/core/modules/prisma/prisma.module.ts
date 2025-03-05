@@ -12,7 +12,7 @@ import type { PrismaClientLike } from './prisma.types.js';
 
 @Module({})
 export class PrismaModule {
-  static forRoot(_options: PrismaModuleOptions): DynamicModule {
+  static forRoot(options: PrismaModuleOptions): DynamicModule {
     const modelProviders = this.getModelProviders();
     const modelTokens = modelProviders.map((provider) => provider.provide);
     return {
@@ -24,7 +24,7 @@ export class PrismaModule {
           inject: [PrismaFactory],
           provide: PRISMA_CLIENT_TOKEN,
           useFactory: (prismaFactory: PrismaFactory) => {
-            return prismaFactory.createClient();
+            return prismaFactory.createClient(options);
           }
         },
         PrismaFactory,

@@ -11,6 +11,7 @@ import type {
 import { ConfigService } from '../config/config.service.js';
 import { getModelKey } from './prisma.utils.js';
 
+import type { PrismaModuleOptions } from './prisma.config.js';
 import type { PrismaModelKey, PrismaModelName } from './prisma.types.js';
 
 type ResultExtArgs = {
@@ -63,10 +64,10 @@ export type ExtendedPrismaClient = InferExtendedClient<ModelExtArgs & ResultExtA
 export class PrismaFactory {
   constructor(private readonly configService: ConfigService) {}
 
-  createClient(): ExtendedPrismaClient {
+  createClient(options: Pick<PrismaModuleOptions, 'dbPrefix'>): ExtendedPrismaClient {
     const mongoUri = this.configService.get('MONGO_URI');
-    const dbName = this.configService.get('NODE_ENV');
-    const url = new URL(`${mongoUri.href}/data-capture-${dbName}`);
+    const env = this.configService.get('NODE_ENV');
+    const url = new URL(`${mongoUri.href}/${options.dbPrefix}-${env}`);
     const params = {
       directConnection: this.configService.get('MONGO_DIRECT_CONNECTION'),
       replicaSet: this.configService.get('MONGO_REPLICA_SET'),
