@@ -15,16 +15,11 @@ export class VirtualizationService<TContext extends vm.Context = vm.Context> {
   readonly context: TContext;
 
   constructor(
-    @Inject(VIRTUALIZATION_MODULE_OPTIONS_TOKEN) { context }: VirtualizationModuleOptions<TContext>,
+    @Inject(VIRTUALIZATION_MODULE_OPTIONS_TOKEN) { context, contextOptions }: VirtualizationModuleOptions<TContext>,
     private readonly loggingService: LoggingService
   ) {
     this.context = context;
-    vm.createContext(this.context, {
-      codeGeneration: {
-        strings: false,
-        wasm: false
-      }
-    });
+    vm.createContext(this.context, contextOptions);
   }
 
   eval<T = unknown>(code: string): ResultAsync<T, ErrorObject> {
