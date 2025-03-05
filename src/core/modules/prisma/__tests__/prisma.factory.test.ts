@@ -1,6 +1,6 @@
 import type { Prisma } from '@prisma/client';
 import type { DynamicClientExtensionThis, InternalArgs } from '@prisma/client/runtime/library';
-import { beforeEach, describe, expect, expectTypeOf, it, test } from 'vitest';
+import { beforeEach, describe, expect, expectTypeOf, it, test, vi } from 'vitest';
 
 import { MockFactory } from '../../../../testing/index.js';
 import { mockEnvConfig } from '../../../../testing/mocks/env-config.mock.js';
@@ -81,6 +81,16 @@ describe('PrismaFactory', () => {
             'mongodb://localhost:27017/my-app-test?directConnection=true&replicaSet=rs0&retryWrites=true&w=majority'
         })
       );
+    });
+    it('should call $extends on the PrismaClient twice', () => {
+      const mockClient = {
+        $extends: vi.fn().mockReturnThis()
+      };
+      PrismaClient.mockImplementationOnce(() => {
+        return mockClient as any;
+      });
+      prismaFactory.createClient({ dbPrefix: 'my-app' });
+      expect(mockClient);
     });
   });
 });
