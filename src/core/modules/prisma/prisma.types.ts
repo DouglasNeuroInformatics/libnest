@@ -12,5 +12,9 @@ export type RuntimePrismaClient = Simplify<ReturnType<PrismaFactory['createClien
 
 export type PrismaModelName = IfNever<Prisma.ModelName, string, Prisma.ModelName>;
 
+export type PrismaModelKey<T extends PrismaModelName = PrismaModelName> = Uncapitalize<T>;
+
+export type PrismaModelToken<T extends PrismaModelName> = `${T}PrismaModel`;
+
 export type Model<T extends PrismaModelName> =
   RuntimePrismaClient extends SingleKeyMap<`${Uncapitalize<T>}`, infer U> ? U : never;
