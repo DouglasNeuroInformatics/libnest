@@ -5,14 +5,25 @@ import type {
   DynamicClientExtensionThis,
   ExtensionArgs,
   InternalArgs,
-  MergeExtArgs,
-  ResultFieldDefinition
+  MergeExtArgs
 } from '@prisma/client/runtime/library';
 
 import { ConfigService } from '../config/config.service.js';
 import { getModelKey } from './prisma.utils.js';
 
-const EXTENSION_ARGS = {
+import type { PrismaModelKey, PrismaModelName } from './prisma.types.js';
+
+type ResultExtArgs = {
+  result: {
+    [K in PrismaModelName as PrismaModelKey<K>]: {
+      __modelName: {
+        compute: () => K;
+      };
+    };
+  };
+};
+
+const MODEL_EXTENSION_ARGS = {
   model: {
     $allModels: {
       async exists<T>(this: T, where: Prisma.Args<T, 'findFirst'>['where']): Promise<boolean> {
@@ -25,6 +36,8 @@ const EXTENSION_ARGS = {
     }
   }
 } satisfies ExtensionArgs;
+
+type ModelExtArgs = typeof MODEL_EXTENSION_ARGS;
 
 type InferPrismaExtensionArgs<TArgs extends { [key: string]: unknown }> = MergeExtArgs<
   Prisma.TypeMap,
@@ -44,7 +57,7 @@ type InferExtendedClient<TArgs extends { [key: string]: unknown }> = DynamicClie
   Prisma.PrismaClientOptions
 >;
 
-export type ExtendedPrismaClient = InferExtendedClient<typeof EXTENSION_ARGS>;
+export type ExtendedPrismaClient = InferExtendedClient<ModelExtArgs & ResultExtArgs>;
 
 @Injectable()
 export class PrismaFactory {
@@ -65,8 +78,8 @@ export class PrismaFactory {
         url.searchParams.append(key, String(value));
       }
     }
-    return new PrismaClient({ datasourceUrl: url.href }).$extends(EXTENSION_ARGS).$extends((client) => {
-      const result: { [key: string]: { __modelName: Pick<ResultFieldDefinition, 'compute'> } } = {};
+    return new PrismaClient({ datasourceUrl: url.href }).$extends(MODEL_EXTENSION_ARGS).$extends((client) => {
+      const result = {} as ResultExtArgs['result'];
       Object.keys(Prisma.ModelName).forEach((modelName) => {
         result[getModelKey(modelName)] = {
           __modelName: {
