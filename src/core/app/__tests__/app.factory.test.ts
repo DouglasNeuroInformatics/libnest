@@ -8,7 +8,7 @@ import type { BaseEnv } from '../../../config/schema.js';
 import type { CreateAppOptions } from '../app.factory.js';
 
 const env = {
-  API_DEV_SERVER_PORT: '5500',
+  API_PORT: '5500',
   DEBUG: 'false',
   MONGO_URI: 'mongodb://localhost:27017',
   NODE_ENV: 'test',

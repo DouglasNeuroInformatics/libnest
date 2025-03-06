@@ -13,8 +13,7 @@ import type { UserConfig } from './index.js';
  * @see {@link RuntimeEnv}
  */
 export const $BaseEnv = z.object({
-  API_DEV_SERVER_PORT: $NumberLike.pipe(z.number().int().nonnegative()),
-  API_PROD_SERVER_PORT: $NumberLike.pipe(z.number().int().nonnegative()).default(80),
+  API_PORT: $NumberLike.pipe(z.number().int().nonnegative()),
   API_RESPONSE_DELAY: $NumberLike.pipe(z.number().positive().int()).optional(),
   DANGEROUSLY_DISABLE_PBKDF2_ITERATION: $BooleanLike.optional(),
   DEBUG: $BooleanLike.optional(),

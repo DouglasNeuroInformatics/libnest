@@ -10,7 +10,7 @@ import type { BaseEnv } from '../src/config/schema.js';
 import type { CreateCatDto } from './cats/dto/create-cat.dto.js';
 
 const env = {
-  API_DEV_SERVER_PORT: '5500',
+  API_PORT: '5500',
   DEBUG: 'false',
   MONGO_URI: 'mongodb://localhost:27017',
   NODE_ENV: 'test',

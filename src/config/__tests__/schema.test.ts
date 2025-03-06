@@ -5,7 +5,7 @@ import { $BaseEnv } from '../schema.js';
 describe('$BaseEnv', () => {
   it('should parse and validate a correct configuration', () => {
     const input = {
-      API_DEV_SERVER_PORT: '3000',
+      API_PORT: '5500',
       DEBUG: 'true',
       MONGO_URI: 'mongodb://localhost:27017',
       NODE_ENV: 'development',
@@ -15,8 +15,7 @@ describe('$BaseEnv', () => {
     const result = $BaseEnv.parse(input);
     expect(result).toEqual({
       ...input,
-      API_DEV_SERVER_PORT: 3000,
-      API_PROD_SERVER_PORT: 80,
+      API_PORT: 5500,
       DEBUG: true,
       MONGO_URI: expect.objectContaining({
         href: 'mongodb://localhost:27017'

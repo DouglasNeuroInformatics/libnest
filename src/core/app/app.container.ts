@@ -39,8 +39,7 @@ export class AppContainer {
   async bootstrap() {
     const app = await this.createNestApplication();
     const logger = app.get(JSONLogger);
-    const isProduction = this.#envConfig.NODE_ENV === 'production';
-    const port = this.#envConfig[isProduction ? 'API_PROD_SERVER_PORT' : 'API_DEV_SERVER_PORT'];
+    const port = this.#envConfig.API_PORT;
     await app.listen(port);
     const url = await app.getUrl();
     logger.log(`Application is running on: ${url}`);

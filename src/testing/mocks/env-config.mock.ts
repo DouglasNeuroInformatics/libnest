@@ -1,8 +1,7 @@
 import type { BaseEnv } from '../../config/schema.js';
 
 export const mockEnvConfig: BaseEnv = Object.freeze({
-  API_DEV_SERVER_PORT: 5500,
-  API_PROD_SERVER_PORT: 80,
+  API_PORT: 5500,
   DEBUG: false,
   MONGO_URI: new URL('mongodb://localhost:27017'),
   NODE_ENV: 'test',
