@@ -9,6 +9,7 @@ export const PrismaClient = vi.fn(() => {
 });
 
 export const Prisma = {
+  getExtensionContext: vi.fn(),
   ModelName: {
     Cat: 'Cat'
   }

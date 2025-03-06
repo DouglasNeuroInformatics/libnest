@@ -1,4 +1,4 @@
-import type { Prisma } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import type { DynamicClientExtensionThis, InternalArgs } from '@prisma/client/runtime/library';
 import { beforeEach, describe, expect, expectTypeOf, it, test, vi } from 'vitest';
 
@@ -6,6 +6,7 @@ import { MockFactory } from '../../../../testing/index.js';
 import { mockEnvConfig } from '../../../../testing/mocks/env-config.mock.js';
 import { ConfigService } from '../../config/config.service.js';
 import { PrismaFactory } from '../prisma.factory.js';
+import { getModelKey } from '../prisma.utils.js';
 
 import type { BaseEnv } from '../../../../config/schema.js';
 import type { MockedInstance } from '../../../../testing/index.js';
@@ -82,15 +83,45 @@ describe('PrismaFactory', () => {
         })
       );
     });
-    it('should call $extends on the PrismaClient twice', () => {
-      const mockClient = {
-        $extends: vi.fn().mockReturnThis()
-      };
-      PrismaClient.mockImplementationOnce(() => {
-        return mockClient as any;
-      });
+
+    it('should correctly extend the PrismaClient', () => {
+      const $extends = vi.fn();
+      PrismaClient.mockImplementationOnce(() => ({ $extends }) as any);
       prismaFactory.createClient({ dbPrefix: 'my-app' });
-      expect(mockClient);
+      expect($extends).toHaveBeenCalledExactlyOnceWith(expect.any(Function));
+      const extension = $extends.mock.lastCall![0] as (client: any) => any;
+      $extends.mockReturnValueOnce('EXTENDED_CLIENT');
+      expect(extension({ $extends })).toBe('EXTENDED_CLIENT');
+      expect($extends).toHaveBeenCalledTimes(2);
+      const extArgs = $extends.mock.lastCall![0];
+      expect(extArgs).toStrictEqual({
+        model: {
+          $allModels: {
+            exists: expect.any(Function)
+          }
+        },
+        result: Object.fromEntries(
+          Object.keys(Prisma.ModelName).map((modelName) => [
+            getModelKey(modelName),
+            {
+              __modelName: {
+                compute: expect.any(Function)
+              }
+            }
+          ])
+        )
+      });
+      const getExtensionContext = vi.spyOn(Prisma, 'getExtensionContext').mockImplementation(() => {
+        return {
+          findFirst: vi.fn()
+        } as any;
+      });
+      const { model, result } = extArgs;
+      expect(model.$allModels.exists.call({ __name: 'TEST' }));
+      expect(getExtensionContext).toHaveBeenCalledExactlyOnceWith({ __name: 'TEST' });
+      Object.keys(Prisma.ModelName).forEach((modelName) => {
+        expect(result[getModelKey(modelName)].__modelName.compute()).toBe(modelName);
+      });
     });
   });
 });
