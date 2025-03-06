@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import type { OmitDeep, PartialDeep } from 'type-fest';
 import { beforeAll, describe, expect, it, vi } from 'vitest';
+import type { Mock } from 'vitest';
 
 import { mockEnvConfig } from '../../../testing/mocks/env-config.mock.js';
 import { delay } from '../../middleware/delay.middleware.js';
@@ -107,6 +108,46 @@ describe('AppModule', () => {
         await app.init();
         expect(delay).toHaveBeenLastCalledWith({ responseDelay: 10 });
         await app.close();
+      });
+    });
+
+    describe('conditional imports', () => {
+      let DebugModule: Mock;
+
+      let init: (debug?: any) => Promise<TestingModule>;
+
+      beforeAll(() => {
+        DebugModule = vi.fn(() => {
+          return {};
+        });
+        init = (debug?: any) => {
+          return createModuleRef({
+            envConfig: {
+              DEBUG: debug
+            },
+            imports: [
+              {
+                module: DebugModule,
+                when: 'DEBUG'
+              }
+            ]
+          });
+        };
+      });
+
+      it('should not import the DebugModule if debug is undefined', async () => {
+        await init();
+        expect(DebugModule).not.toHaveBeenCalled();
+      });
+
+      it('should not import the DebugModule if debug is false', async () => {
+        await init(false);
+        expect(DebugModule).not.toHaveBeenCalled();
+      });
+
+      it('should import the DebugModule if debug is true', async () => {
+        await init(true);
+        expect(DebugModule).toHaveBeenCalledOnce();
       });
     });
   });
