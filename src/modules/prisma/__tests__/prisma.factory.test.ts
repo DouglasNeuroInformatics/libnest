@@ -2,19 +2,19 @@ import { Prisma } from '@prisma/client';
 import type { DynamicClientExtensionThis, InternalArgs } from '@prisma/client/runtime/library';
 import { beforeEach, describe, expect, expectTypeOf, it, test, vi } from 'vitest';
 
-import { MockFactory } from '../../../../testing/index.js';
-import { mockEnvConfig } from '../../../../testing/mocks/env-config.mock.js';
+import { MockFactory } from '../../../testing/index.js';
+import { mockEnvConfig } from '../../../testing/mocks/env-config.mock.js';
 import { ConfigService } from '../../config/config.service.js';
 import { PrismaFactory } from '../prisma.factory.js';
 import { getModelKey } from '../prisma.utils.js';
 
-import type { BaseEnv } from '../../../../config/schema.js';
-import type { MockedInstance } from '../../../../testing/index.js';
+import type { BaseEnv } from '../../../schemas/env.schema.js';
+import type { MockedInstance } from '../../../testing/index.js';
 import type { ExtendedPrismaClient } from '../prisma.factory.js';
 
 const { PrismaClient } = (await import(
   '@prisma/client'
-)) as unknown as typeof import('../../../../testing/mocks/prisma.module.mock.js');
+)) as unknown as typeof import('../../../testing/mocks/prisma.module.mock.js');
 
 test('ExtendedPrismaClient', () => {
   expectTypeOf<ExtendedPrismaClient>().toMatchTypeOf<

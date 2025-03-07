@@ -15,13 +15,9 @@
     "url": "https://github.com/DouglasNeuroInformatics/libnest/issues"
   },
   "exports": {
-    "./config": {
-      "types": "./dist/config/index.d.ts",
-      "import": "./dist/config/index.js"
-    },
-    "./core": {
-      "types": "./dist/core/index.d.ts",
-      "import": "./dist/core/index.js"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
     },
     "./prisma": {
       "types": "./dist/prisma/prisma.index.d.ts",
@@ -30,6 +26,10 @@
     "./testing": {
       "types": "./dist/testing/index.d.ts",
       "import": "./dist/testing/index.js"
+    },
+    "./user-config": {
+      "types": "./dist/user-config.d.ts",
+      "import": "./dist/user-config.js"
     },
     "./virtualization": {
       "types": "./dist/virtualization/virtualization.index.d.ts",

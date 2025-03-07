@@ -6,7 +6,7 @@ import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 
 import appContainer from './app.js';
 
-import type { BaseEnv } from '../src/config/schema.js';
+import type { BaseEnv } from '../src/schemas/env.schema.js';
 import type { CreateCatDto } from './cats/dto/create-cat.dto.js';
 
 const env = {

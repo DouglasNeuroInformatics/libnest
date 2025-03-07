@@ -1,16 +1,15 @@
 import type { ArgumentsHost } from '@nestjs/common';
-import { HttpStatus } from '@nestjs/common';
-import { HttpException, InternalServerErrorException, NotFoundException } from '@nestjs/common/exceptions';
+import { HttpException, HttpStatus, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import type { HttpAdapterHost } from '@nestjs/core';
 import type { ExpressAdapter } from '@nestjs/platform-express';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Mock } from 'vitest';
 
-import { MockFactory } from '../../../testing/factories/mock.factory.js';
 import { LoggingService } from '../../modules/logging/logging.service.js';
+import { MockFactory } from '../../testing/factories/mock.factory.js';
 import { GlobalExceptionFilter } from '../global-exception.filter.js';
 
-import type { MockedInstance } from '../../../testing/factories/mock.factory.js';
+import type { MockedInstance } from '../../testing/factories/mock.factory.js';
 import type { ExceptionResponseBody } from '../global-exception.filter.js';
 
 describe('GlobalExceptionFilter', () => {

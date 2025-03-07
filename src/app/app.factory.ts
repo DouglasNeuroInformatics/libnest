@@ -7,7 +7,7 @@ import type { z } from 'zod';
 import { AppContainer } from './app.container.js';
 import { AppModule } from './app.module.js';
 
-import type { BaseEnv } from '../../config/schema.js';
+import type { BaseEnv } from '../schemas/env.schema.js';
 import type { CreateAppContainerOptions } from './app.container.js';
 import type { CreateAppModuleOptions } from './app.module.js';
 

@@ -1,7 +1,7 @@
 import { InternalServerErrorException } from '@nestjs/common';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { MockPrismaClient } from '../../../../testing/mocks/prisma.client.mock.js';
+import { MockPrismaClient } from '../../../testing/mocks/prisma.client.mock.js';
 import { PrismaService } from '../prisma.service.js';
 
 describe('PrismaService', () => {

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { $BaseEnv } from '../schema.js';
+import { $BaseEnv } from '../env.schema.js';
 
 describe('$BaseEnv', () => {
   it('should parse and validate a correct configuration', () => {

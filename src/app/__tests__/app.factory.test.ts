@@ -1,10 +1,10 @@
 import { ValidationException } from '@douglasneuroinformatics/libjs';
 import { beforeAll, describe, expect, it, vi } from 'vitest';
 
-import { $BaseEnv } from '../../../config/schema.js';
+import { $BaseEnv } from '../../schemas/env.schema.js';
 import { AppFactory } from '../app.factory.js';
 
-import type { BaseEnv } from '../../../config/schema.js';
+import type { BaseEnv } from '../../schemas/env.schema.js';
 import type { CreateAppOptions } from '../app.factory.js';
 
 const env = {

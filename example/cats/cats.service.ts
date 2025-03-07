@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-import { InjectModel } from '../../src/core/index.js';
+import { InjectModel } from '../../src/index.js';
 
 import type { MockPrismaModel } from '../../src/testing/mocks/prisma.model.mock.js';
 import type { Cat } from './schemas/cat.schema.js';

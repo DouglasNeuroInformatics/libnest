@@ -1,7 +1,3 @@
-/**
- * @module core
- */
-
 export { AppFactory } from './app/app.factory.js';
 export { CurrentUser } from './decorators/current-user.decorator.js';
 export { getValidationSchema, ValidationSchema } from './decorators/validation-schema.decorator.js';
@@ -14,3 +10,5 @@ export { PrismaService } from './modules/prisma/prisma.service.js';
 export type { Model } from './modules/prisma/prisma.types.js';
 export { getModelToken } from './modules/prisma/prisma.utils.js';
 export { ParseSchemaPipe } from './pipes/parse-schema.pipe.js';
+export { $BaseEnv } from './schemas/env.schema.js';
+export type { BaseEnv } from './schemas/env.schema.js';

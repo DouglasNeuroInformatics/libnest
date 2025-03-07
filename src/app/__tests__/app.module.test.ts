@@ -3,10 +3,10 @@ import type { OmitDeep, PartialDeep } from 'type-fest';
 import { beforeAll, describe, expect, it, vi } from 'vitest';
 import type { Mock } from 'vitest';
 
-import { mockEnvConfig } from '../../../testing/mocks/env-config.mock.js';
 import { delay } from '../../middleware/delay.middleware.js';
 import { ConfigService } from '../../modules/config/config.service.js';
 import { CryptoService } from '../../modules/crypto/crypto.service.js';
+import { mockEnvConfig } from '../../testing/mocks/env-config.mock.js';
 import { AppModule } from '../app.module.js';
 
 import type { CryptoOptions } from '../../modules/crypto/crypto.service.js';

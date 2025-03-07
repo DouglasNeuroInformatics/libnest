@@ -6,7 +6,7 @@ import { json } from 'express';
 import { JSONLogger } from '../modules/logging/json.logger.js';
 import { DocsFactory } from './docs.factory.js';
 
-import type { BaseEnv } from '../../config/schema.js';
+import type { BaseEnv } from '../schemas/env.schema.js';
 import type { DynamicAppModule } from './app.module.js';
 import type { AppVersion, DocsConfig } from './docs.factory.js';
 

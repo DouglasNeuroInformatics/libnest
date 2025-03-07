@@ -1,5 +1,5 @@
-import { defineConfig } from './src/config/index.js';
+import { defineUserConfig } from './src/user-config.js';
 
-export default defineConfig({
+export default defineUserConfig({
   entry: () => import('./example/app.js')
 });

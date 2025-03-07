@@ -5,10 +5,10 @@ import { err, ok } from 'neverthrow';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Mock } from 'vitest';
 
-import { AppContainer } from '../../core/app/app.container.js';
+import { AppContainer } from '../../app/app.container.js';
 import { importDefault, loadAppContainer, loadConfig, resolveAbsoluteImportPath, runDev } from '../lib.js';
 
-import type { ConfigOptions } from '../../config/index.js';
+import type { UserConfigOptions } from '../../user-config.js';
 
 const configFile = 'libnest.config.ts';
 const entryFile = 'src/main.ts';
@@ -196,7 +196,7 @@ describe('runDev', () => {
         globals: {
           __TEST__: true
         }
-      } satisfies ConfigOptions
+      } satisfies UserConfigOptions
     }));
     vi.spyOn(fs, 'existsSync').mockReturnValue(true);
     vi.spyOn(fs, 'lstatSync').mockReturnValue({ isFile: () => true } as any);

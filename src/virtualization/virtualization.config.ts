@@ -1,6 +1,6 @@
 import * as vm from 'node:vm';
 
-import { defineToken } from '../core/utils/token.utils.js';
+import { defineToken } from '../utils/token.utils.js';
 
 export type VirtualizationModuleOptions<TContext extends vm.Context = vm.Context> = {
   context: TContext;

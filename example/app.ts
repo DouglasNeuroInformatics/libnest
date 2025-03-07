@@ -1,5 +1,4 @@
-import { $BaseEnv } from '../src/config/index.js';
-import { AppFactory } from '../src/core/index.js';
+import { $BaseEnv, AppFactory } from '../src/index.js';
 import { CatsModule } from './cats/cats.module.js';
 
 export default AppFactory.create({

@@ -13,8 +13,8 @@ import { LoggingModule } from '../modules/logging/logging.module.js';
 import { PrismaModule } from '../modules/prisma/prisma.module.js';
 import { ValidationPipe } from '../pipes/validation.pipe.js';
 
-import type { BaseEnv } from '../../config/schema.js';
 import type { PrismaModuleOptions } from '../modules/prisma/prisma.config.js';
+import type { BaseEnv } from '../schemas/env.schema.js';
 
 type ImportedModule = DynamicModule | Type<any>;
 

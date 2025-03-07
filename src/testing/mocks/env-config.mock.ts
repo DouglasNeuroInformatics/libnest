@@ -1,4 +1,4 @@
-import type { BaseEnv } from '../../config/schema.js';
+import type { BaseEnv } from '../../schemas/env.schema.js';
 
 export const mockEnvConfig: BaseEnv = Object.freeze({
   API_PORT: 5500,

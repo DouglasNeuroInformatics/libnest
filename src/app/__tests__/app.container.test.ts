@@ -3,11 +3,11 @@ import type { NestExpressApplication } from '@nestjs/platform-express';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Mock } from 'vitest';
 
-import { mockEnvConfig } from '../../../testing/mocks/env-config.mock.js';
 import { JSONLogger } from '../../modules/logging/json.logger.js';
+import { mockEnvConfig } from '../../testing/mocks/env-config.mock.js';
 import { AppContainer } from '../app.container.js';
 
-import type { MockedInstance } from '../../../testing/index.js';
+import type { MockedInstance } from '../../testing/index.js';
 
 describe('AppContainer', () => {
   let appContainer: AppContainer;

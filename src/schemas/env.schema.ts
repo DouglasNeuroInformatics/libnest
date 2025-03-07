@@ -1,7 +1,7 @@
 import { $BooleanLike, $NumberLike, $UrlLike } from '@douglasneuroinformatics/libjs';
 import { z } from 'zod';
 
-import type { UserConfig } from './index.js';
+import type { UserConfig } from '../user-config.js';
 
 /**
  * Schema definition for the base environment options.

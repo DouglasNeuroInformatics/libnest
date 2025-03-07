@@ -5,7 +5,7 @@ import { ResultAsync } from 'neverthrow';
 import { isErrorLike, serializeError } from 'serialize-error';
 import type { ErrorObject } from 'serialize-error';
 
-import { LoggingService } from '../core/modules/logging/logging.service.js';
+import { LoggingService } from '../modules/logging/logging.service.js';
 import { VIRTUALIZATION_MODULE_OPTIONS_TOKEN } from './virtualization.config.js';
 
 import type { VirtualizationModuleOptions } from './virtualization.config.js';

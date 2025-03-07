@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { LoggingService } from '../../core/modules/logging/logging.service.js';
+import { LoggingService } from '../../modules/logging/logging.service.js';
 import { MockFactory } from '../../testing/index.js';
 import { VirtualizationService } from '../virtualization.service.js';
 

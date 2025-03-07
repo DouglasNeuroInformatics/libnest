@@ -5,12 +5,12 @@ import { BaseException, RuntimeException } from '@douglasneuroinformatics/libjs'
 import { Err, fromAsyncThrowable, Ok, ok, Result, ResultAsync } from 'neverthrow';
 import { z } from 'zod';
 
-import { AppContainer } from '../core/app/app.container.js';
+import { AppContainer } from '../app/app.container.js';
 
-import type { ConfigOptions } from '../config/index.js';
-import type { NodeEnv } from '../config/schema.js';
+import type { NodeEnv } from '../schemas/env.schema.js';
+import type { UserConfigOptions } from '../user-config.js';
 
-const $ConfigOptions: z.ZodType<ConfigOptions> = z.object({
+const $UserConfigOptions: z.ZodType<UserConfigOptions> = z.object({
   entry: z.function().returns(z.promise(z.record(z.unknown()))),
   globals: z.record(z.unknown()).optional()
 });
@@ -63,11 +63,11 @@ function importDefault(
  * @param configFile - The path to the config file.
  * @returns A `ResultAsync` containing the config options on success, or an error message on failure.
  */
-function loadConfig(configFile: string): ResultAsync<ConfigOptions, typeof RuntimeException.Instance> {
+function loadConfig(configFile: string): ResultAsync<UserConfigOptions, typeof RuntimeException.Instance> {
   return resolveAbsoluteImportPath(configFile)
     .asyncAndThen(importDefault)
     .andThen((config) => {
-      const result = $ConfigOptions.safeParse(config);
+      const result = $UserConfigOptions.safeParse(config);
       if (!result.success) {
         return RuntimeException.asAsyncErr(`Invalid format for default export in config file: ${configFile}`, {
           details: {
@@ -84,7 +84,7 @@ function loadConfig(configFile: string): ResultAsync<ConfigOptions, typeof Runti
  * @param config - The user config
  * @returns A `ResultAsync` containing the app container on success, or an error message on failure.
  */
-function loadAppContainer(config: ConfigOptions): ResultAsync<AppContainer, typeof RuntimeException.Instance> {
+function loadAppContainer(config: UserConfigOptions): ResultAsync<AppContainer, typeof RuntimeException.Instance> {
   return importDefault(config.entry)
     .mapErr((err) => {
       return new RuntimeException('Entry function in config failed to resolve', {
