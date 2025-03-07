@@ -18,3 +18,11 @@ export type PrismaModelToken<T extends PrismaModelName> = `${T}PrismaModel`;
 
 export type Model<T extends PrismaModelName> =
   RuntimePrismaClient extends SingleKeyMap<`${Uncapitalize<T>}`, infer U> ? U : never;
+
+export type UserModelMap = {
+  [K in keyof Prisma.TypeMap['model'] as Prisma.TypeMap['model'][K]['fields'] extends {
+    hashedPassword: Prisma.FieldRef<K, 'String'>;
+  }
+    ? K
+    : never]: Prisma.TypeMap['model'][K];
+};
