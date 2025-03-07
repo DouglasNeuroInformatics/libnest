@@ -2,7 +2,7 @@ import type { Promisable } from 'type-fest';
 
 import { defineToken } from '../../utils/token.utils.js';
 
-import type { UserModelName } from '../prisma/prisma.types.js';
+import type { UserModelMap, UserModelName } from '../prisma/prisma.types.js';
 
 type UserQueryResult = {
   hashedPassword: string;
@@ -19,6 +19,7 @@ export type AuthOptions<TUserModel extends UserModelName> =
     }
   | {
       enabled: true;
+      tokenPayload: Extract<keyof UserModelMap[TUserModel]['fields'], string>[];
       userModel: TUserModel;
     };
 
