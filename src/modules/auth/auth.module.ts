@@ -3,7 +3,7 @@ import type { DynamicModule } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 
 import { ConfigService } from '../config/config.service.js';
-import { PRISMA_CLIENT_TOKEN } from '../prisma/prisma.config.js';
+import { getModelToken } from '../prisma/prisma.utils.js';
 import { USER_QUERY_TOKEN } from './auth.config.js';
 import { AuthController } from './auth.controller.js';
 import { AuthService } from './auth.service.js';
@@ -13,7 +13,7 @@ import type { AuthOptions } from './auth.config.js';
 
 @Module({})
 export class AuthModule {
-  static forRoot<TUserModel extends UserModelName>(options: AuthOptions<TUserModel>): DynamicModule {
+  static forRoot<TUserModelName extends UserModelName>(options: AuthOptions<TUserModelName>): DynamicModule {
     if (!options.enabled) {
       return {
         module: AuthModule
@@ -32,10 +32,10 @@ export class AuthModule {
       module: AuthModule,
       providers: [
         {
-          inject: [PRISMA_CLIENT_TOKEN],
+          inject: [getModelToken(options.userModel)],
           provide: USER_QUERY_TOKEN,
-          useFactory: () => {
-            return;
+          useFactory: (userModel: { findFirst: () => (where: { username: string }) => unknown }) => {
+            return userModel;
           }
         },
         AuthService

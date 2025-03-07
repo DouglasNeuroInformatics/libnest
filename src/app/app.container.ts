@@ -28,9 +28,9 @@ type InitAppContainerOptions = {
 
 export type CreateAppContainerOptions<
   TEnvSchema extends EnvSchema = EnvSchema,
-  TUserModel extends UserModelName = UserModelName
+  TUserModelName extends UserModelName = UserModelName
 > = Simplify<
-  Omit<CreateAppModuleOptions<z.TypeOf<TEnvSchema>, TUserModel>, 'envConfig'> &
+  Omit<CreateAppModuleOptions<z.TypeOf<TEnvSchema>, TUserModelName>, 'envConfig'> &
     Pick<InitAppContainerOptions, 'docs' | 'version'> & {
       envSchema: TEnvSchema;
     }

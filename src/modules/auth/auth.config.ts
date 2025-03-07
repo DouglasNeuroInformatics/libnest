@@ -13,14 +13,14 @@ type UserQueryResult = {
 
 export type UserQuery = (username: string) => Promisable<null | UserQueryResult>;
 
-export type AuthOptions<TUserModel extends UserModelName> =
+export type AuthOptions<TUserModelName extends UserModelName> =
   | {
       enabled: false;
     }
   | {
       enabled: true;
-      tokenPayload: Extract<keyof UserModelMap[TUserModel]['fields'], string>[];
-      userModel: TUserModel;
+      tokenPayload: Extract<keyof UserModelMap[TUserModelName]['fields'], string>[];
+      userModel: TUserModelName;
     };
 
 export type AuthPayload = {

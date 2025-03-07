@@ -30,8 +30,11 @@ export type DynamicAppModule = DynamicModule & {
   module: typeof AppModule;
 };
 
-export type CreateAppModuleOptions<TEnv extends BaseEnv = BaseEnv, TUserModel extends UserModelName = UserModelName> = {
-  auth: AuthOptions<TUserModel>;
+export type CreateAppModuleOptions<
+  TEnv extends BaseEnv = BaseEnv,
+  TUserModelName extends UserModelName = UserModelName
+> = {
+  auth: AuthOptions<TUserModelName>;
   envConfig: TEnv;
   imports?: (ConditionalImport<TEnv> | ImportedModule)[];
   prisma: PrismaModuleOptions;
@@ -42,13 +45,13 @@ export class AppModule implements NestModule {
   @Inject()
   private readonly configService: ConfigService;
 
-  static create<TEnv extends BaseEnv, TUserModel extends UserModelName>({
+  static create<TEnv extends BaseEnv, TUserModelName extends UserModelName>({
     auth,
     envConfig,
     imports: imports_ = [],
     prisma,
     providers = []
-  }: CreateAppModuleOptions<TEnv, TUserModel>): DynamicAppModule {
+  }: CreateAppModuleOptions<TEnv, TUserModelName>): DynamicAppModule {
     const coreImports: ImportedModule[] = [
       AuthModule.forRoot(auth),
       ConfigModule.forRoot({ envConfig }),
