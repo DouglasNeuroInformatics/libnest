@@ -14,7 +14,7 @@ export function DataTransferObject<T extends z.ZodType<{ [key: string]: any }>>(
  * @param shapeOrSchema - Zod raw shape for the DTO.
  * @returns A DTO class with validation.
  */
-export function DataTransferObject<T extends z.ZodRawShape>(shapeOrSchema: T): Class<z.TypeOf<z.ZodObject<T>>>;
+export function DataTransferObject<T extends z.ZodRawShape>(shape: T): Class<z.TypeOf<z.ZodObject<T>>>;
 /**
  * Creates a Data Transfer Object (DTO) class with a Zod schema for validation.
  * @param shapeOrSchema - Zod raw shape or schema for the DTO.

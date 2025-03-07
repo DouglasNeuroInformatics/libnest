@@ -1,7 +1,17 @@
-import { $BaseEnv, AppFactory } from '../src/index.js';
+import { $BaseEnv, AppContainer } from '../src/index.js';
 import { CatsModule } from './cats/cats.module.js';
 
-export default AppFactory.create({
+export default await AppContainer.create({
+  auth: {
+    userQueryFactory: () => {
+      return (username) => {
+        if (username !== 'admin') {
+          return null;
+        }
+        return { hashedPassword: '', tokenPayload: {} };
+      };
+    }
+  },
   docs: {
     config: {
       title: 'Example API'

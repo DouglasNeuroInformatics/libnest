@@ -1,7 +1,5 @@
 import * as path from 'path';
 
-import { ValueException } from '@douglasneuroinformatics/libjs';
-import { err, ok } from 'neverthrow';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Mock } from 'vitest';
 
@@ -14,7 +12,6 @@ const configFile = 'libnest.config.ts';
 const entryFile = 'src/main.ts';
 const rootDir = '/root';
 const resolvedConfigFile = path.join(rootDir, configFile);
-// const resolvedEntryFile = path.join(rootDir, entryFile);
 
 const fs = vi.hoisted(() => ({
   existsSync: vi.fn(),
@@ -133,43 +130,16 @@ describe('loadAppContainer', () => {
   it('should return an error if the entry function throws', async () => {
     const filepath = '/dev/null/foo.js';
     const result = await loadAppContainer({ entry: () => import(filepath) });
-    expect(result.isErr() && result.error.message).toBe('Entry function in config failed to resolve');
+    expect(result.isErr() && result.error.message).toBe(
+      "Failed to import module: module inferred as return value from function 'entry'"
+    );
   });
 
-  it('should return an error if the entry does not result a result', async () => {
+  it('should return an error if the entry does not result an AppContainer', async () => {
     const result = await loadAppContainer({ entry: () => Promise.resolve({ default: {} }) });
     expect(result).toMatchObject({
       error: {
-        message: `Invalid default export from entry module: not a result`
-      }
-    });
-  });
-
-  it('should return an error if the entry module resolves to a known Error', async () => {
-    const result = await loadAppContainer({
-      entry: () => Promise.resolve({ default: ValueException.asErr('Invalid value') })
-    });
-    expect(result).toMatchObject({
-      error: {
-        message: `Failed to initialize application`
-      }
-    });
-  });
-
-  it('should return an error if the entry module resolves to an unknown exception', async () => {
-    const result = await loadAppContainer({ entry: () => Promise.resolve({ default: err(new Error('An error')) }) });
-    expect(result).toMatchObject({
-      error: {
-        message: 'Failed to initialize app due to a unexpected error'
-      }
-    });
-  });
-
-  it('should return an error if the entry file result is not an app container', async () => {
-    const result = await loadAppContainer({ entry: () => Promise.resolve({ default: ok({}) }) });
-    expect(result).toMatchObject({
-      error: {
-        message: 'Failed to initialize app: result from entry module does not contain valid AppContainer'
+        message: `Failed to initialize app: default export from entry module is not an AppContainer`
       }
     });
   });
@@ -184,13 +154,11 @@ describe('runDev', () => {
       default: {
         entry: () => {
           return Promise.resolve({
-            default: ok(
-              Object.create(AppContainer.prototype, {
-                bootstrap: {
-                  value: bootstrap
-                }
-              })
-            )
+            default: Object.create(AppContainer.prototype, {
+              bootstrap: {
+                value: bootstrap
+              }
+            })
           });
         },
         globals: {

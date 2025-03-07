@@ -6,6 +6,7 @@ import type { ConditionalKeys } from 'type-fest';
 
 import { GlobalExceptionFilter } from '../filters/global-exception.filter.js';
 import { delay } from '../middleware/delay.middleware.js';
+import { AuthModule } from '../modules/auth/auth.module.js';
 import { ConfigModule } from '../modules/config/config.module.js';
 import { ConfigService } from '../modules/config/config.service.js';
 import { CryptoModule } from '../modules/crypto/crypto.module.js';
@@ -13,6 +14,7 @@ import { LoggingModule } from '../modules/logging/logging.module.js';
 import { PrismaModule } from '../modules/prisma/prisma.module.js';
 import { ValidationPipe } from '../pipes/validation.pipe.js';
 
+import type { AuthOptions } from '../modules/auth/auth.config.js';
 import type { PrismaModuleOptions } from '../modules/prisma/prisma.config.js';
 import type { BaseEnv } from '../schemas/env.schema.js';
 
@@ -28,6 +30,7 @@ export type DynamicAppModule = DynamicModule & {
 };
 
 export type CreateAppModuleOptions<TEnv extends BaseEnv = BaseEnv> = {
+  auth: AuthOptions;
   envConfig: TEnv;
   imports?: (ConditionalImport<TEnv> | ImportedModule)[];
   prisma: PrismaModuleOptions;
@@ -39,12 +42,14 @@ export class AppModule implements NestModule {
   private readonly configService: ConfigService;
 
   static create<TEnv extends BaseEnv>({
+    auth,
     envConfig,
     imports: imports_ = [],
     prisma,
     providers = []
   }: CreateAppModuleOptions<TEnv>): DynamicAppModule {
     const coreImports: ImportedModule[] = [
+      AuthModule.forRoot(auth),
       ConfigModule.forRoot({ envConfig }),
       CryptoModule.forRoot(),
       LoggingModule.forRoot(),

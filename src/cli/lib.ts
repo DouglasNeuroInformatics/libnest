@@ -1,8 +1,8 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 
-import { BaseException, RuntimeException } from '@douglasneuroinformatics/libjs';
-import { Err, fromAsyncThrowable, Ok, ok, Result, ResultAsync } from 'neverthrow';
+import { RuntimeException } from '@douglasneuroinformatics/libjs';
+import { fromAsyncThrowable, ok, Result, ResultAsync } from 'neverthrow';
 import { z } from 'zod';
 
 import { AppContainer } from '../app/app.container.js';
@@ -86,31 +86,14 @@ function loadConfig(configFile: string): ResultAsync<UserConfigOptions, typeof R
  */
 function loadAppContainer(config: UserConfigOptions): ResultAsync<AppContainer, typeof RuntimeException.Instance> {
   return importDefault(config.entry)
-    .mapErr((err) => {
-      return new RuntimeException('Entry function in config failed to resolve', {
-        cause: err
-      });
-    })
-    .andThen((exportResult) => {
-      if (!(exportResult instanceof Err || exportResult instanceof Ok)) {
-        return RuntimeException.asAsyncErr(`Invalid default export from entry module: not a result`, {
-          details: {
-            received: exportResult
-          }
-        });
-      } else if (exportResult.isErr()) {
-        if (exportResult.error instanceof BaseException) {
-          return RuntimeException.asAsyncErr(`Failed to initialize application`, {
-            cause: exportResult.error
-          });
-        }
-        return RuntimeException.asAsyncErr('Failed to initialize app due to a unexpected error');
-      } else if (!(exportResult.value instanceof AppContainer)) {
+    .map(async (appContainer) => await appContainer)
+    .andThen((appContainer) => {
+      if (!(appContainer instanceof AppContainer)) {
         return RuntimeException.asAsyncErr(
-          'Failed to initialize app: result from entry module does not contain valid AppContainer'
+          'Failed to initialize app: default export from entry module is not an AppContainer'
         );
       }
-      return ok(exportResult.value satisfies AppContainer);
+      return ok(appContainer);
     });
 }
 

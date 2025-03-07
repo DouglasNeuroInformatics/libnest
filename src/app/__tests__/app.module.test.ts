@@ -32,6 +32,11 @@ const createAppModule = ({
   providers = []
 }: PartialDeep<OmitDeep<CreateAppModuleOptions, 'envConfig.MONGO_URI'>> = {}) => {
   return AppModule.create({
+    auth: {
+      userQueryFactory: () => {
+        return () => null;
+      }
+    },
     envConfig: {
       ...mockEnvConfig,
       ...envConfig

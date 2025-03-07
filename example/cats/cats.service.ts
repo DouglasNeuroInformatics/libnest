@@ -1,21 +1,17 @@
 import { Injectable } from '@nestjs/common';
 
-import { InjectModel } from '../../src/index.js';
-
-import type { MockPrismaModel } from '../../src/testing/mocks/prisma.model.mock.js';
 import type { Cat } from './schemas/cat.schema.js';
 
 @Injectable()
 export class CatsService {
   private readonly cats: Cat[] = [];
 
-  constructor(@InjectModel('Cat') private catModel: MockPrismaModel) {}
-
   async create(cat: Cat): Promise<Cat> {
-    return (await this.catModel.create(cat)) as Cat;
+    this.cats.push(cat);
+    return Promise.resolve(cat);
   }
 
   async findAll(): Promise<Cat[]> {
-    return (await this.catModel.findMany()) as Cat[];
+    return Promise.resolve(this.cats);
   }
 }
