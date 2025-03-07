@@ -16,6 +16,7 @@ import { ValidationPipe } from '../pipes/validation.pipe.js';
 
 import type { AuthOptions } from '../modules/auth/auth.config.js';
 import type { PrismaModuleOptions } from '../modules/prisma/prisma.config.js';
+import type { UserModelName } from '../modules/prisma/prisma.types.js';
 import type { BaseEnv } from '../schemas/env.schema.js';
 
 type ImportedModule = DynamicModule | Type<any>;
@@ -29,8 +30,8 @@ export type DynamicAppModule = DynamicModule & {
   module: typeof AppModule;
 };
 
-export type CreateAppModuleOptions<TEnv extends BaseEnv = BaseEnv> = {
-  auth: AuthOptions;
+export type CreateAppModuleOptions<TEnv extends BaseEnv = BaseEnv, TUserModel extends UserModelName = UserModelName> = {
+  auth: AuthOptions<TUserModel>;
   envConfig: TEnv;
   imports?: (ConditionalImport<TEnv> | ImportedModule)[];
   prisma: PrismaModuleOptions;
@@ -41,13 +42,13 @@ export class AppModule implements NestModule {
   @Inject()
   private readonly configService: ConfigService;
 
-  static create<TEnv extends BaseEnv>({
+  static create<TEnv extends BaseEnv, TUserModel extends UserModelName>({
     auth,
     envConfig,
     imports: imports_ = [],
     prisma,
     providers = []
-  }: CreateAppModuleOptions<TEnv>): DynamicAppModule {
+  }: CreateAppModuleOptions<TEnv, TUserModel>): DynamicAppModule {
     const coreImports: ImportedModule[] = [
       AuthModule.forRoot(auth),
       ConfigModule.forRoot({ envConfig }),

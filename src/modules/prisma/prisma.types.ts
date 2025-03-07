@@ -26,3 +26,5 @@ export type UserModelMap = {
     ? K
     : never]: Prisma.TypeMap['model'][K];
 };
+
+export type UserModelName = Extract<keyof UserModelMap, string>;

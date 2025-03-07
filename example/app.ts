@@ -3,14 +3,7 @@ import { CatsModule } from './cats/cats.module.js';
 
 export default await AppContainer.create({
   auth: {
-    userQueryFactory: () => {
-      return (username) => {
-        if (username !== 'admin') {
-          return null;
-        }
-        return { hashedPassword: '', tokenPayload: {} };
-      };
-    }
+    enabled: false
   },
   docs: {
     config: {

@@ -2,7 +2,7 @@ import type { Promisable } from 'type-fest';
 
 import { defineToken } from '../../utils/token.utils.js';
 
-import type { RuntimePrismaClient } from '../prisma/prisma.types.js';
+import type { UserModelName } from '../prisma/prisma.types.js';
 
 type UserQueryResult = {
   hashedPassword: string;
@@ -13,9 +13,14 @@ type UserQueryResult = {
 
 export type UserQuery = (username: string) => Promisable<null | UserQueryResult>;
 
-export type AuthOptions = {
-  userQueryFactory: (client: RuntimePrismaClient) => UserQuery;
-};
+export type AuthOptions<TUserModel extends UserModelName> =
+  | {
+      enabled: false;
+    }
+  | {
+      enabled: true;
+      userModel: TUserModel;
+    };
 
 export type AuthPayload = {
   accessToken: string;

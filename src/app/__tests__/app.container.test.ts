@@ -21,9 +21,7 @@ describe('AppContainer', () => {
     const createAppContainer = (options?: Partial<CreateAppContainerOptions>) => {
       return AppContainer.create({
         auth: {
-          userQueryFactory: () => {
-            return () => null;
-          }
+          enabled: false
         },
         envSchema: $BaseEnv,
         prisma: {

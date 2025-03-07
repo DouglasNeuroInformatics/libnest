@@ -8,11 +8,17 @@ import { USER_QUERY_TOKEN } from './auth.config.js';
 import { AuthController } from './auth.controller.js';
 import { AuthService } from './auth.service.js';
 
+import type { UserModelName } from '../prisma/prisma.types.js';
 import type { AuthOptions } from './auth.config.js';
 
 @Module({})
 export class AuthModule {
-  static forRoot({ userQueryFactory }: AuthOptions): DynamicModule {
+  static forRoot<TUserModel extends UserModelName>(options: AuthOptions<TUserModel>): DynamicModule {
+    if (!options.enabled) {
+      return {
+        module: AuthModule
+      };
+    }
     return {
       controllers: [AuthController],
       imports: [
@@ -28,7 +34,9 @@ export class AuthModule {
         {
           inject: [PRISMA_CLIENT_TOKEN],
           provide: USER_QUERY_TOKEN,
-          useFactory: userQueryFactory
+          useFactory: () => {
+            return;
+          }
         },
         AuthService
       ]
