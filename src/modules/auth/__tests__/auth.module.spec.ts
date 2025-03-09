@@ -25,7 +25,6 @@ describe('AuthModule', () => {
     username: 'admin'
   };
 
-  // let cryptoService: CryptoService;
   let hashedPassword: string;
 
   beforeAll(async () => {
