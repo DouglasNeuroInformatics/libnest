@@ -1,5 +1,6 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 
+import { RouteAccess } from '../../decorators/route-access.decorator.js';
 import { AuthService } from './auth.service.js';
 import { LoginCredentialsDto } from './dto/login-credentials.dto.js';
 
@@ -11,6 +12,7 @@ export class AuthController {
 
   @HttpCode(HttpStatus.OK)
   @Post('login')
+  @RouteAccess('public')
   async login(@Body() credentials: LoginCredentialsDto): Promise<LoginResponseBody> {
     return this.authService.login(credentials);
   }
