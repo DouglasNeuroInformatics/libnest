@@ -1,14 +1,16 @@
-import { Module } from '@nestjs/common';
-import type { ConfigurableModuleAsyncOptions, DynamicModule } from '@nestjs/common';
+import { Inject, Module } from '@nestjs/common';
+import type { ConfigurableModuleAsyncOptions, DynamicModule, OnModuleInit } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { z } from 'zod';
 
+import { applyValidationSchema } from '../../utils/validation.utils.js';
 import { ConfigService } from '../config/config.service.js';
-import { ConfigurableAuthModule } from './auth.config.js';
+import { AUTH_MODULE_OPTIONS_TOKEN, ConfigurableAuthModule } from './auth.config.js';
 import { AuthController } from './auth.controller.js';
 import { AuthService } from './auth.service.js';
+import { LoginCredentialsDto } from './dto/login-credentials.dto.js';
 
-import type { AuthModuleOptions, BaseLoginCredentials } from './auth.config.js';
+import type { AuthModuleOptions, BaseLoginCredentials, BaseLoginCredentialsSchema } from './auth.config.js';
 
 @Module({
   controllers: [AuthController],
@@ -22,7 +24,14 @@ import type { AuthModuleOptions, BaseLoginCredentials } from './auth.config.js';
   ],
   providers: [AuthService]
 })
-export class AuthModule extends ConfigurableAuthModule {
+export class AuthModule extends ConfigurableAuthModule implements OnModuleInit {
+  private readonly loginCredentialsSchema: BaseLoginCredentialsSchema;
+
+  constructor(@Inject(AUTH_MODULE_OPTIONS_TOKEN) { loginCredentialsSchema }: AuthModuleOptions) {
+    super();
+    this.loginCredentialsSchema = loginCredentialsSchema;
+  }
+
   static forRoot<TLoginCredentialsSchema extends z.ZodType<BaseLoginCredentials>>(
     options: AuthModuleOptions<TLoginCredentialsSchema>
   ): DynamicModule {
@@ -32,5 +41,9 @@ export class AuthModule extends ConfigurableAuthModule {
     options: ConfigurableModuleAsyncOptions<AuthModuleOptions<TLoginCredentialsSchema>, 'create'>
   ): DynamicModule {
     return super.forRootAsync(options);
+  }
+
+  onModuleInit() {
+    applyValidationSchema(LoginCredentialsDto, this.loginCredentialsSchema);
   }
 }
