@@ -11,3 +11,5 @@ export type RouteAccessType = PublicRouteAccess;
 export function RouteAccess(value: RouteAccessType): MethodDecorator {
   return SetMetadata(ROUTE_ACCESS_METADATA_KEY, value);
 }
+
+export { ROUTE_ACCESS_METADATA_KEY };
