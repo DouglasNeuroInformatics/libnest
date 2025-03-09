@@ -20,9 +20,6 @@ describe('AppContainer', () => {
   describe('create', () => {
     const createAppContainer = (options?: Partial<CreateAppContainerOptions>) => {
       return AppContainer.create({
-        auth: {
-          enabled: false
-        },
         envSchema: $BaseEnv,
         prisma: {
           dbPrefix: null

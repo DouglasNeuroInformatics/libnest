@@ -10,7 +10,6 @@ import { JSONLogger } from '../modules/logging/json.logger.js';
 import { AppModule } from './app.module.js';
 import { DocsFactory } from './docs.factory.js';
 
-import type { UserModelName } from '../modules/prisma/prisma.types.js';
 import type { BaseEnv } from '../schemas/env.schema.js';
 import type { CreateAppModuleOptions } from './app.module.js';
 import type { AppVersion, DocsConfig } from './docs.factory.js';
@@ -26,11 +25,8 @@ type InitAppContainerOptions = {
   version: AppVersion;
 };
 
-export type CreateAppContainerOptions<
-  TEnvSchema extends EnvSchema = EnvSchema,
-  TUserModelName extends UserModelName = UserModelName
-> = Simplify<
-  Omit<CreateAppModuleOptions<z.TypeOf<TEnvSchema>, TUserModelName>, 'envConfig'> &
+export type CreateAppContainerOptions<TEnvSchema extends EnvSchema = EnvSchema> = Simplify<
+  Omit<CreateAppModuleOptions<z.TypeOf<TEnvSchema>>, 'envConfig'> &
     Pick<InitAppContainerOptions, 'docs' | 'version'> & {
       envSchema: TEnvSchema;
     }
@@ -62,7 +58,6 @@ export class AppContainer {
   }
 
   static async create<TEnvSchema extends EnvSchema>({
-    auth,
     docs,
     envSchema,
     imports,
@@ -80,7 +75,7 @@ export class AppContainer {
       });
     }
     const envConfig = envConfigResult.value;
-    const module = AppModule.create({ auth, envConfig, imports, prisma, providers });
+    const module = AppModule.create({ envConfig, imports, prisma, providers });
     const app = await NestFactory.create<NestExpressApplication>(module, {
       bufferLogs: true
     });

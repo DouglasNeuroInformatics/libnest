@@ -6,7 +6,6 @@ import type { ConditionalKeys } from 'type-fest';
 
 import { GlobalExceptionFilter } from '../filters/global-exception.filter.js';
 import { delay } from '../middleware/delay.middleware.js';
-import { AuthModule } from '../modules/auth/auth.module.js';
 import { ConfigModule } from '../modules/config/config.module.js';
 import { ConfigService } from '../modules/config/config.service.js';
 import { CryptoModule } from '../modules/crypto/crypto.module.js';
@@ -14,9 +13,7 @@ import { LoggingModule } from '../modules/logging/logging.module.js';
 import { PrismaModule } from '../modules/prisma/prisma.module.js';
 import { ValidationPipe } from '../pipes/validation.pipe.js';
 
-import type { AuthOptions } from '../modules/auth/auth.config.js';
 import type { PrismaModuleOptions } from '../modules/prisma/prisma.config.js';
-import type { UserModelName } from '../modules/prisma/prisma.types.js';
 import type { BaseEnv } from '../schemas/env.schema.js';
 
 type ImportedModule = DynamicModule | Type<any>;
@@ -30,11 +27,7 @@ export type DynamicAppModule = DynamicModule & {
   module: typeof AppModule;
 };
 
-export type CreateAppModuleOptions<
-  TEnv extends BaseEnv = BaseEnv,
-  TUserModelName extends UserModelName = UserModelName
-> = {
-  auth: AuthOptions<TUserModelName>;
+export type CreateAppModuleOptions<TEnv extends BaseEnv = BaseEnv> = {
   envConfig: TEnv;
   imports?: (ConditionalImport<TEnv> | ImportedModule)[];
   prisma: PrismaModuleOptions;
@@ -45,15 +38,13 @@ export class AppModule implements NestModule {
   @Inject()
   private readonly configService: ConfigService;
 
-  static create<TEnv extends BaseEnv, TUserModelName extends UserModelName>({
-    auth,
+  static create<TEnv extends BaseEnv>({
     envConfig,
     imports: imports_ = [],
     prisma,
     providers = []
-  }: CreateAppModuleOptions<TEnv, TUserModelName>): DynamicAppModule {
+  }: CreateAppModuleOptions<TEnv>): DynamicAppModule {
     const coreImports: ImportedModule[] = [
-      AuthModule.forRoot(auth),
       ConfigModule.forRoot({ envConfig }),
       CryptoModule.forRoot(),
       LoggingModule.forRoot(),
