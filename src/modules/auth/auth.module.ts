@@ -1,5 +1,6 @@
 import { Inject, Module } from '@nestjs/common';
 import type { ConfigurableModuleAsyncOptions, DynamicModule, OnModuleInit } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
 import { z } from 'zod';
 
@@ -9,6 +10,8 @@ import { AUTH_MODULE_OPTIONS_TOKEN, ConfigurableAuthModule } from './auth.config
 import { AuthController } from './auth.controller.js';
 import { AuthService } from './auth.service.js';
 import { LoginCredentialsDto } from './dto/login-credentials.dto.js';
+import { AuthenticationGuard } from './guards/authentication.guard.js';
+import { JwtStrategy } from './strategies/jwt.strategy.js';
 
 import type { AuthModuleOptions, BaseLoginCredentials, BaseLoginCredentialsSchema } from './auth.config.js';
 
@@ -22,7 +25,14 @@ import type { AuthModuleOptions, BaseLoginCredentials, BaseLoginCredentialsSchem
       })
     })
   ],
-  providers: [AuthService]
+  providers: [
+    AuthService,
+    JwtStrategy,
+    {
+      provide: APP_GUARD,
+      useClass: AuthenticationGuard
+    }
+  ]
 })
 export class AuthModule extends ConfigurableAuthModule implements OnModuleInit {
   private readonly loginCredentialsSchema: BaseLoginCredentialsSchema;
