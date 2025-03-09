@@ -10,6 +10,7 @@ import { z } from 'zod';
 import { ConfigModule } from '../../config/config.module.js';
 import { CryptoModule } from '../../crypto/crypto.module.js';
 import { CryptoService } from '../../crypto/crypto.service.js';
+import { LoggingModule } from '../../logging/logging.module.js';
 import { AuthModule } from '../auth.module.js';
 
 import type { BaseEnv } from '../../../schemas/env.schema.js';
@@ -41,10 +42,12 @@ describe('AuthModule', () => {
         }),
         ConfigModule.forRoot({
           envConfig: {
+            NODE_ENV: 'test',
             SECRET_KEY: '12345678'
           } satisfies Partial<BaseEnv> as BaseEnv
         }),
-        CryptoModule.forRoot()
+        CryptoModule.forRoot(),
+        LoggingModule.forRoot()
       ]
     }).compile();
 
