@@ -3,7 +3,6 @@ import type { ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
 import type { Request } from 'express';
-import { Observable } from 'rxjs';
 
 import { ROUTE_ACCESS_METADATA_KEY } from '../../../decorators/route-access.decorator.js';
 import { LoggingService } from '../../logging/logging.service.js';
@@ -18,9 +17,17 @@ export class AuthenticationGuard extends AuthGuard('jwt') {
     super();
   }
 
-  override canActivate(context: ExecutionContext): boolean | Observable<boolean> | Promise<boolean> {
-    this.loggingService.verbose(`Request URL: ${context.switchToHttp().getRequest<Request>().url}`);
-    return this.isPublicRoute(context) || super.canActivate(context);
+  override async canActivate(context: ExecutionContext): Promise<boolean> {
+    const request = context.switchToHttp().getRequest<Request>();
+    this.loggingService.verbose(`Request URL: ${request.url}`);
+    if (this.isPublicRoute(context)) {
+      return true;
+    }
+    const isAuthenticated = await super.canActivate(context);
+    if (isAuthenticated !== true) {
+      return false;
+    }
+    return true;
   }
 
   private isPublicRoute(context: ExecutionContext): boolean {
