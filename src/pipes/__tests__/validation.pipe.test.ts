@@ -4,11 +4,10 @@ import { z } from 'zod';
 
 import { applyValidationSchema, ValidationSchema } from '../../decorators/validation-schema.decorator.js';
 import { DataTransferObject } from '../../mixins/data-transfer-object.mixin.js';
-import { ValidationService } from '../../services/validation.service.js';
 import { ValidationPipe } from '../validation.pipe.js';
 
 describe('ValidationPipe', () => {
-  const validationPipe = new ValidationPipe(new ValidationService());
+  const validationPipe = new ValidationPipe();
 
   it('should pass through arguments that are not a body', async () => {
     await expect(validationPipe.transform('PARAM', { type: 'param' })).resolves.toBe('PARAM');

@@ -13,7 +13,6 @@ import { CryptoModule } from '../modules/crypto/crypto.module.js';
 import { LoggingModule } from '../modules/logging/logging.module.js';
 import { PrismaModule } from '../modules/prisma/prisma.module.js';
 import { ValidationPipe } from '../pipes/validation.pipe.js';
-import { ValidationService } from '../services/validation.service.js';
 
 import type { AuthOptions } from '../modules/auth/auth.config.js';
 import type { PrismaModuleOptions } from '../modules/prisma/prisma.config.js';
@@ -61,7 +60,6 @@ export class AppModule implements NestModule {
       PrismaModule.forRoot(prisma)
     ];
     const coreProviders: Provider[] = [
-      ValidationService,
       {
         provide: APP_FILTER,
         useClass: GlobalExceptionFilter
