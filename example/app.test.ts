@@ -70,6 +70,13 @@ describe('e2e (example)', () => {
       const response = await request(server).post('/v1/auth/login').send({ password: 'password', username: 'user' });
       expect(response.status).toBe(401);
     });
+    it('should return status code 200 and an access token if the credentials are correct', async () => {
+      const response = await request(server).post('/v1/auth/login').send({ password: 'password', username: 'admin' });
+      expect(response.status).toBe(200);
+      expect(response.body).toStrictEqual({
+        accessToken: expect.stringMatching(/^[A-Za-z0-9-_]+\.([A-Za-z0-9-_]+)\.[A-Za-z0-9-_]+$/)
+      });
+    });
   });
 
   describe('/cats', () => {
