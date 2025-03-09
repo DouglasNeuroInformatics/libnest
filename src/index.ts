@@ -1,5 +1,6 @@
 export { AppContainer } from './app/app.container.js';
 export { CurrentUser } from './decorators/current-user.decorator.js';
+export { RouteAccess } from './decorators/route-access.decorator.js';
 export { ValidationSchema } from './decorators/validation-schema.decorator.js';
 export { DataTransferObject } from './mixins/data-transfer-object.mixin.js';
 export type { AuthModuleOptions, UserQuery, UserQueryResult } from './modules/auth/auth.config.js';
