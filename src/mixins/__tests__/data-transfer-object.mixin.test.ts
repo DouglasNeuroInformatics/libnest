@@ -1,7 +1,7 @@
 import { describe, expect, expectTypeOf, it } from 'vitest';
 import { z } from 'zod';
 
-import { getValidationSchema } from '../../decorators/validation-schema.decorator.js';
+import { getValidationSchema } from '../../utils/validation.utils.js';
 import { DataTransferObject } from '../data-transfer-object.mixin.js';
 
 describe('DataTransferObject', () => {

@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { z } from 'zod';
 
-import { VALIDATION_SCHEMA_METADATA_KEY, ValidationSchema } from '../validation-schema.decorator.js';
+import { VALIDATION_SCHEMA_METADATA_KEY } from '../../utils/validation.utils.js';
+import { ValidationSchema } from '../validation-schema.decorator.js';
 
 describe('ValidationSchema', () => {
   it('should attach a schema to a class, if called with a schema', () => {

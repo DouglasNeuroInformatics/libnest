@@ -2,8 +2,9 @@ import { BadRequestException } from '@nestjs/common';
 import { describe, expect, it } from 'vitest';
 import { z } from 'zod';
 
-import { applyValidationSchema, ValidationSchema } from '../../decorators/validation-schema.decorator.js';
+import { ValidationSchema } from '../../decorators/validation-schema.decorator.js';
 import { DataTransferObject } from '../../mixins/data-transfer-object.mixin.js';
+import { applyValidationSchema } from '../../utils/validation.utils.js';
 import { ValidationPipe } from '../validation.pipe.js';
 
 describe('ValidationPipe', () => {

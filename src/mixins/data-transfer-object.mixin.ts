@@ -1,7 +1,7 @@
 import type { Class } from 'type-fest';
 import { z } from 'zod';
 
-import { applyValidationSchema } from '../decorators/validation-schema.decorator.js';
+import { applyValidationSchema } from '../utils/validation.utils.js';
 
 /**
  * Creates a Data Transfer Object (DTO) class with a Zod schema for validation.
