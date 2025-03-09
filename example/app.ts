@@ -1,4 +1,6 @@
-import { $BaseEnv, AppContainer } from '../src/index.js';
+import { z } from 'zod';
+
+import { $BaseEnv, AppContainer, AuthModule, CryptoService } from '../src/index.js';
 import { CatsModule } from './cats/cats.module.js';
 
 export default await AppContainer.create({
@@ -9,7 +11,29 @@ export default await AppContainer.create({
     path: '/spec.json'
   },
   envSchema: $BaseEnv,
-  imports: [CatsModule],
+  imports: [
+    AuthModule.forRootAsync({
+      inject: [CryptoService],
+      useFactory: (cryptoService: CryptoService) => {
+        return {
+          loginCredentialsSchema: z.object({
+            password: z.string(),
+            username: z.string()
+          }),
+          userQuery: async ({ username }) => {
+            if (username !== 'admin') {
+              return null;
+            }
+            return {
+              hashedPassword: await cryptoService.hashPassword('password'),
+              tokenPayload: {}
+            };
+          }
+        };
+      }
+    }),
+    CatsModule
+  ],
   prisma: {
     dbPrefix: null
   },

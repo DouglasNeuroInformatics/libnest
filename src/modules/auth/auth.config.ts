@@ -1,5 +1,4 @@
 import { ConfigurableModuleBuilder } from '@nestjs/common';
-import type { Promisable } from 'type-fest';
 import type { z } from 'zod';
 
 type BaseLoginCredentials = {
@@ -17,7 +16,7 @@ type UserQueryResult = {
 
 type UserQuery<TLoginCredentials extends BaseLoginCredentials = BaseLoginCredentials> = (
   credentials: TLoginCredentials
-) => Promisable<null | UserQueryResult>;
+) => Promise<null | UserQueryResult>;
 
 type LoginResponseBody = {
   accessToken: string;
