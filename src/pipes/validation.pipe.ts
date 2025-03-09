@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import type { ArgumentMetadata, PipeTransform } from '@nestjs/common';
 
 import { getValidationSchema } from '../decorators/validation-schema.decorator.js';
-import { parseAsync } from '../utils/validation.utils.js';
+import { parseRequestBody } from '../utils/validation.utils.js';
 
 @Injectable()
 export class ValidationPipe implements PipeTransform {
@@ -16,6 +16,6 @@ export class ValidationPipe implements PipeTransform {
     const schema = getValidationSchema(metatype);
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    return parseAsync(value, schema);
+    return parseRequestBody(value, schema);
   }
 }

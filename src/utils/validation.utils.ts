@@ -1,7 +1,7 @@
 import { BadRequestException } from '@nestjs/common';
 import type { z } from 'zod';
 
-export async function parseAsync<TSchema extends z.ZodTypeAny>(
+export async function parseRequestBody<TSchema extends z.ZodTypeAny>(
   value: unknown,
   schema: TSchema
 ): Promise<z.TypeOf<TSchema>> {
