@@ -1,3 +1,4 @@
+import { randomBytes } from 'node:crypto';
 import type { IncomingMessage, Server, ServerResponse } from 'node:http';
 
 import type { NestExpressApplication } from '@nestjs/platform-express';
@@ -80,14 +81,34 @@ describe('e2e (example)', () => {
   });
 
   describe('/cats', () => {
-    it('should allow a GET request', async () => {
+    let accessToken: string;
+
+    beforeAll(async () => {
+      const response = await request(server).post('/v1/auth/login').send({ password: 'password', username: 'admin' });
+      accessToken = response.body.accessToken;
+    });
+
+    it('should return status code 401 if there is no access token provided', async () => {
       const response = await request(server).get('/v1/cats');
+      expect(response.status).toBe(401);
+    });
+
+    it('should return status code 401 if there is an invalid access token provided', async () => {
+      const response = await request(server)
+        .get('/v1/cats')
+        .set('Authorization', `Bearer ${randomBytes(12).toString('base64')}`);
+      expect(response.status).toBe(401);
+    });
+
+    it('should allow a GET request', async () => {
+      const response = await request(server).get('/v1/cats').set('Authorization', `Bearer ${accessToken}`);
       expect(response.status).toBe(200);
     });
 
     it('should allow a POST request', async () => {
       const response = await request(server)
         .post('/v1/cats')
+        .set('Authorization', `Bearer ${accessToken}`)
         .send({
           age: 1,
           name: 'Winston'
