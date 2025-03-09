@@ -45,32 +45,32 @@ describe('e2e (example)', () => {
     });
   });
 
-  // describe('/auth/login', () => {
-  //   it('should return status code 400 if the request body does not include login credentials', async () => {
-  //     const response = await request(server).post('/v1/auth/login');
-  //     expect(response.status).toBe(400);
-  //   });
-  //   it('should return status code 400 if the request body does not include a username', async () => {
-  //     const response = await request(server).post('/v1/auth/login').send({ username: 'admin' });
-  //     expect(response.status).toBe(400);
-  //   });
-  //   it('should return status code 400 if the request body does not include a password', async () => {
-  //     const response = await request(server).post('/v1/auth/login').send({ password: 'password' });
-  //     expect(response.status).toBe(400);
-  //   });
-  //   it('should return status code 400 if the request body includes a username and password, but are empty strings', async () => {
-  //     const response = await request(server).post('/v1/auth/login').send({ password: '', username: '' });
-  //     expect(response.status).toBe(400);
-  //   });
-  //   it('should return status code 400 if the request body includes a username and password, but password is a number', async () => {
-  //     const response = await request(server).post('/v1/auth/login').send({ password: 123, username: 'admin' });
-  //     expect(response.status).toBe(400);
-  //   });
-  //   it('should return status code 401 if the user does not exist', async () => {
-  //     const response = await request(server).post('/v1/auth/login').send({ password: 'password', username: 'user' });
-  //     expect(response.status).toBe(401);
-  //   });
-  // });
+  describe('/auth/login', () => {
+    it('should return status code 400 if the request body does not include login credentials', async () => {
+      const response = await request(server).post('/v1/auth/login');
+      expect(response.status).toBe(400);
+    });
+    it('should return status code 400 if the request body does not include a username', async () => {
+      const response = await request(server).post('/v1/auth/login').send({ username: 'admin' });
+      expect(response.status).toBe(400);
+    });
+    it('should return status code 400 if the request body does not include a password', async () => {
+      const response = await request(server).post('/v1/auth/login').send({ password: 'password' });
+      expect(response.status).toBe(400);
+    });
+    it('should return status code 400 if the request body includes a username and password, but are empty strings', async () => {
+      const response = await request(server).post('/v1/auth/login').send({ password: '', username: '' });
+      expect(response.status).toBe(400);
+    });
+    it('should return status code 400 if the request body includes a username and password, but password is a number', async () => {
+      const response = await request(server).post('/v1/auth/login').send({ password: 123, username: 'admin' });
+      expect(response.status).toBe(400);
+    });
+    it('should return status code 401 if the user does not exist', async () => {
+      const response = await request(server).post('/v1/auth/login').send({ password: 'password', username: 'user' });
+      expect(response.status).toBe(401);
+    });
+  });
 
   describe('/cats', () => {
     it('should allow a GET request', async () => {

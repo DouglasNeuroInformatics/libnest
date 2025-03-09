@@ -17,8 +17,8 @@ export default await AppContainer.create({
       useFactory: (cryptoService: CryptoService) => {
         return {
           loginCredentialsSchema: z.object({
-            password: z.string(),
-            username: z.string()
+            password: z.string().min(1),
+            username: z.string().min(1)
           }),
           userQuery: async ({ username }) => {
             if (username !== 'admin') {
