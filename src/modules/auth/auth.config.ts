@@ -37,4 +37,11 @@ const { ConfigurableModuleClass: ConfigurableAuthModule, MODULE_OPTIONS_TOKEN: A
     .build();
 
 export { AUTH_MODULE_OPTIONS_TOKEN, ConfigurableAuthModule };
-export type { AuthModuleOptions, BaseLoginCredentials, LoginResponseBody, UserQuery, UserQueryResult };
+export type {
+  AuthModuleOptions,
+  BaseLoginCredentials,
+  BaseLoginCredentialsSchema,
+  LoginResponseBody,
+  UserQuery,
+  UserQueryResult
+};
