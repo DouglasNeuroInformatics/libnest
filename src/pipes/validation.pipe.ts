@@ -1,12 +1,12 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import type { ArgumentMetadata, PipeTransform } from '@nestjs/common';
-import { Reflector } from '@nestjs/core';
 
 import { getValidationSchema } from '../decorators/validation-schema.decorator.js';
+import { ValidationService } from '../services/validation.service.js';
 
 @Injectable()
 export class ValidationPipe implements PipeTransform {
-  private readonly reflector = new Reflector();
+  constructor(private readonly validationService: ValidationService) {}
 
   async transform(value: unknown, { metatype, type }: ArgumentMetadata) {
     if (type !== 'body') {
@@ -17,14 +17,7 @@ export class ValidationPipe implements PipeTransform {
 
     const schema = getValidationSchema(metatype);
 
-    const result = await schema.safeParseAsync(value);
-    if (!result.success) {
-      throw new BadRequestException({
-        issues: result.error.issues,
-        message: 'Validation Error'
-      });
-    }
-
-    return result.data as unknown;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    return this.validationService.parseAsync(value, schema);
   }
 }
