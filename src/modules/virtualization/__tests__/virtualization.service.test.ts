@@ -1,10 +1,10 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { LoggingService } from '../../modules/logging/logging.service.js';
-import { MockFactory } from '../../testing/index.js';
+import { MockFactory } from '../../../testing/index.js';
+import { LoggingService } from '../../logging/logging.service.js';
 import { VirtualizationService } from '../virtualization.service.js';
 
-import type { MockedInstance } from '../../testing/index.js';
+import type { MockedInstance } from '../../../testing/index.js';
 
 describe('VirtualizationService', () => {
   let loggingService: MockedInstance<LoggingService>;

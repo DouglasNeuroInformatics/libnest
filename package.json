@@ -26,10 +26,6 @@
     "./user-config": {
       "types": "./dist/user-config.d.ts",
       "import": "./dist/user-config.js"
-    },
-    "./virtualization": {
-      "types": "./dist/virtualization/virtualization.index.d.ts",
-      "import": "./dist/virtualization/virtualization.index.js"
     }
   },
   "bin": {
