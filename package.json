@@ -19,10 +19,6 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
     },
-    "./prisma": {
-      "types": "./dist/prisma/prisma.index.d.ts",
-      "import": "./dist/prisma/prisma.index.js"
-    },
     "./testing": {
       "types": "./dist/testing/index.d.ts",
       "import": "./dist/testing/index.js"
