@@ -5,6 +5,7 @@ import { AuthGuard } from '@nestjs/passport';
 import type { Request } from 'express';
 import { Observable } from 'rxjs';
 
+import { ROUTE_ACCESS_METADATA_KEY } from '../../../decorators/route-access.decorator.js';
 import { LoggingService } from '../../logging/logging.service.js';
 
 import type { RouteAccessType } from '../../../decorators/route-access.decorator.js';
@@ -23,7 +24,10 @@ export class AuthenticationGuard extends AuthGuard('jwt') {
   }
 
   private isPublicRoute(context: ExecutionContext): boolean {
-    const routeAccess = this.reflector.get<RouteAccessType | undefined>('RouteAccess', context.getHandler());
+    const routeAccess = this.reflector.get<RouteAccessType | undefined>(
+      ROUTE_ACCESS_METADATA_KEY,
+      context.getHandler()
+    );
     const result = routeAccess === 'public';
     this.loggingService.verbose(`Public Route: ${result}`);
     return result;
