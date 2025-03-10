@@ -1,14 +1,11 @@
 import { Test } from '@nestjs/testing';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { z } from 'zod';
 
 import { MockFactory } from '../../../testing/index.js';
-import { AUTH_MODULE_OPTIONS_TOKEN } from '../auth.config.js';
 import { AuthController } from '../auth.controller.js';
 import { AuthService } from '../auth.service.js';
 
 import type { MockedInstance } from '../../../testing/index.js';
-import type { AuthModuleOptions } from '../auth.config.js';
 
 describe('AuthController', () => {
   let authController: AuthController;
@@ -17,18 +14,7 @@ describe('AuthController', () => {
   beforeEach(async () => {
     const moduleRef = await Test.createTestingModule({
       controllers: [AuthController],
-      providers: [
-        {
-          provide: AUTH_MODULE_OPTIONS_TOKEN,
-          useValue: {
-            loginCredentialsSchema: z.object({
-              password: z.string().min(1),
-              username: z.string().min(1)
-            })
-          } satisfies Partial<AuthModuleOptions>
-        },
-        MockFactory.createForService(AuthService)
-      ]
+      providers: [MockFactory.createForService(AuthService)]
     }).compile();
     authController = moduleRef.get(AuthController);
     authService = moduleRef.get(AuthService);

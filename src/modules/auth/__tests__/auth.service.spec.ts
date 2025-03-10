@@ -3,15 +3,13 @@ import { JwtService } from '@nestjs/jwt';
 import { Test } from '@nestjs/testing';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Mock } from 'vitest';
-import { z } from 'zod';
 
 import { MockFactory } from '../../../testing/index.js';
 import { CryptoService } from '../../crypto/crypto.service.js';
-import { AUTH_MODULE_OPTIONS_TOKEN } from '../auth.config.js';
+import { USER_QUERY_TOKEN } from '../auth.config.js';
 import { AuthService } from '../auth.service.js';
 
 import type { MockedInstance } from '../../../testing/index.js';
-import type { AuthModuleOptions } from '../auth.config.js';
 
 describe('AuthService', () => {
   let authService: AuthService;
@@ -25,14 +23,8 @@ describe('AuthService', () => {
     const moduleRef = await Test.createTestingModule({
       providers: [
         {
-          provide: AUTH_MODULE_OPTIONS_TOKEN,
-          useValue: {
-            loginCredentialsSchema: z.object({
-              password: z.string().min(1),
-              username: z.string().min(1)
-            }),
-            userQuery
-          } satisfies AuthModuleOptions
+          provide: USER_QUERY_TOKEN,
+          useValue: userQuery
         },
         AuthService,
         MockFactory.createForService(CryptoService),

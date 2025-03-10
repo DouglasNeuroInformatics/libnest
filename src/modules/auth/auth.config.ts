@@ -7,6 +7,8 @@ import type { DefaultSelection } from '@prisma/client/runtime/library';
 import type { IfNever } from 'type-fest';
 import type { z } from 'zod';
 
+import { defineToken } from '../../utils/token.utils.js';
+
 type AppAction = 'create' | 'delete' | 'manage' | 'read' | 'update';
 
 type AppSubjects = Subjects<{
@@ -51,7 +53,7 @@ type AuthModuleOptions<TLoginCredentialsSchema extends BaseLoginCredentialsSchem
   userQuery: UserQuery<z.TypeOf<TLoginCredentialsSchema>>;
 };
 
-const { ConfigurableModuleClass: ConfigurableAuthModule, MODULE_OPTIONS_TOKEN: AUTH_MODULE_OPTIONS_TOKEN } =
+export const { ConfigurableModuleClass: ConfigurableAuthModule, MODULE_OPTIONS_TOKEN: AUTH_MODULE_OPTIONS_TOKEN } =
   new ConfigurableModuleBuilder<AuthModuleOptions<any>>()
     .setClassMethodName('forRoot')
     .setExtras({}, (definition) => ({
@@ -60,7 +62,8 @@ const { ConfigurableModuleClass: ConfigurableAuthModule, MODULE_OPTIONS_TOKEN: A
     }))
     .build();
 
-export { AUTH_MODULE_OPTIONS_TOKEN, ConfigurableAuthModule };
+export const { USER_QUERY_TOKEN } = defineToken('USER_QUERY_TOKEN');
+
 export type {
   AbilityModifier,
   AppAbility,

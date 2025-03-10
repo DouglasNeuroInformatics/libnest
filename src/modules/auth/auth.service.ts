@@ -2,21 +2,17 @@ import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
 import { CryptoService } from '../crypto/crypto.service.js';
-import { AUTH_MODULE_OPTIONS_TOKEN } from './auth.config.js';
+import { USER_QUERY_TOKEN } from './auth.config.js';
 
-import type { AuthModuleOptions, BaseLoginCredentials, LoginResponseBody, UserQuery } from './auth.config.js';
+import type { BaseLoginCredentials, LoginResponseBody, UserQuery } from './auth.config.js';
 
 @Injectable()
 export class AuthService {
-  private readonly userQuery: UserQuery;
-
   constructor(
-    @Inject(AUTH_MODULE_OPTIONS_TOKEN) { userQuery }: AuthModuleOptions,
+    @Inject(USER_QUERY_TOKEN) private readonly userQuery: UserQuery,
     private readonly cryptoService: CryptoService,
     private readonly jwtService: JwtService
-  ) {
-    this.userQuery = userQuery;
-  }
+  ) {}
 
   async login(credentials: BaseLoginCredentials): Promise<LoginResponseBody> {
     const user = await this.userQuery(credentials);
