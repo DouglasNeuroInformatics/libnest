@@ -17,7 +17,7 @@ type AppSubjectName = IfNever<AppSubjects, string, Extract<AppSubjects, string>>
 
 type AppAbility = PureAbility<[AppAction, AppSubjects], PrismaQuery>;
 
-type AbilityFactory = (ability: AbilityBuilder<AppAbility>) => AbilityBuilder<AppAbility>;
+type AbilityModifier = (abilityBuilder: AbilityBuilder<AppAbility>) => AbilityBuilder<AppAbility>;
 
 type BaseLoginCredentials = {
   password: string;
@@ -46,7 +46,7 @@ type LoginResponseBody = {
 };
 
 type AuthModuleOptions<TLoginCredentialsSchema extends BaseLoginCredentialsSchema = BaseLoginCredentialsSchema> = {
-  abilityFactory?: AbilityFactory;
+  applyPermissions?: AbilityModifier;
   loginCredentialsSchema: TLoginCredentialsSchema;
   userQuery: UserQuery<z.TypeOf<TLoginCredentialsSchema>>;
 };
@@ -62,7 +62,7 @@ const { ConfigurableModuleClass: ConfigurableAuthModule, MODULE_OPTIONS_TOKEN: A
 
 export { AUTH_MODULE_OPTIONS_TOKEN, ConfigurableAuthModule };
 export type {
-  AbilityFactory,
+  AbilityModifier,
   AppAbility,
   AppAction,
   AppSubjectName,
