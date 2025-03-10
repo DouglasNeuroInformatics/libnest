@@ -2,6 +2,7 @@ import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
 import { CryptoService } from '../crypto/crypto.service.js';
+import { AbilityFactory } from './ability.factory.js';
 import { USER_QUERY_TOKEN } from './auth.config.js';
 
 import type { BaseLoginCredentials, LoginResponseBody, UserQuery } from './auth.config.js';
@@ -10,6 +11,7 @@ import type { BaseLoginCredentials, LoginResponseBody, UserQuery } from './auth.
 export class AuthService {
   constructor(
     @Inject(USER_QUERY_TOKEN) private readonly userQuery: UserQuery,
+    private readonly abilityFactory: AbilityFactory,
     private readonly cryptoService: CryptoService,
     private readonly jwtService: JwtService
   ) {}

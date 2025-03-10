@@ -6,6 +6,7 @@ import type { Mock } from 'vitest';
 
 import { MockFactory } from '../../../testing/index.js';
 import { CryptoService } from '../../crypto/crypto.service.js';
+import { AbilityFactory } from '../ability.factory.js';
 import { USER_QUERY_TOKEN } from '../auth.config.js';
 import { AuthService } from '../auth.service.js';
 
@@ -27,6 +28,7 @@ describe('AuthService', () => {
           useValue: userQuery
         },
         AuthService,
+        MockFactory.createForService(AbilityFactory),
         MockFactory.createForService(CryptoService),
         MockFactory.createForService(JwtService)
       ]
