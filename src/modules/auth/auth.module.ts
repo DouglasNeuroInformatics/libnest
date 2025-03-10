@@ -6,6 +6,7 @@ import { z } from 'zod';
 
 import { applyValidationSchema } from '../../utils/validation.utils.js';
 import { ConfigService } from '../config/config.service.js';
+import { AbilityFactory } from './ability.factory.js';
 import {
   APPLY_PERMISSIONS_TOKEN,
   AUTH_MODULE_OPTIONS_TOKEN,
@@ -31,6 +32,7 @@ import type { AuthModuleOptions, BaseLoginCredentials, BaseLoginCredentialsSchem
     })
   ],
   providers: [
+    AbilityFactory,
     AuthService,
     JwtStrategy,
     {
