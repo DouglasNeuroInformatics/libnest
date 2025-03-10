@@ -64,6 +64,8 @@ export const { ConfigurableModuleClass: ConfigurableAuthModule, MODULE_OPTIONS_T
 
 export const { USER_QUERY_TOKEN } = defineToken('USER_QUERY_TOKEN');
 
+export const { APPLY_PERMISSIONS_TOKEN } = defineToken('APPLY_PERMISSIONS_TOKEN');
+
 export type {
   AbilityModifier,
   AppAbility,

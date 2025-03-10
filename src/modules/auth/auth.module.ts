@@ -6,7 +6,12 @@ import { z } from 'zod';
 
 import { applyValidationSchema } from '../../utils/validation.utils.js';
 import { ConfigService } from '../config/config.service.js';
-import { AUTH_MODULE_OPTIONS_TOKEN, ConfigurableAuthModule, USER_QUERY_TOKEN } from './auth.config.js';
+import {
+  APPLY_PERMISSIONS_TOKEN,
+  AUTH_MODULE_OPTIONS_TOKEN,
+  ConfigurableAuthModule,
+  USER_QUERY_TOKEN
+} from './auth.config.js';
 import { AuthController } from './auth.controller.js';
 import { AuthService } from './auth.service.js';
 import { LoginCredentialsDto } from './dto/login-credentials.dto.js';
@@ -37,6 +42,13 @@ import type { AuthModuleOptions, BaseLoginCredentials, BaseLoginCredentialsSchem
       provide: USER_QUERY_TOKEN,
       useFactory: (options: AuthModuleOptions) => {
         return options.userQuery;
+      }
+    },
+    {
+      inject: [AUTH_MODULE_OPTIONS_TOKEN],
+      provide: APPLY_PERMISSIONS_TOKEN,
+      useFactory: (options: AuthModuleOptions) => {
+        return options.applyPermissions;
       }
     }
   ]
