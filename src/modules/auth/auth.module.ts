@@ -10,7 +10,7 @@ import { AUTH_MODULE_OPTIONS_TOKEN, ConfigurableAuthModule } from './auth.config
 import { AuthController } from './auth.controller.js';
 import { AuthService } from './auth.service.js';
 import { LoginCredentialsDto } from './dto/login-credentials.dto.js';
-import { AuthenticationGuard } from './guards/authentication.guard.js';
+import { JwtAuthGuard } from './guards/jwt-auth.guard.js';
 import { JwtStrategy } from './strategies/jwt.strategy.js';
 
 import type { AuthModuleOptions, BaseLoginCredentials, BaseLoginCredentialsSchema } from './auth.config.js';
@@ -30,7 +30,7 @@ import type { AuthModuleOptions, BaseLoginCredentials, BaseLoginCredentialsSchem
     JwtStrategy,
     {
       provide: APP_GUARD,
-      useClass: AuthenticationGuard
+      useClass: JwtAuthGuard
     }
   ]
 })

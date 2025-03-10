@@ -10,17 +10,19 @@ import { LoggingService } from '../../logging/logging.service.js';
 import type { RouteAccessType } from '../../../decorators/route-access.decorator.js';
 
 @Injectable()
-export class AuthenticationGuard extends AuthGuard('jwt') {
-  private readonly reflector = new Reflector();
-
-  constructor(private readonly loggingService: LoggingService) {
+export class JwtAuthGuard extends AuthGuard('jwt') {
+  constructor(
+    private readonly loggingService: LoggingService,
+    private readonly reflector: Reflector
+  ) {
     super();
   }
 
   override async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<Request>();
-    this.loggingService.verbose(`Request URL: ${request.url}`);
+    this.loggingService.verbose(`Checking Auth for Request URL: ${request.url}`);
     if (this.isPublicRoute(context)) {
+      this.loggingService.verbose(`Granting Access for Public Route: ${request.url}`);
       return true;
     }
     const isAuthenticated = await super.canActivate(context);
@@ -35,8 +37,6 @@ export class AuthenticationGuard extends AuthGuard('jwt') {
       ROUTE_ACCESS_METADATA_KEY,
       context.getHandler()
     );
-    const result = routeAccess === 'public';
-    this.loggingService.verbose(`Public Route: ${result}`);
-    return result;
+    return routeAccess === 'public';
   }
 }

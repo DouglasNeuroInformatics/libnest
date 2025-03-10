@@ -1,5 +1,7 @@
 import type { IncomingMessage, Server, ServerResponse } from 'node:http';
 
+import { Controller, Get } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import { Test } from '@nestjs/testing';
 import request from 'supertest';
@@ -14,6 +16,16 @@ import { LoggingModule } from '../../logging/logging.module.js';
 import { AuthModule } from '../auth.module.js';
 
 import type { BaseEnv } from '../../../schemas/env.schema.js';
+
+@Controller('cats')
+class CatsController {
+  @Get()
+  get() {
+    return {
+      name: 'Winston'
+    };
+  }
+}
 
 describe('AuthModule', () => {
   let app: NestExpressApplication;
@@ -32,6 +44,7 @@ describe('AuthModule', () => {
     userQuery = vi.fn();
 
     const moduleRef = await Test.createTestingModule({
+      controllers: [CatsController],
       imports: [
         AuthModule.forRoot({
           loginCredentialsSchema: z.object({
@@ -72,28 +85,46 @@ describe('AuthModule', () => {
     }
   });
 
-  it('should return status code 401 if the user query returns null', async () => {
-    userQuery.mockResolvedValueOnce(null);
-    const response = await request(server).post('/auth/login').send(loginCredentials);
-    expect(response.status).toBe(401);
-    expect(userQuery).toHaveBeenCalledExactlyOnceWith(loginCredentials);
+  describe('/auth/login', () => {
+    it('should return status code 401 if the user query returns null', async () => {
+      userQuery.mockResolvedValueOnce(null);
+      const response = await request(server).post('/auth/login').send(loginCredentials);
+      expect(response.status).toBe(401);
+      expect(userQuery).toHaveBeenCalledExactlyOnceWith(loginCredentials);
+    });
+
+    it('should return status code 401 if the hashed password is incorrect', async () => {
+      const comparePassword = vi.spyOn(CryptoService.prototype, 'comparePassword');
+      userQuery.mockResolvedValueOnce({ hashedPassword: '123$123' });
+      const response = await request(server).post('/auth/login').send(loginCredentials);
+      expect(response.status).toBe(401);
+      expect(userQuery).toHaveBeenCalledExactlyOnceWith(loginCredentials);
+      expect(comparePassword).toHaveBeenCalledExactlyOnceWith(loginCredentials.password, '123$123');
+    });
+
+    it('should return status code 200 and an access token if the credentials are correct', async () => {
+      userQuery.mockResolvedValueOnce({ hashedPassword, tokenPayload: {} });
+      const response = await request(server).post('/auth/login').send(loginCredentials);
+      expect(response.status).toBe(200);
+      expect(response.body).toStrictEqual({
+        accessToken: expect.stringMatching(/^[A-Za-z0-9-_]+\.([A-Za-z0-9-_]+)\.[A-Za-z0-9-_]+$/)
+      });
+    });
   });
 
-  it('should return status code 401 if the hashed password is incorrect', async () => {
-    const comparePassword = vi.spyOn(CryptoService.prototype, 'comparePassword');
-    userQuery.mockResolvedValueOnce({ hashedPassword: '123$123' });
-    const response = await request(server).post('/auth/login').send(loginCredentials);
-    expect(response.status).toBe(401);
-    expect(userQuery).toHaveBeenCalledExactlyOnceWith(loginCredentials);
-    expect(comparePassword).toHaveBeenCalledExactlyOnceWith(loginCredentials.password, '123$123');
-  });
-
-  it('should return status code 200 and an access token if the credentials are correct', async () => {
-    userQuery.mockResolvedValueOnce({ hashedPassword, tokenPayload: {} });
-    const response = await request(server).post('/auth/login').send(loginCredentials);
-    expect(response.status).toBe(200);
-    expect(response.body).toStrictEqual({
-      accessToken: expect.stringMatching(/^[A-Za-z0-9-_]+\.([A-Za-z0-9-_]+)\.[A-Za-z0-9-_]+$/)
+  describe('/cats', () => {
+    it('should reject queries without an access token', async () => {
+      const response = await request(server).get('/cats');
+      expect(response.status).toBe(401);
+    });
+    it('should reject queries with an malformed access token', async () => {
+      const response = await request(server).get('/cats').set('Authorization', 'Bearer 123$123');
+      expect(response.status).toBe(401);
+    });
+    it('should reject queries with an access token signed with the wrong secret key', async () => {
+      const accessToken = await new JwtService({ secret: 'NOT_A_SECRET' }).signAsync({});
+      const response = await request(server).get('/cats').set('Authorization', `Bearer ${accessToken}`);
+      expect(response.status).toBe(401);
     });
   });
 });

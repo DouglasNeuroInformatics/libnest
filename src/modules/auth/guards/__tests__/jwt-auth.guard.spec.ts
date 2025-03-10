@@ -1,0 +1,79 @@
+import type { ExecutionContext } from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
+import type { Request } from 'express';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import type { Mock } from 'vitest';
+
+import { MockFactory } from '../../../../testing/index.js';
+import { LoggingService } from '../../../logging/logging.service.js';
+import { JwtAuthGuard } from '../jwt-auth.guard.js';
+
+import type { RouteAccessType } from '../../../../decorators/route-access.decorator.js';
+import type { MockedInstance } from '../../../../testing/index.js';
+
+const BaseConstructor = vi.hoisted(() => {
+  const constructor = vi.fn();
+  constructor.prototype.canActivate = vi.fn();
+  return constructor;
+});
+
+vi.mock('@nestjs/passport', () => ({ AuthGuard: () => BaseConstructor }));
+
+describe('JwtAuthGuard', () => {
+  let guard: JwtAuthGuard;
+
+  let loggingService: MockedInstance<LoggingService>;
+  let reflector: MockedInstance<Reflector>;
+
+  let context: MockedInstance<ExecutionContext>;
+  let getRequest: Mock;
+
+  beforeEach(() => {
+    getRequest = vi.fn().mockReturnValue({ url: 'http://localhost:5500' } satisfies Partial<Request>);
+    context = {
+      getHandler: vi.fn(),
+      switchToHttp: vi.fn(() => ({ getRequest, getResponse: vi.fn() }))
+    } satisfies Partial<MockedInstance<ExecutionContext>> as MockedInstance<ExecutionContext>;
+    loggingService = MockFactory.createMock(LoggingService);
+    reflector = MockFactory.createMock(Reflector);
+    guard = new JwtAuthGuard(loggingService as any, reflector);
+  });
+
+  it('should extend BaseConstructor', () => {
+    expect(BaseConstructor).toHaveBeenCalled();
+  });
+
+  it('should return true for a public route', async () => {
+    reflector.get.mockReturnValueOnce('public' satisfies RouteAccessType);
+    await expect(guard.canActivate(context)).resolves.toBe(true);
+    expect(loggingService.verbose).toHaveBeenCalledTimes(2);
+    expect(loggingService.verbose).toHaveBeenLastCalledWith('Granting Access for Public Route: http://localhost:5500');
+  });
+
+  it('should return false for a protected route, if AuthGuard.canActivate returns false', async () => {
+    reflector.get.mockReturnValueOnce({
+      action: 'manage',
+      subject: 'all'
+    } satisfies RouteAccessType);
+    BaseConstructor.prototype.canActivate.mockResolvedValueOnce(false);
+    await expect(guard.canActivate(context)).resolves.toBe(false);
+  });
+
+  it('should return false for a protected route, if AuthGuard.canActivate returns a truthy, non-boolean value', async () => {
+    reflector.get.mockReturnValueOnce({
+      action: 'manage',
+      subject: 'all'
+    } satisfies RouteAccessType);
+    BaseConstructor.prototype.canActivate.mockResolvedValueOnce({});
+    await expect(guard.canActivate(context)).resolves.toBe(false);
+  });
+
+  it('should return true for a protected route, if AuthGuard.canActivate returns true', async () => {
+    reflector.get.mockReturnValueOnce({
+      action: 'manage',
+      subject: 'all'
+    } satisfies RouteAccessType);
+    BaseConstructor.prototype.canActivate.mockResolvedValueOnce(true);
+    await expect(guard.canActivate(context)).resolves.toBe(true);
+  });
+});
