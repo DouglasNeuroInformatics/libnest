@@ -46,8 +46,8 @@ describe('AuthModule', () => {
             SECRET_KEY: '12345678'
           } satisfies Partial<BaseEnv> as BaseEnv
         }),
-        CryptoModule.forRoot(),
-        LoggingModule.forRoot()
+        CryptoModule,
+        LoggingModule
       ]
     }).compile();
 

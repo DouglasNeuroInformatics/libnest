@@ -46,8 +46,8 @@ export class AppModule implements NestModule {
   }: CreateAppModuleOptions<TEnv>): DynamicAppModule {
     const coreImports: ImportedModule[] = [
       ConfigModule.forRoot({ envConfig }),
-      CryptoModule.forRoot(),
-      LoggingModule.forRoot(),
+      CryptoModule,
+      LoggingModule,
       PrismaModule.forRoot(prisma)
     ];
     const coreProviders: Provider[] = [
