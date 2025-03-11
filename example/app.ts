@@ -16,6 +16,9 @@ export default await AppContainer.create({
       inject: [CryptoService],
       useFactory: (cryptoService: CryptoService) => {
         return {
+          defineAbility: (ability) => {
+            ability.can('manage', 'all');
+          },
           loginCredentialsSchema: z.object({
             password: z.string().min(1),
             username: z.string().min(1)
