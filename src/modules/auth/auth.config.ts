@@ -34,6 +34,8 @@ type DefineAbility<TPayload extends { [key: string]: unknown } = { [key: string]
   tokenPayload: TPayload
 ) => void;
 
+type Permission = RawRuleOf<PureAbility<[AppAction, AppSubjectName]>>;
+
 type BaseLoginCredentials = {
   password: string;
 };
@@ -49,7 +51,7 @@ type UserQueryResult = {
 
 interface JwtPayload {
   [key: string]: any;
-  permissions: RawRuleOf<PureAbility<[AppAction, AppSubjectName]>>[];
+  permissions: Permission[];
 }
 
 type UserQuery<TLoginCredentials extends BaseLoginCredentials = BaseLoginCredentials> = (
@@ -95,6 +97,7 @@ export type {
   DefineAbility,
   JwtPayload,
   LoginResponseBody,
+  Permission,
   UserQuery,
   UserQueryResult
 };
