@@ -26,8 +26,21 @@ describe('AbilityFactory', () => {
   });
 
   describe('createForPayload', () => {
-    it('should return an empty ruleset, if applyPermissions is undefined', () => {
-      expect(abilityFactory.createForPayload({}).rules).toStrictEqual([]);
+    it('should return an empty ruleset, if defineAbility is undefined', () => {
+      const ability = abilityFactory.createForPayload({});
+      expect(ability.rules).toStrictEqual([]);
+    });
+    it('should add the correct ruleset for the ability', () => {
+      defineAbility.mockImplementationOnce((ability) => {
+        ability.can('manage', 'all');
+      });
+      const ability = abilityFactory.createForPayload({});
+      expect(ability.rules).toStrictEqual([
+        {
+          action: 'manage',
+          subject: 'all'
+        }
+      ]);
     });
   });
 });
