@@ -14,6 +14,7 @@ import { CryptoModule } from '../../crypto/crypto.module.js';
 import { CryptoService } from '../../crypto/crypto.service.js';
 import { LoggingModule } from '../../logging/logging.module.js';
 import { AuthModule } from '../auth.module.js';
+import { JwtStrategy } from '../strategies/jwt.strategy.js';
 
 import type { BaseEnv } from '../../../schemas/env.schema.js';
 
@@ -31,6 +32,8 @@ describe('AuthModule', () => {
   let app: NestExpressApplication;
   let server: Server<typeof IncomingMessage, typeof ServerResponse>;
 
+  let jwtStrategy: JwtStrategy;
+
   let userQuery: Mock;
 
   const loginCredentials = {
@@ -39,6 +42,7 @@ describe('AuthModule', () => {
   };
 
   let hashedPassword: string;
+  const tokenPayload = { username: 'admin' };
 
   beforeAll(async () => {
     userQuery = vi.fn();
@@ -66,6 +70,8 @@ describe('AuthModule', () => {
 
     const cryptoService = moduleRef.get(CryptoService);
     hashedPassword = await cryptoService.hashPassword(loginCredentials.password);
+
+    jwtStrategy = moduleRef.get(JwtStrategy);
 
     app = moduleRef.createNestApplication({
       logger: ['debug', 'error', 'fatal', 'log', 'verbose', 'warn']
@@ -103,7 +109,7 @@ describe('AuthModule', () => {
     });
 
     it('should return status code 200 and an access token if the credentials are correct', async () => {
-      userQuery.mockResolvedValueOnce({ hashedPassword, tokenPayload: {} });
+      userQuery.mockResolvedValueOnce({ hashedPassword, tokenPayload });
       const response = await request(server).post('/auth/login').send(loginCredentials);
       expect(response.status).toBe(200);
       expect(response.body).toStrictEqual({
@@ -113,18 +119,44 @@ describe('AuthModule', () => {
   });
 
   describe('/cats', () => {
-    it('should reject queries without an access token', async () => {
-      const response = await request(server).get('/cats');
-      expect(response.status).toBe(401);
+    describe('unauthorized', () => {
+      it('should reject queries without an access token', async () => {
+        const response = await request(server).get('/cats');
+        expect(response.status).toBe(401);
+      });
+      it('should reject queries with an malformed access token', async () => {
+        const response = await request(server).get('/cats').set('Authorization', 'Bearer 123$123');
+        expect(response.status).toBe(401);
+      });
+      it('should reject queries with an access token signed with the wrong secret key', async () => {
+        const accessToken = await new JwtService({ secret: 'NOT_A_SECRET' }).signAsync({});
+        const response = await request(server).get('/cats').set('Authorization', `Bearer ${accessToken}`);
+        expect(response.status).toBe(401);
+      });
     });
-    it('should reject queries with an malformed access token', async () => {
-      const response = await request(server).get('/cats').set('Authorization', 'Bearer 123$123');
-      expect(response.status).toBe(401);
-    });
-    it('should reject queries with an access token signed with the wrong secret key', async () => {
-      const accessToken = await new JwtService({ secret: 'NOT_A_SECRET' }).signAsync({});
-      const response = await request(server).get('/cats').set('Authorization', `Bearer ${accessToken}`);
-      expect(response.status).toBe(401);
+    describe('authorized', () => {
+      let accessToken: string;
+
+      beforeAll(async () => {
+        userQuery.mockResolvedValueOnce({ hashedPassword, tokenPayload });
+        const response = await request(server).post('/auth/login').send(loginCredentials);
+        accessToken = response.body.accessToken;
+      });
+
+      it('should accept queries with the correct access token', async () => {
+        const response = await request(server).get('/cats').set('Authorization', `Bearer ${accessToken}`);
+        expect(response.status).toBe(200);
+      });
+
+      it('should call the jwt strategy with the payload', async () => {
+        const validate = vi.spyOn(jwtStrategy, 'validate');
+        await request(server).get('/cats').set('Authorization', `Bearer ${accessToken}`);
+        expect(validate).toHaveBeenCalledOnce();
+        expect(validate.mock.lastCall![0]).toMatchObject({
+          permissions: [],
+          username: 'admin'
+        });
+      });
     });
   });
 });
