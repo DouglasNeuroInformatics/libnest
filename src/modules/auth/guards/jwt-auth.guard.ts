@@ -1,4 +1,5 @@
-import { Injectable } from '@nestjs/common';
+import { PureAbility } from '@casl/ability';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import type { ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
@@ -20,23 +21,30 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
 
   override async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<Request>();
-    this.loggingService.verbose(`Checking Auth for Request URL: ${request.url}`);
-    if (this.isPublicRoute(context)) {
-      this.loggingService.verbose(`Granting Access for Public Route: ${request.url}`);
-      return true;
-    }
-    const isAuthenticated = await super.canActivate(context);
-    if (isAuthenticated !== true) {
-      return false;
-    }
-    return true;
-  }
+    this.loggingService.verbose(`Checking auth for request url: ${request.url}`);
 
-  private isPublicRoute(context: ExecutionContext): boolean {
     const routeAccess = this.reflector.get<RouteAccessType | undefined>(
       ROUTE_ACCESS_METADATA_KEY,
       context.getHandler()
     );
-    return routeAccess === 'public';
+
+    // if (!routeAccess) {
+    //   this.loggingService.error(`Route access is not defined for url: ${request.url}`);
+    //   throw new InternalServerErrorException();
+    // }
+
+    if (routeAccess === 'public') {
+      this.loggingService.verbose(`Granting access for public route: ${request.url}`);
+      return true;
+    }
+
+    const isAuthenticated = await super.canActivate(context);
+    if (isAuthenticated !== true) {
+      return false;
+    } else if (!(request.user?.ability instanceof PureAbility)) {
+      this.loggingService.error('User property of request does not include expected AppAbility');
+      return false;
+    }
+    return true;
   }
 }

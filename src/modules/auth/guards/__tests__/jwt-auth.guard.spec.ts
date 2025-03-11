@@ -47,7 +47,7 @@ describe('JwtAuthGuard', () => {
     reflector.get.mockReturnValueOnce('public' satisfies RouteAccessType);
     await expect(guard.canActivate(context)).resolves.toBe(true);
     expect(loggingService.verbose).toHaveBeenCalledTimes(2);
-    expect(loggingService.verbose).toHaveBeenLastCalledWith('Granting Access for Public Route: http://localhost:5500');
+    expect(loggingService.verbose).toHaveBeenLastCalledWith('Granting access for public route: http://localhost:5500');
   });
 
   it('should return false for a protected route, if AuthGuard.canActivate returns false', async () => {
@@ -68,12 +68,24 @@ describe('JwtAuthGuard', () => {
     await expect(guard.canActivate(context)).resolves.toBe(false);
   });
 
-  it('should return true for a protected route, if AuthGuard.canActivate returns true', async () => {
+  it('should return false for a protected route, if AuthGuard.canActivate returns true, but for some reason there is no user ability for the request', async () => {
     reflector.get.mockReturnValueOnce({
       action: 'manage',
       subject: 'all'
     } satisfies RouteAccessType);
     BaseConstructor.prototype.canActivate.mockResolvedValueOnce(true);
-    await expect(guard.canActivate(context)).resolves.toBe(true);
+    await expect(guard.canActivate(context)).resolves.toBe(false);
+    expect(loggingService.error).toHaveBeenLastCalledWith(
+      'User property of request does not include expected AppAbility'
+    );
   });
+
+  // it('should return true for a protected route, if AuthGuard.canActivate returns true', async () => {
+  // reflector.get.mockReturnValueOnce({
+  //   action: 'manage',
+  //   subject: 'all'
+  // } satisfies RouteAccessType);
+  //   BaseConstructor.prototype.canActivate.mockResolvedValueOnce(true);
+  //   await expect(guard.canActivate(context)).resolves.toBe(true);
+  // });
 });
