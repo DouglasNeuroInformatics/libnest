@@ -29,16 +29,17 @@ class CatsController {
       name: 'Winston'
     };
   }
-  // @Get('undefined-route-access')
-  // getRouteWithUndefinedRouteAccess() {
-  //   return {};
-  // }
+  @Get('undefined-route-access')
+  getRouteWithUndefinedRouteAccess() {
+    return {};
+  }
 }
 
 describe('AuthModule', () => {
   let app: NestExpressApplication;
   let server: Server<typeof IncomingMessage, typeof ServerResponse>;
 
+  let jwtService: JwtService;
   let jwtStrategy: JwtStrategy;
 
   let defineAbility: Mock<DefineAbility>;
@@ -81,6 +82,7 @@ describe('AuthModule', () => {
     const cryptoService = moduleRef.get(CryptoService);
     hashedPassword = await cryptoService.hashPassword(loginCredentials.password);
 
+    jwtService = moduleRef.get(JwtService);
     jwtStrategy = moduleRef.get(JwtStrategy);
 
     app = moduleRef.createNestApplication({
@@ -143,7 +145,29 @@ describe('AuthModule', () => {
         const response = await request(server).get('/cats').set('Authorization', `Bearer ${accessToken}`);
         expect(response.status).toBe(401);
       });
+      it('should reject queries with a valid access token, but insufficient permissions', async () => {
+        const signAsync = vi.spyOn(jwtService, 'signAsync');
+        userQuery.mockResolvedValueOnce({ hashedPassword, tokenPayload });
+        defineAbility.mockImplementationOnce((ability) => {
+          ability.can('delete', 'Cat');
+        });
+        const loginResponse = await request(server).post('/auth/login').send(loginCredentials);
+        const accessToken = loginResponse.body.accessToken;
+        expect(accessToken).toBeTypeOf('string');
+        expect(signAsync).toHaveBeenCalledExactlyOnceWith(
+          {
+            permissions: [{ action: 'delete', subject: 'Cat' }],
+            username: 'admin'
+          },
+          {
+            expiresIn: '1d'
+          }
+        );
+        const response = await request(server).get('/cats').set('Authorization', `Bearer ${accessToken}`);
+        expect(response.status).toBe(403);
+      });
     });
+
     describe('authorized', () => {
       let accessToken: string;
 
