@@ -23,9 +23,9 @@ describe('AbilityFactory', () => {
     abilityFactory = moduleRef.get(AbilityFactory);
   });
 
-  describe('createForUser', () => {
+  describe('createForPayload', () => {
     it('should return an empty ruleset, if applyPermissions is undefined', () => {
-      expect(abilityFactory.createForUser().rules).toStrictEqual([]);
+      expect(abilityFactory.createForPayload({}).rules).toStrictEqual([]);
     });
   });
 });

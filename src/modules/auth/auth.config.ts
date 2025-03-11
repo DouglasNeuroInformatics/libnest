@@ -19,7 +19,10 @@ type AppSubjectName = IfNever<AppSubjects, string, Extract<AppSubjects, string>>
 
 type AppAbility = IfNever<AppSubjects, AnyAbility, PureAbility<[AppAction, AppSubjects], PrismaQuery>>;
 
-type AbilityModifier = (abilityBuilder: AbilityBuilder<AppAbility>) => AbilityBuilder<AppAbility>;
+type AbilityModifier<TPayload extends { [key: string]: unknown } = { [key: string]: unknown }> = (
+  abilityBuilder: AbilityBuilder<AppAbility>,
+  tokenPayload: TPayload
+) => AbilityBuilder<AppAbility>;
 
 type BaseLoginCredentials = {
   password: string;
@@ -47,10 +50,15 @@ type LoginResponseBody = {
   accessToken: string;
 };
 
-type AuthModuleOptions<TLoginCredentialsSchema extends BaseLoginCredentialsSchema = BaseLoginCredentialsSchema> = {
-  applyPermissions?: AbilityModifier;
+type AuthModuleOptions<
+  TLoginCredentialsSchema extends BaseLoginCredentialsSchema = BaseLoginCredentialsSchema,
+  TUserQuery extends UserQuery<z.TypeOf<NoInfer<TLoginCredentialsSchema>>> = UserQuery<
+    z.TypeOf<NoInfer<TLoginCredentialsSchema>>
+  >
+> = {
+  applyPermissions?: AbilityModifier<NonNullable<Awaited<ReturnType<NoInfer<TUserQuery>>>>['tokenPayload']>;
   loginCredentialsSchema: TLoginCredentialsSchema;
-  userQuery: UserQuery<z.TypeOf<TLoginCredentialsSchema>>;
+  userQuery: TUserQuery;
 };
 
 export const { ConfigurableModuleClass: ConfigurableAuthModule, MODULE_OPTIONS_TOKEN: AUTH_MODULE_OPTIONS_TOKEN } =

@@ -10,10 +10,10 @@ import type { AbilityModifier, AppAbility } from './auth.config.js';
 export class AbilityFactory {
   constructor(@Inject(APPLY_PERMISSIONS_TOKEN) private readonly applyPermissions?: AbilityModifier) {}
 
-  createForUser() {
+  createForPayload(tokenPayload: { [key: string]: any }) {
     const abilityBuilder = new AbilityBuilder<AppAbility>(createPrismaAbility);
     if (this.applyPermissions) {
-      this.applyPermissions(abilityBuilder);
+      this.applyPermissions(abilityBuilder, tokenPayload);
     }
     return abilityBuilder.build({
       detectSubjectType: (obj: { [key: string]: unknown }) => {
