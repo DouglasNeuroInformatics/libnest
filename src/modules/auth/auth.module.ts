@@ -19,7 +19,7 @@ import { LoginCredentialsDto } from './dto/login-credentials.dto.js';
 import { JwtAuthGuard } from './guards/jwt-auth.guard.js';
 import { JwtStrategy } from './strategies/jwt.strategy.js';
 
-import type { AuthModuleOptions, BaseLoginCredentials, BaseLoginCredentialsSchema } from './auth.config.js';
+import type { AuthModuleOptions, BaseLoginCredentials, BaseLoginCredentialsSchema, UserQuery } from './auth.config.js';
 
 @Module({
   controllers: [AuthController],
@@ -63,13 +63,17 @@ export class AuthModule extends ConfigurableAuthModule implements OnModuleInit {
     this.loginCredentialsSchema = loginCredentialsSchema;
   }
 
-  static forRoot<TLoginCredentialsSchema extends z.ZodType<BaseLoginCredentials>>(
-    options: AuthModuleOptions<TLoginCredentialsSchema>
-  ): DynamicModule {
+  static forRoot<
+    TLoginCredentialsSchema extends z.ZodType<BaseLoginCredentials>,
+    TUserQuery extends UserQuery<z.TypeOf<NoInfer<TLoginCredentialsSchema>>>
+  >(options: AuthModuleOptions<TLoginCredentialsSchema, TUserQuery>): DynamicModule {
     return super.forRoot(options);
   }
-  static forRootAsync<TLoginCredentialsSchema extends z.ZodType<BaseLoginCredentials>>(
-    options: ConfigurableModuleAsyncOptions<AuthModuleOptions<TLoginCredentialsSchema>, 'create'>
+  static forRootAsync<
+    TLoginCredentialsSchema extends z.ZodType<BaseLoginCredentials>,
+    TUserQuery extends UserQuery<z.TypeOf<NoInfer<TLoginCredentialsSchema>>>
+  >(
+    options: ConfigurableModuleAsyncOptions<AuthModuleOptions<TLoginCredentialsSchema, TUserQuery>, 'create'>
   ): DynamicModule {
     return super.forRootAsync(options);
   }
