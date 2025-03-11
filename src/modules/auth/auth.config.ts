@@ -24,9 +24,9 @@ type AppAbility = IfNever<
 >;
 
 type DefineAbility<TPayload extends { [key: string]: unknown } = { [key: string]: unknown }> = (
-  abilityBuilder: AbilityBuilder<AppAbility>,
+  ability: AbilityBuilder<AppAbility>,
   tokenPayload: TPayload
-) => AbilityBuilder<AppAbility>;
+) => void;
 
 type BaseLoginCredentials = {
   password: string;
