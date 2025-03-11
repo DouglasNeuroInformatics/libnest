@@ -7,6 +7,7 @@ import type { Mock } from 'vitest';
 
 import { MockFactory } from '../../../../testing/index.js';
 import { LoggingService } from '../../../logging/logging.service.js';
+import { AbilityFactory } from '../../ability.factory.js';
 import { JwtAuthGuard } from '../jwt-auth.guard.js';
 
 import type { RouteAccessType } from '../../../../decorators/route-access.decorator.js';
@@ -27,10 +28,10 @@ describe('JwtAuthGuard', () => {
   let reflector: MockedInstance<Reflector>;
 
   let context: MockedInstance<ExecutionContext>;
-  let getRequest: Mock;
+  let getRequest: Mock<() => Partial<Request>>;
 
   beforeEach(() => {
-    getRequest = vi.fn().mockReturnValue({ url: 'http://localhost:5500' } satisfies Partial<Request>);
+    getRequest = vi.fn().mockReturnValue({ url: 'http://localhost:5500' });
     context = {
       getHandler: vi.fn(),
       switchToHttp: vi.fn(() => ({ getRequest, getResponse: vi.fn() }))
@@ -75,24 +76,26 @@ describe('JwtAuthGuard', () => {
     await expect(guard.canActivate(context)).resolves.toBe(false);
   });
 
-  it('should return false for a protected route, if AuthGuard.canActivate returns true, but for some reason there is no user ability for the request', async () => {
+  it('should throw an InternalServerError if, for some reason, there is no user ability for the request', async () => {
     reflector.get.mockReturnValueOnce({
       action: 'manage',
       subject: 'all'
     } satisfies RouteAccessType);
     BaseConstructor.prototype.canActivate.mockResolvedValueOnce(true);
-    await expect(guard.canActivate(context)).resolves.toBe(false);
+    await expect(guard.canActivate(context)).rejects.toThrowError(InternalServerErrorException);
     expect(loggingService.error).toHaveBeenLastCalledWith(
       'User property of request does not include expected AppAbility'
     );
   });
 
-  // it('should return true for a protected route, if AuthGuard.canActivate returns true', async () => {
-  // reflector.get.mockReturnValueOnce({
-  //   action: 'manage',
-  //   subject: 'all'
-  // } satisfies RouteAccessType);
-  //   BaseConstructor.prototype.canActivate.mockResolvedValueOnce(true);
-  //   await expect(guard.canActivate(context)).resolves.toBe(true);
-  // });
+  it('should return true for a protected route, if the user has the right permissions', async () => {
+    reflector.get.mockReturnValueOnce({
+      action: 'manage',
+      subject: 'all'
+    } satisfies RouteAccessType);
+    BaseConstructor.prototype.canActivate.mockResolvedValueOnce(true);
+    const ability = AbilityFactory.prototype.createForPermissions([{ action: 'manage', subject: 'all' }]);
+    getRequest.mockReturnValueOnce({ url: 'http://localhost:5500', user: { ability } });
+    await expect(guard.canActivate(context)).resolves.toBe(true);
+  });
 });

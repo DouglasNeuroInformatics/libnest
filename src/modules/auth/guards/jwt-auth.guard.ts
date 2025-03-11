@@ -43,7 +43,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
       return false;
     } else if (!(request.user?.ability instanceof PureAbility)) {
       this.loggingService.error('User property of request does not include expected AppAbility');
-      return false;
+      throw new InternalServerErrorException();
     }
     return true;
   }
