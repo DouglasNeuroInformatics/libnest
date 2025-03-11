@@ -42,5 +42,30 @@ describe('AbilityFactory', () => {
         }
       ]);
     });
+    it('should correctly detect the subject type', () => {
+      defineAbility.mockImplementationOnce((ability) => {
+        ability.can('manage', 'Cat', { id: { in: [0, 1] } });
+      });
+      const ability = abilityFactory.createForPayload({});
+      expect(ability.rules).toStrictEqual([
+        {
+          action: 'manage',
+          conditions: {
+            id: {
+              in: [0, 1]
+            }
+          },
+          subject: 'Cat'
+        }
+      ]);
+      const cat1 = { __modelName: 'Cat', id: 1 };
+      const cat2 = { __modelName: 'Cat', id: 2 };
+      const dog = { __modelName: 'Dog', id: 1 };
+      const obj = { id: 1 };
+      expect(ability.can('manage', cat1)).toBe(true);
+      expect(ability.can('manage', cat2)).toBe(false);
+      expect(ability.can('manage', dog)).toBe(false);
+      expect(ability.can('manage', obj)).toBe(false);
+    });
   });
 });
