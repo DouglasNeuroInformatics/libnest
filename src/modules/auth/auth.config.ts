@@ -27,7 +27,11 @@ type AppSubjects = FallbackIfNever<RuntimeAppSubjects, DefaultAppSubjects>;
 
 type AppSubjectName = Extract<AppSubjects, string>;
 
-type AppAbility = PureAbility<[AppAction, AppSubjects], FallbackIfNever<PrismaQuery, unknown>>;
+type AppAbilities = [AppAction, AppSubjects];
+
+type AppConditions = FallbackIfNever<PrismaQuery, unknown>;
+
+type AppAbility = PureAbility<AppAbilities, AppConditions>;
 
 type DefineAbility<TPayload extends { [key: string]: unknown } = { [key: string]: unknown }> = (
   ability: AbilityBuilder<AppAbility>,
@@ -87,8 +91,10 @@ export const { USER_QUERY_TOKEN } = defineToken('USER_QUERY_TOKEN');
 export const { DEFINE_ABILITY_TOKEN } = defineToken('DEFINE_ABILITY_TOKEN');
 
 export type {
+  AppAbilities,
   AppAbility,
   AppAction,
+  AppConditions,
   AppSubjectName,
   AppSubjects,
   AuthModuleOptions,
