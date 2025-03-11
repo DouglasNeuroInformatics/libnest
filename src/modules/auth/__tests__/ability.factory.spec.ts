@@ -3,20 +3,22 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Mock } from 'vitest';
 
 import { AbilityFactory } from '../ability.factory.js';
-import { APPLY_PERMISSIONS_TOKEN } from '../auth.config.js';
+import { DEFINE_ABILITY_TOKEN } from '../auth.config.js';
+
+import type { DefineAbility } from '../auth.config.js';
 
 describe('AbilityFactory', () => {
   let abilityFactory: AbilityFactory;
-  let applyPermissions: Mock;
+  let defineAbility: Mock<DefineAbility>;
 
   beforeEach(async () => {
-    applyPermissions = vi.fn();
+    defineAbility = vi.fn();
     const moduleRef = await Test.createTestingModule({
       providers: [
         AbilityFactory,
         {
-          provide: APPLY_PERMISSIONS_TOKEN,
-          useValue: applyPermissions
+          provide: DEFINE_ABILITY_TOKEN,
+          useValue: defineAbility
         }
       ]
     }).compile();

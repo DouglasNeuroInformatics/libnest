@@ -2,18 +2,18 @@ import { AbilityBuilder, detectSubjectType } from '@casl/ability';
 import { createPrismaAbility } from '@casl/prisma';
 import { Inject, Injectable } from '@nestjs/common';
 
-import { APPLY_PERMISSIONS_TOKEN } from './auth.config.js';
+import { DEFINE_ABILITY_TOKEN } from './auth.config.js';
 
-import type { AbilityModifier, AppAbility } from './auth.config.js';
+import type { AppAbility, DefineAbility } from './auth.config.js';
 
 @Injectable()
 export class AbilityFactory {
-  constructor(@Inject(APPLY_PERMISSIONS_TOKEN) private readonly applyPermissions?: AbilityModifier) {}
+  constructor(@Inject(DEFINE_ABILITY_TOKEN) private readonly defineAbility?: DefineAbility) {}
 
   createForPayload(tokenPayload: { [key: string]: any }) {
     const abilityBuilder = new AbilityBuilder<AppAbility>(createPrismaAbility);
-    if (this.applyPermissions) {
-      this.applyPermissions(abilityBuilder, tokenPayload);
+    if (this.defineAbility) {
+      this.defineAbility(abilityBuilder, tokenPayload);
     }
     return abilityBuilder.build({
       detectSubjectType: (obj: { [key: string]: unknown }) => {

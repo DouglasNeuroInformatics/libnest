@@ -23,7 +23,7 @@ type AppAbility = IfNever<
   PureAbility<[AppAction, AppSubjects], PrismaQuery>
 >;
 
-type AbilityModifier<TPayload extends { [key: string]: unknown } = { [key: string]: unknown }> = (
+type DefineAbility<TPayload extends { [key: string]: unknown } = { [key: string]: unknown }> = (
   abilityBuilder: AbilityBuilder<AppAbility>,
   tokenPayload: TPayload
 ) => AbilityBuilder<AppAbility>;
@@ -60,7 +60,7 @@ type AuthModuleOptions<
     z.TypeOf<NoInfer<TLoginCredentialsSchema>>
   >
 > = {
-  applyPermissions?: AbilityModifier<NonNullable<Awaited<ReturnType<NoInfer<TUserQuery>>>>['tokenPayload']>;
+  defineAbility?: DefineAbility<NonNullable<Awaited<ReturnType<NoInfer<TUserQuery>>>>['tokenPayload']>;
   loginCredentialsSchema: TLoginCredentialsSchema;
   userQuery: TUserQuery;
 };
@@ -76,10 +76,9 @@ export const { ConfigurableModuleClass: ConfigurableAuthModule, MODULE_OPTIONS_T
 
 export const { USER_QUERY_TOKEN } = defineToken('USER_QUERY_TOKEN');
 
-export const { APPLY_PERMISSIONS_TOKEN } = defineToken('APPLY_PERMISSIONS_TOKEN');
+export const { DEFINE_ABILITY_TOKEN } = defineToken('DEFINE_ABILITY_TOKEN');
 
 export type {
-  AbilityModifier,
   AppAbility,
   AppAction,
   AppSubjectName,
@@ -87,6 +86,7 @@ export type {
   AuthModuleOptions,
   BaseLoginCredentials,
   BaseLoginCredentialsSchema,
+  DefineAbility,
   JwtPayload,
   LoginResponseBody,
   UserQuery,

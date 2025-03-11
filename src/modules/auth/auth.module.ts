@@ -8,9 +8,9 @@ import { applyValidationSchema } from '../../utils/validation.utils.js';
 import { ConfigService } from '../config/config.service.js';
 import { AbilityFactory } from './ability.factory.js';
 import {
-  APPLY_PERMISSIONS_TOKEN,
   AUTH_MODULE_OPTIONS_TOKEN,
   ConfigurableAuthModule,
+  DEFINE_ABILITY_TOKEN,
   USER_QUERY_TOKEN
 } from './auth.config.js';
 import { AuthController } from './auth.controller.js';
@@ -48,9 +48,9 @@ import type { AuthModuleOptions, BaseLoginCredentials, BaseLoginCredentialsSchem
     },
     {
       inject: [AUTH_MODULE_OPTIONS_TOKEN],
-      provide: APPLY_PERMISSIONS_TOKEN,
+      provide: DEFINE_ABILITY_TOKEN,
       useFactory: (options: AuthModuleOptions) => {
-        return options.applyPermissions;
+        return options.defineAbility;
       }
     }
   ]
