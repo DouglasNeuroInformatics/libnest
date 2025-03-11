@@ -14,6 +14,7 @@ import type { MockedInstance } from '../../../testing/index.js';
 
 describe('AuthService', () => {
   let authService: AuthService;
+  let abilityFactory: MockedInstance<AbilityFactory>;
   let cryptoService: MockedInstance<CryptoService>;
   let jwtService: MockedInstance<JwtService>;
 
@@ -33,9 +34,12 @@ describe('AuthService', () => {
         MockFactory.createForService(JwtService)
       ]
     }).compile();
+    abilityFactory = moduleRef.get(AbilityFactory);
     authService = moduleRef.get(AuthService);
     cryptoService = moduleRef.get(CryptoService);
     jwtService = moduleRef.get(JwtService);
+
+    abilityFactory.createForPayload.mockReturnValue([]);
   });
 
   describe('login', () => {

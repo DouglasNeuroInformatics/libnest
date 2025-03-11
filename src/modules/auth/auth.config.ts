@@ -1,5 +1,5 @@
 import { AbilityBuilder, PureAbility } from '@casl/ability';
-import type { AnyAbility, RawRuleOf } from '@casl/ability';
+import type { RawRuleOf } from '@casl/ability';
 import type { PrismaQuery, Subjects } from '@casl/prisma';
 import { ConfigurableModuleBuilder } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
@@ -17,7 +17,11 @@ type AppSubjects = Subjects<{
 
 type AppSubjectName = IfNever<AppSubjects, string, Extract<AppSubjects, string>>;
 
-type AppAbility = IfNever<AppSubjects, AnyAbility, PureAbility<[AppAction, AppSubjects], PrismaQuery>>;
+type AppAbility = IfNever<
+  AppSubjects,
+  PureAbility<[AppAction, any], any>,
+  PureAbility<[AppAction, AppSubjects], PrismaQuery>
+>;
 
 type AbilityModifier<TPayload extends { [key: string]: unknown } = { [key: string]: unknown }> = (
   abilityBuilder: AbilityBuilder<AppAbility>,

@@ -5,7 +5,7 @@ import { CryptoService } from '../crypto/crypto.service.js';
 import { AbilityFactory } from './ability.factory.js';
 import { USER_QUERY_TOKEN } from './auth.config.js';
 
-import type { BaseLoginCredentials, LoginResponseBody, UserQuery } from './auth.config.js';
+import type { BaseLoginCredentials, JwtPayload, LoginResponseBody, UserQuery } from './auth.config.js';
 
 @Injectable()
 export class AuthService {
@@ -26,10 +26,13 @@ export class AuthService {
       throw new UnauthorizedException('Invalid Credentials');
     }
 
-    return { accessToken: await this.signToken(user.tokenPayload) };
+    const ability = this.abilityFactory.createForPayload(user.tokenPayload);
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    return { accessToken: await this.signToken({ ...user.tokenPayload, permissions: ability.rules }) };
   }
 
-  private async signToken(payload: object): Promise<string> {
+  private async signToken(payload: JwtPayload): Promise<string> {
     return this.jwtService.signAsync(payload, {
       expiresIn: '1d'
     });
