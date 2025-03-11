@@ -9,6 +9,7 @@ import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest
 import type { Mock } from 'vitest';
 import { z } from 'zod';
 
+import { RouteAccess } from '../../../decorators/route-access.decorator.js';
 import { ConfigModule } from '../../config/config.module.js';
 import { CryptoModule } from '../../crypto/crypto.module.js';
 import { CryptoService } from '../../crypto/crypto.service.js';
@@ -21,11 +22,16 @@ import type { BaseEnv } from '../../../schemas/env.schema.js';
 @Controller('cats')
 class CatsController {
   @Get()
-  get() {
+  @RouteAccess({ action: 'read', subject: 'Cat' })
+  getCats() {
     return {
       name: 'Winston'
     };
   }
+  // @Get('undefined-route-access')
+  // getRouteWithUndefinedRouteAccess() {
+  //   return {};
+  // }
 }
 
 describe('AuthModule', () => {

@@ -1,3 +1,4 @@
+import { InternalServerErrorException } from '@nestjs/common';
 import type { ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import type { Request } from 'express';
@@ -48,6 +49,12 @@ describe('JwtAuthGuard', () => {
     await expect(guard.canActivate(context)).resolves.toBe(true);
     expect(loggingService.verbose).toHaveBeenCalledTimes(2);
     expect(loggingService.verbose).toHaveBeenLastCalledWith('Granting access for public route: http://localhost:5500');
+  });
+
+  it('should throw an InternalServerError if RouteAccess is not defined for a route', async () => {
+    reflector.get.mockReturnValueOnce(undefined);
+    await expect(guard.canActivate(context)).rejects.toThrowError(InternalServerErrorException);
+    expect(loggingService.error).toHaveBeenLastCalledWith(`Route access is not defined for url: http://localhost:5500`);
   });
 
   it('should return false for a protected route, if AuthGuard.canActivate returns false', async () => {

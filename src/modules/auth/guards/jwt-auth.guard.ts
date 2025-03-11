@@ -28,10 +28,10 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
       context.getHandler()
     );
 
-    // if (!routeAccess) {
-    //   this.loggingService.error(`Route access is not defined for url: ${request.url}`);
-    //   throw new InternalServerErrorException();
-    // }
+    if (!routeAccess) {
+      this.loggingService.error(`Route access is not defined for url: ${request.url}`);
+      throw new InternalServerErrorException();
+    }
 
     if (routeAccess === 'public') {
       this.loggingService.verbose(`Granting access for public route: ${request.url}`);
