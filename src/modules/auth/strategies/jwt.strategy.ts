@@ -3,10 +3,16 @@ import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 
 import { ConfigService } from '../../config/config.service.js';
+import { AbilityFactory } from '../ability.factory.js';
+
+import type { JwtPayload } from '../auth.config.js';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
-  constructor(configService: ConfigService) {
+  constructor(
+    configService: ConfigService,
+    private readonly abilityFactory: AbilityFactory
+  ) {
     super({
       ignoreExpiration: configService.getOrThrow('NODE_ENV') === 'development',
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -14,7 +20,8 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     });
   }
 
-  async validate() {
-    return Promise.resolve({});
+  validate(payload: JwtPayload) {
+    const ability = this.abilityFactory.createForPermissions(payload.permissions);
+    return { ability };
   }
 }
