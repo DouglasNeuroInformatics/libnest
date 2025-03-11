@@ -18,6 +18,7 @@ import { AuthModule } from '../auth.module.js';
 import { JwtStrategy } from '../strategies/jwt.strategy.js';
 
 import type { BaseEnv } from '../../../schemas/env.schema.js';
+import type { DefineAbility } from '../auth.config.js';
 
 @Controller('cats')
 class CatsController {
@@ -40,6 +41,7 @@ describe('AuthModule', () => {
 
   let jwtStrategy: JwtStrategy;
 
+  let defineAbility: Mock<DefineAbility>;
   let userQuery: Mock;
 
   const loginCredentials = {
@@ -51,12 +53,14 @@ describe('AuthModule', () => {
   const tokenPayload = { username: 'admin' };
 
   beforeAll(async () => {
+    defineAbility = vi.fn();
     userQuery = vi.fn();
 
     const moduleRef = await Test.createTestingModule({
       controllers: [CatsController],
       imports: [
         AuthModule.forRoot({
+          defineAbility,
           loginCredentialsSchema: z.object({
             password: z.string(),
             username: z.string()
@@ -145,6 +149,9 @@ describe('AuthModule', () => {
 
       beforeAll(async () => {
         userQuery.mockResolvedValueOnce({ hashedPassword, tokenPayload });
+        defineAbility.mockImplementationOnce((ability) => {
+          ability.can('manage', 'Cat');
+        });
         const response = await request(server).post('/auth/login').send(loginCredentials);
         accessToken = response.body.accessToken;
       });
@@ -159,7 +166,12 @@ describe('AuthModule', () => {
         await request(server).get('/cats').set('Authorization', `Bearer ${accessToken}`);
         expect(validate).toHaveBeenCalledOnce();
         expect(validate.mock.lastCall![0]).toMatchObject({
-          permissions: [],
+          permissions: [
+            {
+              action: 'manage',
+              subject: 'Cat'
+            }
+          ],
           username: 'admin'
         });
       });

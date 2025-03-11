@@ -41,10 +41,17 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     const isAuthenticated = await super.canActivate(context);
     if (isAuthenticated !== true) {
       return false;
-    } else if (!(request.user?.ability instanceof PureAbility)) {
+    }
+
+    const ability = request.user?.ability;
+
+    if (!(ability instanceof PureAbility)) {
       this.loggingService.error('User property of request does not include expected AppAbility');
       throw new InternalServerErrorException();
     }
-    return true;
+
+    return Array.isArray(routeAccess)
+      ? routeAccess.every(({ action, subject }) => ability.can(action, subject))
+      : ability.can(routeAccess.action, routeAccess.subject);
   }
 }

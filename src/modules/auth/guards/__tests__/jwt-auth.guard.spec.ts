@@ -88,6 +88,17 @@ describe('JwtAuthGuard', () => {
     );
   });
 
+  it('should return false for a protected route, if the user does not have the right permissions', async () => {
+    reflector.get.mockReturnValueOnce({
+      action: 'manage',
+      subject: 'all'
+    } satisfies RouteAccessType);
+    BaseConstructor.prototype.canActivate.mockResolvedValueOnce(true);
+    const ability = AbilityFactory.prototype.createForPermissions([{ action: 'manage', subject: 'Cat' }]);
+    getRequest.mockReturnValueOnce({ url: 'http://localhost:5500', user: { ability } });
+    await expect(guard.canActivate(context)).resolves.toBe(false);
+  });
+
   it('should return true for a protected route, if the user has the right permissions', async () => {
     reflector.get.mockReturnValueOnce({
       action: 'manage',
