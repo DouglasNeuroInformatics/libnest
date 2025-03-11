@@ -82,29 +82,28 @@ describe('AbilityFactory', () => {
       expect(ability.rules).toStrictEqual(permissions);
       expect(ability.can('create', 'Cat')).toBe(true);
     });
-    // it('should correctly detect the subject type', () => {
-    //   const permissions: Permission[] = [
-    //     {
-    //       action: 'manage',
-    //       conditions: {
-    //         id: {
-    //           in: [0, 1]
-    //         }
-    //       },
-    //       subject: 'Cat'
-    //     }
-    //   ];
-    //   const ability = abilityFactory.createForPermissions(permissions);
-    //   expect(ability.rules).toStrictEqual(permissions);
-
-    //   // const cat1 = { __modelName: 'Cat', id: 1 };
-    //   // const cat2 = { __modelName: 'Cat', id: 2 };
-    //   // const dog = { __modelName: 'Dog', id: 1 };
-    //   // const obj = { id: 1 };
-    //   // expect(ability.can('manage', cat1)).toBe(true);
-    //   // expect(ability.can('manage', cat2)).toBe(false);
-    //   // expect(ability.can('manage', dog)).toBe(false);
-    //   // expect(ability.can('manage', obj as any)).toBe(false);
-    // });
+    it('should correctly detect the subject type', () => {
+      const permissions: Permission[] = [
+        {
+          action: 'manage',
+          conditions: {
+            id: {
+              in: [0, 1]
+            }
+          },
+          subject: 'Cat'
+        }
+      ];
+      const ability = abilityFactory.createForPermissions(permissions);
+      expect(ability.rules).toStrictEqual(permissions);
+      const cat1 = { __modelName: 'Cat', id: 1 };
+      const cat2 = { __modelName: 'Cat', id: 2 };
+      const dog = { __modelName: 'Dog', id: 1 };
+      const obj = { id: 1 };
+      expect(ability.can('manage', cat1)).toBe(true);
+      expect(ability.can('manage', cat2)).toBe(false);
+      expect(ability.can('manage', dog)).toBe(false);
+      expect(ability.can('manage', obj as any)).toBe(false);
+    });
   });
 });

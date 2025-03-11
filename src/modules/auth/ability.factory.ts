@@ -1,10 +1,10 @@
-import { AbilityBuilder, detectSubjectType, PureAbility } from '@casl/ability';
+import { AbilityBuilder, detectSubjectType } from '@casl/ability';
 import { createPrismaAbility } from '@casl/prisma';
 import { Inject, Injectable } from '@nestjs/common';
 
 import { DEFINE_ABILITY_TOKEN } from './auth.config.js';
 
-import type { AppAbilities, AppAbility, AppConditions, DefineAbility, Permission } from './auth.config.js';
+import type { AppAbilities, AppAbility, DefineAbility, Permission } from './auth.config.js';
 
 @Injectable()
 export class AbilityFactory {
@@ -28,7 +28,7 @@ export class AbilityFactory {
   }
 
   createForPermissions(permissions: Permission[]): AppAbility {
-    return new PureAbility<AppAbilities, AppConditions>(permissions, {
+    return createPrismaAbility<AppAbilities>(permissions, {
       detectSubjectType: this.detectSubjectType
     });
   }
