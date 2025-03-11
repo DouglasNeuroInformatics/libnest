@@ -69,11 +69,9 @@ type LoginResponseBody = {
 
 type AuthModuleOptions<
   TLoginCredentialsSchema extends BaseLoginCredentialsSchema = BaseLoginCredentialsSchema,
-  TUserQuery extends UserQuery<z.TypeOf<NoInfer<TLoginCredentialsSchema>>> = UserQuery<
-    z.TypeOf<NoInfer<TLoginCredentialsSchema>>
-  >
+  TUserQuery extends UserQuery<z.TypeOf<TLoginCredentialsSchema>> = UserQuery<z.TypeOf<TLoginCredentialsSchema>>
 > = {
-  defineAbility?: DefineAbility<NonNullable<Awaited<ReturnType<NoInfer<TUserQuery>>>>['tokenPayload']>;
+  defineAbility?: DefineAbility<NonNullable<Awaited<ReturnType<UserQuery>>>['tokenPayload']>;
   loginCredentialsSchema: TLoginCredentialsSchema;
   userQuery: TUserQuery;
 };
