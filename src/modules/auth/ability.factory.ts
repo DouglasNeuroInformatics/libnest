@@ -8,6 +8,13 @@ import type { AppAbilities, AppAbility, AppConditions, DefineAbility, Permission
 
 @Injectable()
 export class AbilityFactory {
+  private detectSubjectType = (obj: { [key: string]: unknown }) => {
+    if (typeof obj.__modelName === 'string') {
+      return obj.__modelName;
+    }
+    return detectSubjectType(obj);
+  };
+
   constructor(@Inject(DEFINE_ABILITY_TOKEN) private readonly defineAbility?: DefineAbility) {}
 
   createForPayload(tokenPayload: { [key: string]: any }): AppAbility {
@@ -16,16 +23,13 @@ export class AbilityFactory {
       this.defineAbility(abilityBuilder, tokenPayload);
     }
     return abilityBuilder.build({
-      detectSubjectType: (obj: { [key: string]: unknown }) => {
-        if (typeof obj.__modelName === 'string') {
-          return obj.__modelName;
-        }
-        return detectSubjectType(obj);
-      }
+      detectSubjectType: this.detectSubjectType
     });
   }
 
   createForPermissions(permissions: Permission[]): AppAbility {
-    return new PureAbility<AppAbilities, AppConditions>(permissions);
+    return new PureAbility<AppAbilities, AppConditions>(permissions, {
+      detectSubjectType: this.detectSubjectType
+    });
   }
 }
