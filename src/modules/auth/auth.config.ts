@@ -71,7 +71,7 @@ type AuthModuleOptions<
   TLoginCredentialsSchema extends BaseLoginCredentialsSchema = BaseLoginCredentialsSchema,
   TUserQuery extends UserQuery<z.TypeOf<TLoginCredentialsSchema>> = UserQuery<z.TypeOf<TLoginCredentialsSchema>>
 > = {
-  defineAbility?: DefineAbility<NonNullable<Awaited<ReturnType<UserQuery>>>['tokenPayload']>;
+  defineAbility?: DefineAbility<NonNullable<Awaited<ReturnType<TUserQuery>>>['tokenPayload']>;
   loginCredentialsSchema: TLoginCredentialsSchema;
   userQuery: TUserQuery;
 };
