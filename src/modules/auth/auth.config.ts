@@ -4,24 +4,30 @@ import type { PrismaQuery, Subjects } from '@casl/prisma';
 import { ConfigurableModuleBuilder } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import type { DefaultSelection } from '@prisma/client/runtime/library';
-import type { IfNever } from 'type-fest';
 import type { z } from 'zod';
 
 import { defineToken } from '../../utils/token.utils.js';
 
+type FallbackIfNever<T, U> = [T] extends [never] ? U : T;
+
 type AppAction = 'create' | 'delete' | 'manage' | 'read' | 'update';
 
-type AppSubjects = Subjects<{
+type DefaultAppSubjects =
+  | string
+  | {
+      [key: string]: unknown;
+      __modelName: string;
+    };
+
+type RuntimeAppSubjects = Subjects<{
   [K in keyof Prisma.TypeMap['model']]: DefaultSelection<Prisma.TypeMap['model'][K]['payload']>;
 }>;
 
-type AppSubjectName = IfNever<AppSubjects, string, Extract<AppSubjects, string>>;
+type AppSubjects = FallbackIfNever<RuntimeAppSubjects, DefaultAppSubjects>;
 
-type AppAbility = IfNever<
-  AppSubjects,
-  PureAbility<[AppAction, any], any>,
-  PureAbility<[AppAction, AppSubjects], PrismaQuery>
->;
+type AppSubjectName = Extract<AppSubjects, string>;
+
+type AppAbility = PureAbility<[AppAction, AppSubjects], FallbackIfNever<PrismaQuery, unknown>>;
 
 type DefineAbility<TPayload extends { [key: string]: unknown } = { [key: string]: unknown }> = (
   ability: AbilityBuilder<AppAbility>,

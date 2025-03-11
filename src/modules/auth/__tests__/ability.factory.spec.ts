@@ -65,7 +65,7 @@ describe('AbilityFactory', () => {
       expect(ability.can('manage', cat1)).toBe(true);
       expect(ability.can('manage', cat2)).toBe(false);
       expect(ability.can('manage', dog)).toBe(false);
-      expect(ability.can('manage', obj)).toBe(false);
+      expect(ability.can('manage', obj as any)).toBe(false);
     });
   });
 });

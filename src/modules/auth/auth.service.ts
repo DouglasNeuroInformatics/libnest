@@ -28,7 +28,6 @@ export class AuthService {
 
     const ability = this.abilityFactory.createForPayload(user.tokenPayload);
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     return { accessToken: await this.signToken({ ...user.tokenPayload, permissions: ability.rules }) };
   }
 
