@@ -23,7 +23,8 @@ type RuntimeAppSubjects = Subjects<{
   [K in keyof Prisma.TypeMap['model']]: DefaultSelection<Prisma.TypeMap['model'][K]['payload']>;
 }>;
 
-type AppSubjects = FallbackIfNever<RuntimeAppSubjects, DefaultAppSubjects>;
+// eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+type AppSubjects = 'all' | FallbackIfNever<RuntimeAppSubjects, DefaultAppSubjects>;
 
 type AppSubjectName = Extract<AppSubjects, string>;
 
