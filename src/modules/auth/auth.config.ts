@@ -71,7 +71,11 @@ type AuthModuleOptions<
   TLoginCredentialsSchema extends BaseLoginCredentialsSchema = BaseLoginCredentialsSchema,
   TUserQuery extends UserQuery<z.TypeOf<TLoginCredentialsSchema>> = UserQuery<z.TypeOf<TLoginCredentialsSchema>>
 > = {
-  defineAbility?: DefineAbility<NonNullable<Awaited<ReturnType<TUserQuery>>>['tokenPayload']>;
+  defineAbility: TUserQuery extends (...args: any[]) => Promise<infer R>
+    ? R extends { tokenPayload: infer TPayload extends { [key: string]: unknown } }
+      ? DefineAbility<TPayload>
+      : never
+    : never;
   loginCredentialsSchema: TLoginCredentialsSchema;
   userQuery: TUserQuery;
 };
