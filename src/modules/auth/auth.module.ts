@@ -19,7 +19,7 @@ import { LoginCredentialsDto } from './dto/login-credentials.dto.js';
 import { JwtAuthGuard } from './guards/jwt-auth.guard.js';
 import { JwtStrategy } from './strategies/jwt.strategy.js';
 
-import type { AuthModuleOptions, BaseLoginCredentials, BaseLoginCredentialsSchema, UserQuery } from './auth.config.js';
+import type { AuthModuleOptions, BaseLoginCredentialsSchema, UserQuery } from './auth.config.js';
 
 @Module({
   controllers: [AuthController],
@@ -64,13 +64,13 @@ export class AuthModule extends ConfigurableAuthModule implements OnModuleInit {
   }
 
   static forRoot<
-    TLoginCredentialsSchema extends z.ZodType<BaseLoginCredentials>,
+    TLoginCredentialsSchema extends BaseLoginCredentialsSchema,
     TUserQuery extends UserQuery<z.TypeOf<TLoginCredentialsSchema>>
   >(options: AuthModuleOptions<TLoginCredentialsSchema, TUserQuery>): DynamicModule {
     return super.forRoot(options);
   }
   static forRootAsync<
-    TLoginCredentialsSchema extends z.ZodType<BaseLoginCredentials>,
+    TLoginCredentialsSchema extends BaseLoginCredentialsSchema,
     TUserQuery extends UserQuery<z.TypeOf<TLoginCredentialsSchema>>
   >(
     options: ConfigurableModuleAsyncOptions<AuthModuleOptions<TLoginCredentialsSchema, TUserQuery>, 'create'>
