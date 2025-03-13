@@ -18,7 +18,7 @@ import { AuthModule } from '../auth.module.js';
 import { JwtStrategy } from '../strategies/jwt.strategy.js';
 
 import type { BaseEnv } from '../../../schemas/env.schema.js';
-import type { DefineAbility } from '../auth.config.js';
+import type { DefineAbility, UserQuery } from '../auth.config.js';
 
 @Controller('cats')
 class CatsController {
@@ -43,7 +43,7 @@ describe('AuthModule', () => {
   let jwtStrategy: JwtStrategy;
 
   let defineAbility: Mock<DefineAbility>;
-  let userQuery: Mock;
+  let userQuery: Mock<UserQuery>;
 
   const loginCredentials = {
     password: 'password',
@@ -66,7 +66,7 @@ describe('AuthModule', () => {
             password: z.string(),
             username: z.string()
           }),
-          userQuery
+          userQuery: userQuery
         }),
         ConfigModule.forRoot({
           envConfig: {
@@ -113,7 +113,7 @@ describe('AuthModule', () => {
 
     it('should return status code 401 if the hashed password is incorrect', async () => {
       const comparePassword = vi.spyOn(CryptoService.prototype, 'comparePassword');
-      userQuery.mockResolvedValueOnce({ hashedPassword: '123$123' });
+      userQuery.mockResolvedValueOnce({ hashedPassword: '123$123', tokenPayload });
       const response = await request(server).post('/auth/login').send(loginCredentials);
       expect(response.status).toBe(401);
       expect(userQuery).toHaveBeenCalledExactlyOnceWith(loginCredentials);

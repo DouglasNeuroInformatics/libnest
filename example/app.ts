@@ -16,8 +16,10 @@ export default await AppContainer.create({
       inject: [CryptoService],
       useFactory: (cryptoService: CryptoService) => {
         return {
-          defineAbility: (ability) => {
-            ability.can('manage', 'all');
+          defineAbility: (ability, payload: { isAdmin: boolean }) => {
+            if (payload.isAdmin) {
+              ability.can('manage', 'all');
+            }
           },
           loginCredentialsSchema: z.object({
             password: z.string().min(1),
@@ -29,7 +31,9 @@ export default await AppContainer.create({
             }
             return {
               hashedPassword: await cryptoService.hashPassword('password'),
-              tokenPayload: {}
+              tokenPayload: {
+                isAdmin: true
+              }
             };
           }
         };
