@@ -29,8 +29,8 @@ export default defineConfig({
   ],
   test: {
     coverage: {
-      exclude: ['src/**/?(*.)index.ts', 'src/**/*.test-d.ts', 'src/user-config.ts'],
-      include: ['src/**/*'],
+      exclude: ['src/**/?(*.)index.ts', 'src/**/*.test-d.ts', 'src/**/*.dto.ts', 'src/user-config.ts'],
+      include: ['example/**/*', 'src/**/*'],
       provider: 'v8',
       skipFull: true,
       thresholds: {
@@ -38,7 +38,7 @@ export default defineConfig({
       }
     },
     globals: true,
-    include: ['src/**/*.{test,spec}.?(c|m)[jt]s?(x)'],
+    include: ['{example,src}/**/*.{test,spec}.?(c|m)[jt]s?(x)'],
     root: './',
     setupFiles: [path.resolve(import.meta.dirname, 'src/testing/setup.ts')],
     watch: false

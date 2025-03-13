@@ -16,7 +16,7 @@ vi.mock('node:process', () => ({
   }
 }));
 
-vi.mock('../lib.js', () => ({
+vi.mock('./lib.js', () => ({
   resolveAbsoluteImportPath,
   runDev
 }));

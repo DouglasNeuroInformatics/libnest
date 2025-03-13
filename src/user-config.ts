@@ -1,66 +1,42 @@
-/**
- * This module provides a helper function to setup for the `libnest` CLI. It also
- * exports interfaces that users can augment in their application.
- * @module user-config
- */
+import type { Promisable } from 'type-fest';
+import type { z } from 'zod';
 
-import type { BaseRuntimeConfig } from './config/config.schema.js';
-
-declare global {
-  namespace Express {
-    interface Request {
-      user?: User;
-    }
-    interface User {
-      [key: string]: unknown;
-    }
-  }
-}
+import type { AppContainer } from './app/app.container.js';
 
 /**
- * Represents the parsed environment variables available at runtime.
- *
- * This type should be augmented by users to include additional configuration properties in their schema.
- *
- * ### Example:
- * ```typescript
- * declare module '@douglasneuroinformatics/libnest/user-config' {
- *   export interface RuntimeConfig {
- *     foo: string;
- *   }
- * }
- * ```
+ * Configuration options for a `libnest` application.
  */
-export interface RuntimeConfig extends BaseRuntimeConfig {}
-
-/**
- * Represents the `PrismaClient` for your application. Users should augment
- * this declaration with their own `PrismaClient`.
- */
-export type { RuntimePrismaClient } from './prisma/prisma.types.js';
-
-/**
- * Configuration options for the user-defined settings in the `libnest` CLI.
- */
-export interface UserConfigOptions {
+export type UserConfigOptions = {
   /**
    * The entry point for the `libnest` CLI.
    *
    * This should be a module whose default export is a function that initializes the application.
    */
-  entry: string;
+  entry: () => Promise<{ [key: string]: any }>;
 
   /**
    * Optional global variables that should be defined at runtime.
    */
   globals?: { [key: string]: unknown };
-}
+};
 
 /**
- * Defines user configuration options with type safety.
+ * Defines configuration options with type safety.
  * @param config - The configuration options for the application.
  * @returns The same configuration options
  */
-export function defineUserConfig(config: UserConfigOptions) {
+export function defineUserConfig<T extends UserConfigOptions>(config: T) {
   return config;
 }
+
+export type InferUserConfig<T extends UserConfigOptions> = T extends {
+  entry: () => Promise<{ default: infer U extends Promisable<AppContainer> }>;
+}
+  ? Awaited<U> extends { __inferredEnvSchema: infer TSchema extends z.ZodTypeAny }
+    ? {
+        RuntimeEnv: z.TypeOf<TSchema>;
+      }
+    : never
+  : never;
+
+export interface UserConfig {}
