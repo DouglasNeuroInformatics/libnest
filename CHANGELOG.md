@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.0.1](https://github.com/DouglasNeuroInformatics/libnest/compare/v2.0.0...v2.0.1) (2025-03-14)
+
+### Bug Fixes
+
+* add explicit schema for token payload ([1bc1aeb](https://github.com/DouglasNeuroInformatics/libnest/commit/1bc1aeb9764bda1ee7f7e69b63429b3906c0f5bb))
+
 ## [2.0.0](https://github.com/DouglasNeuroInformatics/libnest/compare/v1.0.0...v2.0.0) (2025-03-13)
 
 ### ⚠ BREAKING CHANGES
