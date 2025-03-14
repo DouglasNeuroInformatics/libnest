@@ -11,7 +11,7 @@ export { LoggingService } from './modules/logging/logging.service.js';
 export { InjectModel } from './modules/prisma/prisma.decorators.js';
 export { PrismaService } from './modules/prisma/prisma.service.js';
 export type { Model } from './modules/prisma/prisma.types.js';
-export { getModelToken } from './modules/prisma/prisma.utils.js';
+export { accessibleQuery, getModelToken } from './modules/prisma/prisma.utils.js';
 export type { VirtualizationModuleOptions } from './modules/virtualization/virtualization.config.js';
 export { VirtualizationModule } from './modules/virtualization/virtualization.module.js';
 export { VirtualizationService } from './modules/virtualization/virtualization.service.js';
