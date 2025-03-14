@@ -16,5 +16,13 @@ export type PrismaModelKey<T extends PrismaModelName = PrismaModelName> = Uncapi
 
 export type PrismaModelToken<T extends PrismaModelName> = `${T}PrismaModel`;
 
+export type PrismaModelWhereInputMap = {
+  [K in PrismaModelName]: PrismaClientLike[PrismaModelKey<K>] extends {
+    findFirst: (args: { where: infer TWhereInput }) => any;
+  }
+    ? TWhereInput
+    : never;
+};
+
 export type Model<T extends PrismaModelName> =
   RuntimePrismaClient extends SingleKeyMap<`${Uncapitalize<T>}`, infer U> ? U : never;

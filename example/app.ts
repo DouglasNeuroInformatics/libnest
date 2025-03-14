@@ -16,7 +16,7 @@ export default await AppContainer.create({
       inject: [CryptoService],
       useFactory: (cryptoService: CryptoService) => {
         return {
-          defineAbility: (ability, payload: { isAdmin: boolean }) => {
+          defineAbility: (ability, payload) => {
             if (payload.isAdmin) {
               ability.can('manage', 'all');
             }
