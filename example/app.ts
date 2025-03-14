@@ -21,10 +21,15 @@ export default await AppContainer.create({
               ability.can('manage', 'all');
             }
           },
-          loginCredentialsSchema: z.object({
-            password: z.string().min(1),
-            username: z.string().min(1)
-          }),
+          schemas: {
+            loginCredentials: z.object({
+              password: z.string().min(1),
+              username: z.string().min(1)
+            }),
+            tokenPayload: z.object({
+              isAdmin: z.boolean()
+            })
+          },
           userQuery: async ({ username }) => {
             if (username !== 'admin') {
               return null;
