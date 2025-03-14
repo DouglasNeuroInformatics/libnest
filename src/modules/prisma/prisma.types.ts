@@ -16,7 +16,7 @@ export type PrismaModelKey<T extends PrismaModelName = PrismaModelName> = Uncapi
 
 export type PrismaModelToken<T extends PrismaModelName> = `${T}PrismaModel`;
 
-export type PrismaModelWhereInput = {
+export type PrismaModelWhereInputMap = {
   [K in PrismaModelName]: PrismaClientLike[PrismaModelKey<K>] extends {
     findFirst: (args: { where: infer TWhereInput }) => any;
   }
