@@ -47,21 +47,18 @@ type BaseLoginCredentials = {
 
 type BaseLoginCredentialsSchema = z.ZodType<BaseLoginCredentials>;
 
-type UserQueryResult = {
-  hashedPassword: string;
-  tokenPayload: {
-    [key: string]: unknown;
-  };
-};
-
 interface JwtPayload {
   [key: string]: any;
   permissions: Permission[];
 }
 
-type UserQuery<TLoginCredentials extends BaseLoginCredentials = BaseLoginCredentials> = (
-  credentials: TLoginCredentials
-) => Promise<null | UserQueryResult>;
+type UserQuery<
+  TLoginCredentials extends BaseLoginCredentials = BaseLoginCredentials,
+  TPayload extends { [key: string]: unknown } = { [key: string]: unknown }
+> = (credentials: TLoginCredentials) => Promise<null | {
+  hashedPassword: string;
+  tokenPayload: TPayload;
+}>;
 
 type LoginResponseBody = {
   accessToken: string;
@@ -69,19 +66,18 @@ type LoginResponseBody = {
 
 type AuthModuleOptions<
   TLoginCredentialsSchema extends BaseLoginCredentialsSchema = BaseLoginCredentialsSchema,
-  TUserQuery extends UserQuery<z.TypeOf<TLoginCredentialsSchema>> = UserQuery<z.TypeOf<TLoginCredentialsSchema>>
+  TPayloadSchema extends z.ZodType<{ [key: string]: unknown }> = z.ZodType<{ [key: string]: unknown }>
 > = {
-  defineAbility: TUserQuery extends (...args: any[]) => Promise<infer R>
-    ? R extends { tokenPayload: infer TPayload extends { [key: string]: unknown } }
-      ? DefineAbility<TPayload>
-      : never
-    : never;
-  loginCredentialsSchema: TLoginCredentialsSchema;
-  userQuery: TUserQuery;
+  defineAbility: (ability: AbilityBuilder<AppAbility>, tokenPayload: z.TypeOf<TPayloadSchema>) => any;
+  schemas: {
+    loginCredentials: TLoginCredentialsSchema;
+    tokenPayload: TPayloadSchema;
+  };
+  userQuery: UserQuery<z.TypeOf<TLoginCredentialsSchema>, z.TypeOf<TPayloadSchema>>;
 };
 
 export const { ConfigurableModuleClass: ConfigurableAuthModule, MODULE_OPTIONS_TOKEN: AUTH_MODULE_OPTIONS_TOKEN } =
-  new ConfigurableModuleBuilder<AuthModuleOptions<any>>()
+  new ConfigurableModuleBuilder<AuthModuleOptions<any, any>>()
     .setClassMethodName('forRoot')
     .setExtras({}, (definition) => ({
       ...definition,
@@ -107,6 +103,5 @@ export type {
   JwtPayload,
   LoginResponseBody,
   Permission,
-  UserQuery,
-  UserQueryResult
+  UserQuery
 };

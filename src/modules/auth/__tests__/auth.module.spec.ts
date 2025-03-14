@@ -43,7 +43,7 @@ describe('AuthModule', () => {
   let jwtStrategy: JwtStrategy;
 
   let defineAbility: Mock<DefineAbility>;
-  let userQuery: Mock<UserQuery>;
+  let userQuery: Mock<UserQuery<{ password: string; username: string }, { username: string }>>;
 
   const loginCredentials = {
     password: 'password',
@@ -62,10 +62,15 @@ describe('AuthModule', () => {
       imports: [
         AuthModule.forRoot({
           defineAbility,
-          loginCredentialsSchema: z.object({
-            password: z.string(),
-            username: z.string()
-          }),
+          schemas: {
+            loginCredentials: z.object({
+              password: z.string(),
+              username: z.string()
+            }),
+            tokenPayload: z.object({
+              username: z.string()
+            })
+          },
           userQuery: userQuery
         }),
         ConfigModule.forRoot({
