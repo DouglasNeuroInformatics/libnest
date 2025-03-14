@@ -3,7 +3,7 @@ export { CurrentUser } from './decorators/current-user.decorator.js';
 export { RouteAccess } from './decorators/route-access.decorator.js';
 export { ValidationSchema } from './decorators/validation-schema.decorator.js';
 export { DataTransferObject } from './mixins/data-transfer-object.mixin.js';
-export type { AuthModuleOptions } from './modules/auth/auth.config.js';
+export type { AppAbility, AuthModuleOptions } from './modules/auth/auth.config.js';
 export { AuthModule } from './modules/auth/auth.module.js';
 export { ConfigService } from './modules/config/config.service.js';
 export { CryptoService } from './modules/crypto/crypto.service.js';
