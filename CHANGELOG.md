@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.0](https://github.com/DouglasNeuroInformatics/libnest/compare/v2.0.1...v2.1.0) (2025-03-14)
+
+### Features
+
+* add accessibleQuery ([9020a5c](https://github.com/DouglasNeuroInformatics/libnest/commit/9020a5c42ee76c8e4a3d99c6470ec5d92aeb5cb9))
+* add PrismaModelWhereInput ([7011547](https://github.com/DouglasNeuroInformatics/libnest/commit/7011547db16e1d454cb8fb18de535b221404aab1))
+
 ## [2.0.1](https://github.com/DouglasNeuroInformatics/libnest/compare/v2.0.0...v2.0.1) (2025-03-14)
 
 ### Bug Fixes
