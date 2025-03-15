@@ -1,0 +1,22 @@
+#!/usr/bin/env node
+// @ts-check
+
+import * as module from 'node:module';
+import * as process from 'node:process';
+
+import { program } from 'commander';
+
+const require = module.createRequire(import.meta.url);
+
+/** @type {{ name: string; version: string }} */
+const { name, version } = require('../../../package.json');
+
+// const program = new Command();
+program.name(name);
+program.version(version);
+program.allowExcessArguments(false);
+
+// program.command('build', 'build application for production');
+program.command('dev', 'run application in development mode');
+
+await program.parseAsync(process.argv);
