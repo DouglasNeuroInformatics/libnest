@@ -4,7 +4,9 @@
 import * as module from 'node:module';
 import * as process from 'node:process';
 
-import { program } from 'commander';
+import { Command } from 'commander';
+
+const program = new Command();
 
 const require = module.createRequire(import.meta.url);
 
