@@ -16,25 +16,25 @@ export class CryptoService {
     this.secretKey = options.secretKey;
   }
 
-  async comparePassword(password: string, hashedPassword: string) {
+  async comparePassword(password: string, hashedPassword: string): Promise<boolean> {
     const [hash, salt] = hashedPassword.split('$');
     const correctHash = await this.pbkdf2(password, salt!);
     return hash === correctHash;
   }
 
-  hash(source: string) {
+  hash(source: string): string {
     return createHash('sha256')
       .update(source + this.secretKey)
       .digest('hex');
   }
 
-  async hashPassword(password: string) {
+  async hashPassword(password: string): Promise<string> {
     const salt = this.genSalt();
     const hash = await this.pbkdf2(password, salt);
     return [hash, salt].join('$');
   }
 
-  private genSalt() {
+  private genSalt(): string {
     return randomBytes(16).toString('hex');
   }
 

@@ -11,7 +11,7 @@ export type DelayOptions = {
  * @returns An Express middleware function.
  */
 export function delay({ responseDelay }: DelayOptions) {
-  return (_req: Request, _res: Response, next: NextFunction) => {
+  return (_req: Request, _res: Response, next: NextFunction): void => {
     setTimeout(() => {
       next();
     }, responseDelay);

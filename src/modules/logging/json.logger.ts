@@ -48,21 +48,21 @@ export class JSONLogger implements JSONLoggerType, LoggerService {
 
   error(message: unknown, ...args: [...additionalMessages: any, context?: string]): void;
   error(message: unknown, context?: string): void;
-  error(...args: unknown[]) {
+  error(...args: unknown[]): void {
     const { context, messages } = this.getContextAndMessagesToPrint(args);
     this.printMessages(messages, { context, file: 'stderr', level: 'error' });
   }
 
   fatal(message: unknown, ...args: [...additionalMessages: any, context?: string]): void;
   fatal(message: unknown, context?: string): void;
-  fatal(...args: unknown[]) {
+  fatal(...args: unknown[]): void {
     const { context, messages } = this.getContextAndMessagesToPrint(args);
     this.printMessages(messages, { context, file: 'stderr', level: 'fatal' });
   }
 
   log(message: unknown, ...args: [...additionalMessages: any, context?: string]): void;
   log(message: unknown, context?: string): void;
-  log(...args: unknown[]) {
+  log(...args: unknown[]): void {
     if (!this.options.log) {
       return;
     }
@@ -72,7 +72,7 @@ export class JSONLogger implements JSONLoggerType, LoggerService {
 
   verbose(message: unknown, ...args: [...additionalMessages: any, context?: string]): void;
   verbose(message: unknown, context?: string): void;
-  verbose(...args: unknown[]) {
+  verbose(...args: unknown[]): void {
     if (!this.options.verbose) {
       return;
     }
@@ -82,7 +82,7 @@ export class JSONLogger implements JSONLoggerType, LoggerService {
 
   warn(message: unknown, ...args: [...additionalMessages: any, context?: string]): void;
   warn(message: unknown, context?: string): void;
-  warn(...args: unknown[]) {
+  warn(...args: unknown[]): void {
     if (!this.options.warn) {
       return;
     }
@@ -115,7 +115,10 @@ export class JSONLogger implements JSONLoggerType, LoggerService {
     };
   }
 
-  private getContextAndMessagesToPrint(args: unknown[]) {
+  private getContextAndMessagesToPrint(args: unknown[]): {
+    context: string | undefined;
+    messages: unknown[];
+  } {
     if (args.length <= 1 || typeof args.at(-1) !== 'string') {
       return { context: this.context, messages: args };
     }
@@ -132,7 +135,7 @@ export class JSONLogger implements JSONLoggerType, LoggerService {
       file: 'stderr' | 'stdout';
       level: LogLevel;
     }
-  ) {
+  ): void {
     messages.forEach((message) => {
       const output: { [key: string]: unknown } = {};
       if (isErrorLike(message)) {

@@ -80,7 +80,7 @@ export class PrismaFactory {
       Object.keys(Prisma.ModelName).forEach((modelName) => {
         result[getModelKey(modelName)] = {
           __modelName: {
-            compute: () => modelName
+            compute: (): string => modelName
           }
         };
       });

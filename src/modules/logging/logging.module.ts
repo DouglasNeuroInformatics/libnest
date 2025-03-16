@@ -7,6 +7,8 @@ import { LOGGING_MODULE_OPTIONS_TOKEN } from './logging.config.js';
 import { LoggingMiddleware } from './logging.middleware.js';
 import { LoggingService } from './logging.service.js';
 
+import type { LoggingOptions } from './logging.config.js';
+
 @Global()
 @Module({
   exports: [JSONLogger, LoggingService],
@@ -14,7 +16,7 @@ import { LoggingService } from './logging.service.js';
     {
       inject: [ConfigService],
       provide: LOGGING_MODULE_OPTIONS_TOKEN,
-      useFactory: (configService: ConfigService) => {
+      useFactory: (configService: ConfigService): LoggingOptions => {
         return {
           debug: configService.get('DEBUG'),
           log: configService.get('NODE_ENV') !== 'test',
@@ -27,7 +29,7 @@ import { LoggingService } from './logging.service.js';
   ]
 })
 export class LoggingModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
+  configure(consumer: MiddlewareConsumer): void {
     consumer.apply(LoggingMiddleware).forRoutes('*');
   }
 }

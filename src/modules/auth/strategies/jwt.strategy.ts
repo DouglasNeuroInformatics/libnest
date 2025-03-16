@@ -5,7 +5,7 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { ConfigService } from '../../config/config.service.js';
 import { AbilityFactory } from '../ability.factory.js';
 
-import type { JwtPayload } from '../auth.config.js';
+import type { AppAbility, JwtPayload } from '../auth.config.js';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
@@ -20,7 +20,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     });
   }
 
-  validate(payload: JwtPayload) {
+  validate(payload: JwtPayload): { ability: AppAbility } {
     const ability = this.abilityFactory.createForPermissions(payload.permissions);
     return { ability };
   }

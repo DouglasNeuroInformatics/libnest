@@ -41,7 +41,7 @@ function importDefault(
     importFn = argument;
     context = `module inferred as return value from function '${importFn.name || 'anonymous'}'`;
   } else {
-    importFn = () => import(argument);
+    importFn = (): Promise<{ [key: string]: unknown }> => import(argument);
     context = argument;
   }
   return fromAsyncThrowable(

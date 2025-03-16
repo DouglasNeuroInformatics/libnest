@@ -1,5 +1,6 @@
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import type { OpenAPIObject } from '@nestjs/swagger';
 
 export type AppVersion = `${number}`;
 
@@ -27,7 +28,7 @@ export class DocsFactory {
   static createDocs(
     app: NestExpressApplication,
     { contact, description, externalDoc, license, tags, title, version }: DocsConfig
-  ) {
+  ): OpenAPIObject {
     const documentBuilder = new DocumentBuilder();
     documentBuilder.setTitle(title);
 

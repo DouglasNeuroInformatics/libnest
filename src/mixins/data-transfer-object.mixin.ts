@@ -20,7 +20,7 @@ export function DataTransferObject<T extends z.ZodRawShape>(shape: T): Class<z.T
  * @param shapeOrSchema - Zod raw shape or schema for the DTO.
  * @returns A DTO class with validation.
  */
-export function DataTransferObject(shapeOrSchema: z.ZodRawShape | z.ZodType<{ [key: string]: any }>) {
+export function DataTransferObject(shapeOrSchema: z.ZodRawShape | z.ZodType<{ [key: string]: any }>): unknown {
   const schema = shapeOrSchema instanceof z.ZodType ? shapeOrSchema : z.object(shapeOrSchema);
   const Target = class {} as Class<z.TypeOf<typeof schema>>;
   applyValidationSchema(Target, schema);

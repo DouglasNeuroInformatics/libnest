@@ -105,7 +105,7 @@ export class AppModule implements NestModule {
     };
   }
 
-  configure(consumer: MiddlewareConsumer) {
+  configure(consumer: MiddlewareConsumer): void {
     const isProd = this.configService.get('NODE_ENV') === 'production';
     const responseDelay = this.configService.get('API_RESPONSE_DELAY');
     if (!isProd && responseDelay) {

@@ -64,7 +64,11 @@ export class AppContainer {
     prisma,
     providers,
     version
-  }: CreateAppContainerOptions<TEnvSchema>) {
+  }: CreateAppContainerOptions<TEnvSchema>): Promise<
+    AppContainer & {
+      __inferredEnvSchema: TEnvSchema;
+    }
+  > {
     const envConfigResult = safeParse(
       filterObject(process.env, (value) => value !== ''),
       envSchema
@@ -84,14 +88,14 @@ export class AppContainer {
     };
   }
 
-  async bootstrap() {
+  async bootstrap(): Promise<void> {
     const logger = this.#app.get(JSONLogger);
     await this.#app.listen(this.#port);
     const url = await this.#app.getUrl();
     logger.log(`Application is running on: ${url}`);
   }
 
-  getApplicationInstance() {
+  getApplicationInstance(): NestExpressApplication {
     return this.#app;
   }
 }

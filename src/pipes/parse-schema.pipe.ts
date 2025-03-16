@@ -12,7 +12,7 @@ export class ParseSchemaPipe<T> implements PipeTransform<T> {
     this.schema = options.schema;
   }
 
-  async transform(value: unknown) {
+  async transform(value: unknown): Promise<T | undefined> {
     if (this.isOptional && value === undefined) {
       return undefined;
     }

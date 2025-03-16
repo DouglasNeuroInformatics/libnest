@@ -25,7 +25,7 @@ export type UserConfigOptions = {
  * @param config - The configuration options for the application.
  * @returns The same configuration options
  */
-export function defineUserConfig<T extends UserConfigOptions>(config: T) {
+export function defineUserConfig<T extends UserConfigOptions>(config: T): T {
   return config;
 }
 

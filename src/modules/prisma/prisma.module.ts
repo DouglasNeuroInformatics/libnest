@@ -8,6 +8,7 @@ import { PrismaService } from './prisma.service.js';
 import { getModelKey, getModelToken } from './prisma.utils.js';
 
 import type { PrismaModuleOptions } from './prisma.config.js';
+import type { ExtendedPrismaClient } from './prisma.factory.js';
 import type { PrismaClientLike } from './prisma.types.js';
 
 @Module({})
@@ -23,7 +24,7 @@ export class PrismaModule {
         {
           inject: [PrismaFactory],
           provide: PRISMA_CLIENT_TOKEN,
-          useFactory: (prismaFactory: PrismaFactory) => {
+          useFactory: (prismaFactory: PrismaFactory): ExtendedPrismaClient => {
             return prismaFactory.createClient(options);
           }
         },
@@ -39,8 +40,8 @@ export class PrismaModule {
       return {
         inject: [PRISMA_CLIENT_TOKEN],
         provide: getModelToken(modelName),
-        useFactory: (prismaClient: PrismaClientLike) => {
-          return prismaClient[getModelKey(modelName)] as unknown;
+        useFactory: (prismaClient: PrismaClientLike): unknown => {
+          return prismaClient[getModelKey(modelName)];
         }
       };
     });
