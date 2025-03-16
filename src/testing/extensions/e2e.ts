@@ -13,6 +13,9 @@ export const e2e = test.extend<EndToEndFixtures>({
     async ({ app }, use): Promise<void> => {
       const server = app.getHttpServer();
       await use(request(server));
+    },
+    {
+      auto: true
     }
   ],
   app: [
@@ -36,6 +39,9 @@ export const e2e = test.extend<EndToEndFixtures>({
             throw err;
           }
         );
+    },
+    {
+      auto: true
     }
   ]
 });
