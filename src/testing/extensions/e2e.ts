@@ -20,7 +20,7 @@ export const e2e = test.extend<EndToEndFixtures>({
     async ({}, use): Promise<void> => {
       // we need to use dynamic import here, as importing meta utils will also import AppContainer, which
       // prevents mocking a host of dependencies in unit tests
-      const { findConfig, loadAppContainer, loadConfig } = await import('../utils/meta.utils.js');
+      const { findConfig, loadAppContainer, loadConfig } = await import('../../utils/meta.utils.js');
       await findConfig(import.meta.dirname)
         .asyncAndThen(loadConfig)
         .andThen(loadAppContainer)
