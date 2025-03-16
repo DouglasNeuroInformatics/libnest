@@ -10,7 +10,6 @@ import type { UserConfig } from '../user-config.js';
  * can extend this schema to include additional configuration parameters.
  *
  * @see {@link BaseEnv}
- * @see {@link RuntimeEnv}
  */
 export const $BaseEnv = z.object({
   API_PORT: $NumberLike.pipe(z.number().int().nonnegative()),
@@ -35,7 +34,6 @@ export const $BaseEnv = z.object({
  * schema must have, as it's output, a type that is assignable to this type.
  *
  * @see {@link $BaseEnv}
- * @see {@link RuntimeEnv}
  */
 export type BaseEnv = z.infer<typeof $BaseEnv>;
 
