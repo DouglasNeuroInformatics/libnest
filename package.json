@@ -44,7 +44,7 @@
     "example:dev": "env-cmd  -f .env.example ./src/cli/bin/libnest dev -c libnest.config.ts",
     "format": "prettier --write src",
     "knip": "knip",
-    "lint": "tsc && eslint --fix src",
+    "lint": "tsc && eslint --fix example src",
     "prepare": "husky",
     "prisma:generate": "prisma generate --allow-no-models",
     "test": "vitest",

@@ -23,7 +23,7 @@ export default config(
     }
   },
   {
-    files: ['**/*.spec.ts', '**/*.test.ts'],
+    files: ['**/*.spec.ts', '**/*.test.ts', 'example/**/*'],
     rules: {
       '@typescript-eslint/explicit-function-return-type': 'off'
     }
