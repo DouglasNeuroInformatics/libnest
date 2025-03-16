@@ -19,7 +19,8 @@ export type {
   AuthModuleOptions,
   BaseLoginCredentials,
   BaseLoginCredentialsSchema,
-  UserQuery
+  UserQuery,
+  UserQueryResult
 } from './modules/auth/auth.config.js';
 export { AuthModule } from './modules/auth/auth.module.js';
 export { ConfigService } from './modules/config/config.service.js';

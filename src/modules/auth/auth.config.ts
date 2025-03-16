@@ -51,13 +51,15 @@ interface JwtPayload {
   permissions: Permission[];
 }
 
+type UserQueryResult<TPayload extends { [key: string]: unknown } = { [key: string]: unknown }> = {
+  hashedPassword: string;
+  tokenPayload: TPayload;
+};
+
 type UserQuery<
   TLoginCredentials extends BaseLoginCredentials = BaseLoginCredentials,
   TPayload extends { [key: string]: unknown } = { [key: string]: unknown }
-> = (credentials: TLoginCredentials) => Promise<null | {
-  hashedPassword: string;
-  tokenPayload: TPayload;
-}>;
+> = (credentials: TLoginCredentials) => Promise<null | UserQueryResult<TPayload>>;
 
 type LoginResponseBody = {
   accessToken: string;
@@ -102,5 +104,6 @@ export type {
   JwtPayload,
   LoginResponseBody,
   Permission,
-  UserQuery
+  UserQuery,
+  UserQueryResult
 };
