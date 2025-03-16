@@ -15,7 +15,7 @@ const $UserConfigOptions: z.ZodType<UserConfigOptions> = z.object({
   globals: z.record(z.unknown()).optional()
 });
 
-function resolveAbsoluteImportPath(filename: string): Result<string, typeof RuntimeException.Instance> {
+function resolveAbsoluteImportPathFromCwd(filename: string): Result<string, typeof RuntimeException.Instance> {
   const filepath = path.resolve(process.cwd(), filename);
   const extension = path.extname(filepath);
   if (!fs.existsSync(filepath)) {
@@ -86,19 +86,17 @@ function importDefault(
  * @returns A `ResultAsync` containing the config options on success, or an error message on failure.
  */
 function loadConfig(configFile: string): ResultAsync<UserConfigOptions, typeof RuntimeException.Instance> {
-  return resolveAbsoluteImportPath(configFile)
-    .asyncAndThen(importDefault)
-    .andThen((config) => {
-      const result = $UserConfigOptions.safeParse(config);
-      if (!result.success) {
-        return RuntimeException.asAsyncErr(`Invalid format for default export in config file: ${configFile}`, {
-          details: {
-            issues: result.error.issues
-          }
-        });
-      }
-      return ok(result.data);
-    });
+  return importDefault(configFile).andThen((config) => {
+    const result = $UserConfigOptions.safeParse(config);
+    if (!result.success) {
+      return RuntimeException.asAsyncErr(`Invalid format for default export in config file: ${configFile}`, {
+        details: {
+          issues: result.error.issues
+        }
+      });
+    }
+    return ok(result.data);
+  });
 }
 
 /**
@@ -128,19 +126,21 @@ function runDev(configFile: string): ResultAsync<void, typeof RuntimeException.I
   if (!process.env.NODE_ENV) {
     process.env.NODE_ENV = 'development' satisfies NodeEnv;
   }
-  return loadConfig(configFile).andThen((config) => {
-    return loadAppContainer(config).map(async (appContainer) => {
-      if (config.globals) {
-        Object.entries(config.globals).forEach(([key, value]) => {
-          Object.defineProperty(globalThis, key, {
-            value,
-            writable: false
+  return resolveAbsoluteImportPathFromCwd(configFile)
+    .asyncAndThen(loadConfig)
+    .andThen((config) => {
+      return loadAppContainer(config).map(async (appContainer) => {
+        if (config.globals) {
+          Object.entries(config.globals).forEach(([key, value]) => {
+            Object.defineProperty(globalThis, key, {
+              value,
+              writable: false
+            });
           });
-        });
-      }
-      await appContainer.bootstrap();
+        }
+        await appContainer.bootstrap();
+      });
     });
-  });
 }
 
-export { findConfig, importDefault, loadAppContainer, loadConfig, resolveAbsoluteImportPath, runDev };
+export { findConfig, importDefault, loadAppContainer, loadConfig, resolveAbsoluteImportPathFromCwd, runDev };

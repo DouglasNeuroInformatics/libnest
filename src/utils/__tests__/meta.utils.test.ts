@@ -11,7 +11,7 @@ import {
   importDefault,
   loadAppContainer,
   loadConfig,
-  resolveAbsoluteImportPath,
+  resolveAbsoluteImportPathFromCwd,
   runDev
 } from '../meta.utils.js';
 
@@ -38,10 +38,10 @@ afterEach(() => {
   vi.resetAllMocks();
 });
 
-describe('resolveAbsoluteImportPath', () => {
+describe('resolveAbsoluteImportPathFromCwd', () => {
   it('should return an error if the path does not exist', () => {
     vi.spyOn(fs, 'existsSync').mockReturnValueOnce(false);
-    expect(resolveAbsoluteImportPath('src/main.ts')).toMatchObject({
+    expect(resolveAbsoluteImportPathFromCwd('src/main.ts')).toMatchObject({
       error: {
         message: expect.stringContaining('File does not exist')
       }
@@ -50,7 +50,7 @@ describe('resolveAbsoluteImportPath', () => {
   it('should return an error if the path exists, but is not a file', () => {
     vi.spyOn(fs, 'existsSync').mockReturnValueOnce(true);
     vi.spyOn(fs, 'lstatSync').mockReturnValueOnce({ isFile: () => false } as any);
-    expect(resolveAbsoluteImportPath('src/main.ts')).toMatchObject({
+    expect(resolveAbsoluteImportPathFromCwd('src/main.ts')).toMatchObject({
       error: {
         message: expect.stringContaining('Not a file')
       }
@@ -59,7 +59,7 @@ describe('resolveAbsoluteImportPath', () => {
   it('should return an error if the file has an invalid extension', () => {
     vi.spyOn(fs, 'existsSync').mockReturnValueOnce(true);
     vi.spyOn(fs, 'lstatSync').mockReturnValueOnce({ isFile: () => true } as any);
-    expect(resolveAbsoluteImportPath('src/main.txt')).toMatchObject({
+    expect(resolveAbsoluteImportPathFromCwd('src/main.txt')).toMatchObject({
       error: {
         message: expect.stringContaining("Unexpected file extension '.txt'")
       }
@@ -69,14 +69,14 @@ describe('resolveAbsoluteImportPath', () => {
   it('should return an absolute path when the file exists, relative to the working directory, and has a valid extension', () => {
     vi.spyOn(fs, 'existsSync').mockReturnValueOnce(true);
     vi.spyOn(fs, 'lstatSync').mockReturnValueOnce({ isFile: () => true } as any);
-    expect(resolveAbsoluteImportPath('src/main.ts')).toMatchObject({
+    expect(resolveAbsoluteImportPathFromCwd('src/main.ts')).toMatchObject({
       value: '/root/src/main.ts'
     });
   });
   it('should return an absolute path when the file exists and has a valid extension', () => {
     vi.spyOn(fs, 'existsSync').mockReturnValueOnce(true);
     vi.spyOn(fs, 'lstatSync').mockReturnValueOnce({ isFile: () => true } as any);
-    expect(resolveAbsoluteImportPath('/root/src/main.ts')).toMatchObject({
+    expect(resolveAbsoluteImportPathFromCwd('/root/src/main.ts')).toMatchObject({
       value: '/root/src/main.ts'
     });
   });
@@ -145,12 +145,11 @@ describe('loadConfig', () => {
     vi.spyOn(fs, 'existsSync').mockReturnValue(true);
     vi.spyOn(fs, 'lstatSync').mockReturnValue({ isFile: () => true } as any);
   });
-
   it('should return an error if importing the config file fails', async () => {
     vi.doMock(resolvedConfigFile, () => ({ default: 0 }));
-    await expect(loadConfig(configFile)).resolves.toMatchObject({
+    await expect(loadConfig(resolvedConfigFile)).resolves.toMatchObject({
       error: {
-        message: `Invalid format for default export in config file: ${configFile}`
+        message: `Invalid format for default export in config file: ${resolvedConfigFile}`
       }
     });
   });
