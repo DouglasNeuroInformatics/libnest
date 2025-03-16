@@ -12,8 +12,6 @@ export type PrismaModelName = IfNever<Prisma.ModelName, string, Prisma.ModelName
 
 export type PrismaModelKey<T extends PrismaModelName = PrismaModelName> = Uncapitalize<T>;
 
-export type PrismaModelToken<T extends PrismaModelName> = `${T}PrismaModel`;
-
 export type PrismaModelWhereInputMap = {
   [K in PrismaModelName]: PrismaClientLike[PrismaModelKey<K>] extends {
     findFirst: (args: { where: infer TWhereInput }) => any;

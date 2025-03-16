@@ -22,6 +22,15 @@ const entryPoints = Object.values(exports).map(({ import: importPath }) => {
 export default {
   cleanOutputDir: true,
   entryPoints,
+  intentionallyNotExported: [
+    'AppAbilities',
+    'AppConditions',
+    'AppSubjects',
+    'InferExtendedClient',
+    'ModelExtArgs',
+    'PrismaModelWhereInputMap',
+    'ResultExtArgs'
+  ],
   out: path.resolve(import.meta.dirname, 'docs'),
   plugin: ['typedoc-material-theme', 'typedoc-plugin-zod']
 };

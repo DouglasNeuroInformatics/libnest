@@ -14,7 +14,7 @@ import type { BaseEnv } from '../schemas/env.schema.js';
 import type { CreateAppModuleOptions } from './app.module.js';
 import type { AppVersion, DocsConfig } from './docs.factory.js';
 
-type EnvSchema = z.ZodType<BaseEnv, z.ZodTypeDef, { [key: string]: string }>;
+type BaseEnvSchema = z.ZodType<BaseEnv, z.ZodTypeDef, { [key: string]: string }>;
 
 type InitAppContainerOptions = {
   docs?: {
@@ -25,7 +25,7 @@ type InitAppContainerOptions = {
   version: AppVersion;
 };
 
-export type CreateAppContainerOptions<TEnvSchema extends EnvSchema = EnvSchema> = Simplify<
+export type CreateAppContainerOptions<TEnvSchema extends BaseEnvSchema = BaseEnvSchema> = Simplify<
   Omit<CreateAppModuleOptions<z.TypeOf<TEnvSchema>>, 'envConfig'> &
     Pick<InitAppContainerOptions, 'docs' | 'version'> & {
       envSchema: TEnvSchema;
@@ -57,7 +57,7 @@ export class AppContainer {
     this.#port = envConfig.API_PORT;
   }
 
-  static async create<TEnvSchema extends EnvSchema>({
+  static async create<TEnvSchema extends BaseEnvSchema>({
     docs,
     envSchema,
     imports,
@@ -95,3 +95,5 @@ export class AppContainer {
     return this.#app;
   }
 }
+
+export type { BaseEnvSchema };

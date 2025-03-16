@@ -2,12 +2,7 @@ import { createHash, pbkdf2, randomBytes } from 'node:crypto';
 
 import { Injectable } from '@nestjs/common';
 
-export type CryptoOptions = {
-  pbkdf2Params?: {
-    iterations: number;
-  };
-  secretKey: string;
-};
+import type { CryptoOptions } from './crypto.config.js';
 
 @Injectable()
 export class CryptoService {
