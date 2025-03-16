@@ -11,7 +11,7 @@ import { applyValidationSchema } from '../utils/validation.utils.js';
 export function DataTransferObject<T extends z.ZodType<{ [key: string]: any }>>(schema: T): Class<z.TypeOf<T>>;
 /**
  * Creates a Data Transfer Object (DTO) class with a Zod schema for validation.
- * @param shapeOrSchema - Zod raw shape for the DTO.
+ * @param shape - Zod raw shape for the DTO.
  * @returns A DTO class with validation.
  */
 export function DataTransferObject<T extends z.ZodRawShape>(shape: T): Class<z.TypeOf<z.ZodObject<T>>>;
