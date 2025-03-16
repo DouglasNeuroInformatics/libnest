@@ -1,14 +1,13 @@
 import { AbilityBuilder, PureAbility } from '@casl/ability';
 import type { RawRuleOf } from '@casl/ability';
 import type { PrismaQuery, Subjects } from '@casl/prisma';
+import type { FallbackIfNever } from '@douglasneuroinformatics/libjs';
 import { ConfigurableModuleBuilder } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import type { DefaultSelection } from '@prisma/client/runtime/library';
 import type { z } from 'zod';
 
 import { defineToken } from '../../utils/token.utils.js';
-
-type FallbackIfNever<T, U> = [T] extends [never] ? U : T;
 
 type AppAction = 'create' | 'delete' | 'manage' | 'read' | 'update';
 
