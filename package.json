@@ -66,7 +66,7 @@
   "dependencies": {
     "@casl/ability": "^6.7.3",
     "@casl/prisma": "^1.5.1",
-    "@douglasneuroinformatics/libjs": "^2.3.0",
+    "@douglasneuroinformatics/libjs": "^2.4.0",
     "@nestjs/jwt": "^11.0.0",
     "@nestjs/passport": "^11.0.5",
     "@nestjs/swagger": "^11.0.3",
