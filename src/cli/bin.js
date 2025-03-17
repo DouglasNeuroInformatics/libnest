@@ -7,7 +7,7 @@ import { Command, InvalidArgumentError } from 'commander';
 
 module.register('@swc-node/register/esm', import.meta.url);
 
-const { resolveAbsoluteImportPath, runDev } = await import('./lib.js');
+const { resolveAbsoluteImportPathFromCwd, runDev } = await import('../utils/meta.utils.js');
 
 const require = module.createRequire(import.meta.url);
 
@@ -22,7 +22,7 @@ program.allowExcessArguments(false);
 program
   .command('dev')
   .requiredOption('-c, --config-file <path>', 'path to the config file', (filename) => {
-    const result = resolveAbsoluteImportPath(filename);
+    const result = resolveAbsoluteImportPathFromCwd(filename);
     if (result.isErr()) {
       throw new InvalidArgumentError(result.error.message);
     }
