@@ -7,7 +7,7 @@ import { CommanderError, InvalidArgumentError, program } from 'commander';
 
 module.register('@swc-node/register/esm', import.meta.url);
 
-const { resolveAbsoluteImportPathFromCwd, runDev } = await import('../../utils/meta.utils');
+const { resolveAbsoluteImportPathFromCwd, runDev } = await import('../utils/meta.utils.js');
 
 // kill all processes in group to stop watch mode
 const kill = () => process.kill(0);

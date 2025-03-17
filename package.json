@@ -29,7 +29,8 @@
     }
   },
   "bin": {
-    "libnest": "./dist/cli/bin.js"
+    "libnest": "./dist/bin/libnest",
+    "libnest-dev": "./dist/bin/libnest-dev"
   },
   "files": [
     "dist"
@@ -38,7 +39,7 @@
     "node": "22.x"
   },
   "scripts": {
-    "build": "rm -rf dist && tsc -b tsconfig.build.json",
+    "build": "rm -rf dist && tsc -b tsconfig.build.json && cp -r src/bin dist/bin",
     "docs:build": "typedoc",
     "docs:dev": "concurrently \"typedoc --watch\" \"http-server docs -c-1\"",
     "example:dev": "env-cmd  -f .env.example ./src/cli/bin/libnest dev -c libnest.config.ts",
