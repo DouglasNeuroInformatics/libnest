@@ -70,7 +70,14 @@ export class AppContainer {
     }
   > {
     const envConfigResult = safeParse(
-      filterObject(process.env, (value) => value !== ''),
+      filterObject(
+        {
+          ...process.env,
+          // this is required so that NODE_ENV can be statically replaced in the bundle
+          NODE_ENV: process.env.NODE_ENV
+        },
+        (value) => value !== ''
+      ),
       envSchema
     );
     if (envConfigResult.isErr()) {
