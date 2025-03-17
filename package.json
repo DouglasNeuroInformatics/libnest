@@ -42,7 +42,7 @@
     "build": "rm -rf dist && tsc -b tsconfig.build.json && cp -r src/bin dist/bin",
     "docs:build": "typedoc",
     "docs:dev": "concurrently \"typedoc --watch\" \"http-server docs -c-1\"",
-    "example:dev": "env-cmd  -f .env.example ./src/cli/bin/libnest dev -c libnest.config.ts",
+    "example:dev": "env-cmd  -f .env.example ./src/bin/libnest dev -c libnest.config.ts",
     "format": "prettier --write src",
     "knip": "knip",
     "lint": "tsc && eslint --fix example src",
