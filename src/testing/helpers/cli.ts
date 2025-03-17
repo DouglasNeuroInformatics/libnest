@@ -1,22 +1,35 @@
+import * as path from 'node:path';
+
 import { CommanderError } from 'commander';
 import { vi } from 'vitest';
 import type { Mock } from 'vitest';
 
+type CommandTestOptions = {
+  entry: string;
+  root: string;
+};
+
+type CommandMocks = {
+  args: Mock<() => string[]>;
+  stderr: Mock<(input: string) => void>;
+  stdout: Mock<(input: string) => void>;
+};
+
 type CommandTestHelpers = {
-  cmdArgs: Mock<() => string[]>;
-  cmdStderr: Mock<(input: string) => void>;
-  cmdStdout: Mock<(input: string) => void>;
+  cmd: CommandMocks;
   exec: (args: string[]) => Promise<CommanderError | undefined>;
 };
 
-export const setupCommandTest = (entry: string): CommandTestHelpers => {
-  const cmdArgs = vi.fn<() => string[]>();
-  const cmdStderr = vi.fn<(input: string) => void>();
-  const cmdStdout = vi.fn<(input: string) => void>();
+const cmd: CommandMocks = vi.hoisted(() => ({
+  args: vi.fn<() => string[]>(),
+  stderr: vi.fn<(input: string) => void>(),
+  stdout: vi.fn<(input: string) => void>()
+}));
 
+export const setupCommandTest = ({ entry, root }: CommandTestOptions): CommandTestHelpers => {
   vi.mock('node:process', () => ({
     get argv(): string[] {
-      return ['node', 'libnest', ...cmdArgs()];
+      return ['node', 'libnest', ...cmd.args()];
     }
   }));
 
@@ -28,13 +41,12 @@ export const setupCommandTest = (entry: string): CommandTestHelpers => {
       constructor(name: string) {
         super(name);
         this.configureOutput({
-          writeErr: cmdStderr,
-          writeOut: cmdStdout
+          writeErr: cmd.stderr,
+          writeOut: cmd.stdout
         });
         this.exitOverride();
       }
     }
-
     return {
       Command,
       ...module
@@ -47,9 +59,9 @@ export const setupCommandTest = (entry: string): CommandTestHelpers => {
    * @returns A `CommanderError` if the command fails, otherwise `undefined`
    */
   const exec = async (args: string[]): Promise<CommanderError | undefined> => {
-    cmdArgs.mockReturnValue(args);
+    cmd.args.mockReturnValue(args);
     try {
-      await import(entry);
+      await import(path.resolve(root, entry));
     } catch (err) {
       if (err instanceof CommanderError) {
         return err;
@@ -59,5 +71,5 @@ export const setupCommandTest = (entry: string): CommandTestHelpers => {
     return;
   };
 
-  return { cmdArgs, cmdStderr, cmdStdout, exec };
+  return { cmd, exec };
 };
