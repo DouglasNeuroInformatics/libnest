@@ -1,8 +1,17 @@
 import * as path from 'node:path';
 
+import { isPlainObject } from '@douglasneuroinformatics/libjs';
 import { CommanderError } from 'commander';
 import type { PartialDeep } from 'type-fest';
 import { vi } from 'vitest';
+
+type ProcessExitTestResult = {
+  exitCode: number;
+};
+
+const isProcessExitTestResult = (arg: unknown): arg is ProcessExitTestResult => {
+  return isPlainObject(arg) && typeof arg.exitCode === 'number';
+};
 
 const { getArgv, process } = vi.hoisted(() => {
   const getArgv = vi.fn<() => string[]>();
@@ -10,7 +19,12 @@ const { getArgv, process } = vi.hoisted(() => {
     get argv(): string[] {
       return getArgv();
     },
+    exit: vi.fn((exitCode: number) => {
+      // eslint-disable-next-line @typescript-eslint/only-throw-error
+      throw { exitCode } satisfies ProcessExitTestResult;
+    }),
     kill: vi.fn(),
+    ppid: undefined,
     stderr: {
       write: vi.fn()
     },
@@ -47,12 +61,12 @@ export function setupCommandTest(options: { entry: string; root: string }) {
     };
   });
 
-  const exec = async (args: string[]): Promise<CommanderError | undefined> => {
+  const exec = async (args: string[]): Promise<CommanderError | ProcessExitTestResult | undefined> => {
     getArgv.mockReturnValueOnce(['node', options.entry, ...args]);
     try {
       await import(path.resolve(options.root, options.entry));
     } catch (err) {
-      if (err instanceof CommanderError) {
+      if (err instanceof CommanderError || isProcessExitTestResult(err)) {
         return err;
       }
       throw err;
@@ -62,3 +76,5 @@ export function setupCommandTest(options: { entry: string; root: string }) {
 
   return { exec, process };
 }
+
+export type { ProcessExitTestResult };

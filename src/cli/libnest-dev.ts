@@ -1,16 +1,14 @@
 import * as process from 'node:process';
 
-import { Command, CommanderError } from 'commander';
+import { Command } from 'commander';
 
 const program = new Command();
 
 const { runDev } = await import('../utils/meta.utils.js');
 
 program.exitOverride((err) => {
-  if (err instanceof CommanderError) {
-    process.kill(0); // kill all processes in group to stop watch mode
-    throw err; // for test purposes
-  }
+  process.kill(process.ppid);
+  process.exit(err.exitCode);
 });
 
 program.action(async function () {
