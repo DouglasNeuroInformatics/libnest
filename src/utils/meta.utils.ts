@@ -2,6 +2,7 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 
 import { RuntimeException } from '@douglasneuroinformatics/libjs';
+import * as swc from '@swc/core';
 import esbuild from 'esbuild';
 import { fromAsyncThrowable, ok, Result, ResultAsync } from 'neverthrow';
 import { z } from 'zod';
@@ -159,7 +160,42 @@ async function build(options: { entry: string; outfile: string }) {
     keepNames: true,
     outfile: options.outfile,
     platform: 'node',
+    plugins: [
+      {
+        name: 'esbuild-plugin-swc',
+        setup: (build) => {
+          build.onLoad({ filter: /\.(ts)$/ }, async (args) => {
+            const code = await fs.promises.readFile(args.path, 'utf-8');
+            const result = await swc.transform(code, {
+              filename: args.path,
+              isModule: true,
+              jsc: {
+                parser: {
+                  decorators: true,
+                  syntax: 'typescript'
+                },
+                target: 'esnext',
+                transform: {
+                  decoratorMetadata: true,
+                  legacyDecorator: true
+                }
+              },
+              module: {
+                type: 'es6'
+              },
+              sourceFileName: args.path,
+              sourceMaps: true
+            });
+            return {
+              contents: result.code,
+              loader: 'js'
+            };
+          });
+        }
+      }
+    ],
     target: ['node22', 'es2022']
   });
 }
+
 export { build, findConfig, importDefault, loadAppContainer, loadConfig, resolveAbsoluteImportPathFromCwd, runDev };
