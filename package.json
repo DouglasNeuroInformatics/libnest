@@ -43,6 +43,7 @@
     "docs:dev": "concurrently \"typedoc --watch\" \"pnpm docs:serve\"",
     "docs:serve": "http-server docs -c-1",
     "example:dev": "env-cmd  -f .env.example ./src/cli/bin/libnest dev -c libnest.config.ts",
+    "example:start": "env-cmd -f .env.example node build/main.js",
     "format": "prettier --write src",
     "knip": "knip",
     "lint": "tsc && eslint --fix example src",
