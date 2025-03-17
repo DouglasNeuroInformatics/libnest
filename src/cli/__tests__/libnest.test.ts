@@ -1,14 +1,10 @@
-import { describe, expect, it, test } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 import { setupCommandTest } from '../../testing/helpers/cli.js';
 
 const cmd = setupCommandTest({
   entry: '../libnest.js',
   root: import.meta.dirname
-});
-
-test(() => {
-  expect(true).toBe(true);
 });
 
 describe('libnest', () => {
