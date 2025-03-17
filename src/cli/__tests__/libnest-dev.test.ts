@@ -50,4 +50,18 @@ describe('libnest-dev', () => {
       })
     );
   });
+  it('should call the runDev function', async () => {
+    const action = vi.spyOn(Command.prototype, 'action');
+    await exec(['--help']);
+    const callback = action.mock.lastCall![0];
+    vi.spyOn(process.env as any, 'LIBNEST_CONFIG_FILEPATH', 'get').mockReturnValueOnce('/path/to/config.js');
+    const mapErr = vi.fn();
+    runDev.mockReturnValueOnce({ mapErr });
+    (callback as any)();
+    expect(runDev).toHaveBeenCalledOnce();
+    const programError = vi.spyOn(Command.prototype, 'error').mockImplementationOnce(() => null!);
+    const errorHandler = mapErr.mock.lastCall![0];
+    errorHandler(new Error('An error occurred'));
+    expect(programError).toHaveBeenCalledExactlyOnceWith('Error: An error occurred', { exitCode: 1 });
+  });
 });
