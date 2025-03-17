@@ -1,7 +1,17 @@
 import { Command } from 'commander';
+import { err } from 'neverthrow';
 import { describe, expect, it, vi } from 'vitest';
 
 import { createExec, process } from '../../testing/helpers/cli.js';
+
+const { resolveAbsoluteImportPathFromCwd } = vi.hoisted(() => ({
+  resolveAbsoluteImportPathFromCwd: vi.fn(),
+  runDev: vi.fn()
+}));
+
+vi.mock('../../utils/meta.utils.js', () => ({
+  resolveAbsoluteImportPathFromCwd
+}));
 
 const exec = createExec({
   entry: '../libnest.js',
@@ -18,12 +28,12 @@ describe('libnest', () => {
       expect.stringContaining('Usage: @douglasneuroinformatics/libnest')
     );
   });
-  // it('should throw an InvalidArgumentError if the config path cannot be resolved', async () => {
-  //   const parseAsync = vi.spyOn(Command.prototype, 'parseAsync');
-  //   // resolveAbsoluteImportPathFromCwd.mockReturnValueOnce(err('Failed'));
-  //   await exec(['-c', 'libnest.config.ts']);
-  //   expect(parseAsync).toHaveBeenCalledExactlyOnceWith(['node', '../libnest.js', '-c', 'libnest.config.ts']);
-  //   // expect(resolveAbsoluteImportPathFromCwd).toHaveBeenLastCalledWith('libnest.config.ts');
-  //   // expect(result).toMatchObject({ code: 'commander.invalidArgument', exitCode: 1 });
-  // });
+  it('should throw an InvalidArgumentError if the config path cannot be resolved', async () => {
+    const parseAsync = vi.spyOn(Command.prototype, 'parseAsync');
+    resolveAbsoluteImportPathFromCwd.mockReturnValueOnce(err('Failed'));
+    const result = await exec(['-c', 'libnest.config.ts']);
+    expect(parseAsync).toHaveBeenCalledExactlyOnceWith(['node', '../libnest.js', '-c', 'libnest.config.ts']);
+    expect(resolveAbsoluteImportPathFromCwd).toHaveBeenLastCalledWith('libnest.config.ts');
+    expect(result).toMatchObject({ code: 'commander.invalidArgument', exitCode: 1 });
+  });
 });

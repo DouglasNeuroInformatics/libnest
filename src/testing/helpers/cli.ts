@@ -13,7 +13,7 @@ const isProcessExitTestResult = (arg: unknown): arg is ProcessExitTestResult => 
   return isPlainObject(arg) && typeof arg.exitCode === 'number';
 };
 
-const { getArgv, meta, process } = vi.hoisted(() => {
+const { getArgv, process } = vi.hoisted(() => {
   const getArgv = vi.fn<() => string[]>();
   const process = {
     get argv(): string[] {
@@ -32,13 +32,9 @@ const { getArgv, meta, process } = vi.hoisted(() => {
       write: vi.fn()
     }
   } satisfies PartialDeep<NodeJS.Process>;
-  const meta = {
-    resolveAbsoluteImportPathFromCwd: vi.fn(),
-    runDev: vi.fn()
-  };
+
   return {
     getArgv,
-    meta,
     process
   };
 });
@@ -65,8 +61,6 @@ vi.mock('commander', async (importOriginal) => {
   };
 });
 
-vi.mock('../../utils/meta.utils.js', () => meta);
-
 function createExec(options: { entry: string; root: string }) {
   return async (args: string[]): Promise<CommanderError | ProcessExitTestResult | undefined> => {
     getArgv.mockReturnValueOnce(['node', options.entry, ...args]);
@@ -77,10 +71,12 @@ function createExec(options: { entry: string; root: string }) {
         return err;
       }
       throw err;
+    } finally {
+      vi.resetModules();
     }
     return;
   };
 }
 
-export { createExec, meta, process };
+export { createExec, process };
 export type { ProcessExitTestResult };
