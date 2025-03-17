@@ -13,7 +13,7 @@ const isProcessExitTestResult = (arg: unknown): arg is ProcessExitTestResult => 
   return isPlainObject(arg) && typeof arg.exitCode === 'number';
 };
 
-const { getArgv, process } = vi.hoisted(() => {
+const { getArgv, meta, process } = vi.hoisted(() => {
   const getArgv = vi.fn<() => string[]>();
   const process = {
     get argv(): string[] {
@@ -32,36 +32,42 @@ const { getArgv, process } = vi.hoisted(() => {
       write: vi.fn()
     }
   } satisfies PartialDeep<NodeJS.Process>;
+  const meta = {
+    resolveAbsoluteImportPathFromCwd: vi.fn()
+  };
   return {
     getArgv,
+    meta,
     process
   };
 });
 
-export function setupCommandTest(options: { entry: string; root: string }) {
-  vi.mock('node:process', () => process);
+vi.mock('node:process', () => process);
 
-  vi.mock('commander', async (importOriginal) => {
-    const { Command: DefaultCommand, ...module } = await importOriginal<typeof import('commander')>();
+vi.mock('commander', async (importOriginal) => {
+  const { Command: DefaultCommand, ...module } = await importOriginal<typeof import('commander')>();
 
-    // Force to throw a CommanderError on exit and write stdout/stderr to mock functions
-    class Command extends DefaultCommand {
-      constructor(name: string) {
-        super(name);
-        this.configureOutput({
-          writeErr: process.stderr.write,
-          writeOut: process.stdout.write
-        });
-        this.exitOverride();
-      }
+  // Force to throw a CommanderError on exit and write stdout/stderr to mock functions
+  class Command extends DefaultCommand {
+    constructor(name: string) {
+      super(name);
+      this.configureOutput({
+        writeErr: process.stderr.write,
+        writeOut: process.stdout.write
+      });
+      this.exitOverride();
     }
-    return {
-      Command,
-      ...module
-    };
-  });
+  }
+  return {
+    Command,
+    ...module
+  };
+});
 
-  const exec = async (args: string[]): Promise<CommanderError | ProcessExitTestResult | undefined> => {
+vi.mock('../../utils/meta.utils.js', () => meta);
+
+function createExec(options: { entry: string; root: string }) {
+  return async (args: string[]): Promise<CommanderError | ProcessExitTestResult | undefined> => {
     getArgv.mockReturnValueOnce(['node', options.entry, ...args]);
     try {
       await import(path.resolve(options.root, options.entry));
@@ -73,8 +79,7 @@ export function setupCommandTest(options: { entry: string; root: string }) {
     }
     return;
   };
-
-  return { exec, process };
 }
 
+export { createExec, meta, process };
 export type { ProcessExitTestResult };
