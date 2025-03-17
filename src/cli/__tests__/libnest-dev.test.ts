@@ -1,5 +1,3 @@
-// import { describe, expect, it } from 'vitest';
-
 import { describe, expect, it } from 'vitest';
 
 import { createExec, process } from '../../testing/helpers/cli.js';
@@ -9,7 +7,7 @@ const exec = createExec({
   root: import.meta.dirname
 });
 
-describe('libnest dev', () => {
+describe('libnest-dev', () => {
   it('should output help', async () => {
     const result = await exec(['--help']);
     expect(result).toMatchObject({ exitCode: 0 });
