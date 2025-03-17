@@ -58,6 +58,9 @@ importers:
       commander:
         specifier: ^13.1.0
         version: 13.1.0
+      esbuild:
+        specifier: ^0.25.1
+        version: 0.25.1
       express:
         specifier: ^5.0.1
         version: 5.0.1
