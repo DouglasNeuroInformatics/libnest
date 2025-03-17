@@ -18,7 +18,9 @@ const { getArgv, process } = vi.hoisted(() => {
     get argv(): string[] {
       return getArgv();
     },
-    env: vi.fn(),
+    env: {
+      LIBNEST_CONFIG_FILEPATH: vi.fn()
+    },
     exit: vi.fn((exitCode: number) => {
       // eslint-disable-next-line @typescript-eslint/only-throw-error
       throw { exitCode } satisfies ProcessExitTestResult;

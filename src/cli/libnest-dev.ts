@@ -11,7 +11,7 @@ program.exitOverride((err) => {
   process.exit(err.exitCode);
 });
 
-program.action(async function () {
+program.action(async function (this: void) {
   const configFile = process.env.LIBNEST_CONFIG_FILEPATH;
   if (!configFile) {
     return program.error(`error: environment variable 'LIBNEST_CONFIG_FILEPATH' must be defined`);

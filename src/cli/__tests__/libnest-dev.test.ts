@@ -25,4 +25,21 @@ describe('libnest-dev', () => {
     expect(kill).toHaveBeenCalledExactlyOnceWith(100);
     expect(exit).toHaveBeenCalledExactlyOnceWith(1);
   });
+  it('should set the action', async () => {
+    const action = vi.spyOn(Command.prototype, 'action');
+    await exec(['--help']);
+    const callback = action.mock.lastCall![0];
+    expect(callback).toBeTypeOf('function');
+  });
+  it('should throw an error if LIBNEST_CONFIG_FILEPATH is not defined', async () => {
+    const action = vi.spyOn(Command.prototype, 'action');
+    await exec(['--help']);
+    const callback = action.mock.lastCall![0];
+    vi.spyOn(process.env as any, 'LIBNEST_CONFIG_FILEPATH', 'get').mockReturnValueOnce(undefined);
+    await expect(() => (callback as any)()).rejects.toThrow(
+      expect.objectContaining({
+        exitCode: 1
+      })
+    );
+  });
 });
