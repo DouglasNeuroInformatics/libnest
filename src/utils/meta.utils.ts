@@ -2,6 +2,7 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 
 import { RuntimeException } from '@douglasneuroinformatics/libjs';
+import esbuild from 'esbuild';
 import { fromAsyncThrowable, ok, Result, ResultAsync } from 'neverthrow';
 import { z } from 'zod';
 
@@ -143,4 +144,22 @@ function runDev(configFile: string): ResultAsync<void, typeof RuntimeException.I
     });
 }
 
-export { findConfig, importDefault, loadAppContainer, loadConfig, resolveAbsoluteImportPathFromCwd, runDev };
+async function build(options: { entry: string; outfile: string }) {
+  await esbuild.build({
+    banner: {
+      js: "Object.defineProperties(globalThis, { __dirname: { value: import.meta.dirname, writable: false }, __filename: { value: import.meta.filename, writable: false }, require: { value: (await import('module')).createRequire(import.meta.url), writable: false } });"
+    },
+    bundle: true,
+    define: {
+      'process.env.NODE_ENV': "'production'"
+    },
+    entryPoints: [options.entry],
+    external: ['@nestjs/microservices', '@nestjs/websockets/socket-module', 'class-transformer', 'class-validator'],
+    format: 'esm',
+    keepNames: true,
+    outfile: options.outfile,
+    platform: 'node',
+    target: ['node22', 'es2022']
+  });
+}
+export { build, findConfig, importDefault, loadAppContainer, loadConfig, resolveAbsoluteImportPathFromCwd, runDev };
