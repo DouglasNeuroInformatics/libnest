@@ -9,7 +9,9 @@
 import * as module from 'node:module';
 import * as process from 'node:process';
 
-import { Command } from 'commander';
+import { Command, InvalidArgumentError } from 'commander';
+
+import { resolveAbsoluteImportPathFromCwd } from '../utils/meta.utils.js';
 
 const require = module.createRequire(import.meta.url);
 
@@ -20,8 +22,20 @@ program.name(name);
 program.version(version);
 program.allowExcessArguments(false);
 program.allowUnknownOption(false);
+program.requiredOption('-c, --config-file <path>', 'path to the config file', (filename) => {
+  const result = resolveAbsoluteImportPathFromCwd(filename);
+  if (result.isErr()) {
+    throw new InvalidArgumentError(result.error.message);
+  }
+  return result.value;
+});
 
 program.command('build', 'build application for production');
 program.command('dev', 'run application in development mode');
+
+program.hook('preSubcommand', (command) => {
+  const configFile = command.getOptionValue('configFile') as string;
+  process.env.LIBNEST_CONFIG_FILEPATH = configFile;
+});
 
 await program.parseAsync(process.argv);
