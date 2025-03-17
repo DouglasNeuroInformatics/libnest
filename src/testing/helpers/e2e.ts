@@ -4,13 +4,13 @@ import type { NestExpressApplication } from '@nestjs/platform-express';
 import request from 'supertest';
 import type TestAgent from 'supertest/lib/agent.js';
 import { afterAll, beforeAll, beforeEach, describe } from 'vitest';
-import type { TestAPI } from 'vitest';
+import type { SuiteAPI } from 'vitest';
 
 export type EndToEndContext = {
   api: TestAgent;
 };
 
-export function e2e(name: string, fn: (it: TestAPI<EndToEndContext>) => void): void {
+export function e2e(fn: (it: SuiteAPI<EndToEndContext>) => void): void {
   let app: NestExpressApplication;
   let server: Server<typeof IncomingMessage, typeof ServerResponse>;
 
@@ -36,5 +36,5 @@ export function e2e(name: string, fn: (it: TestAPI<EndToEndContext>) => void): v
     app.flushLogs();
   });
 
-  describe(name, fn);
+  fn(describe as SuiteAPI<EndToEndContext>);
 }
