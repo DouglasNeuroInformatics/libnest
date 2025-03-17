@@ -154,7 +154,6 @@ async function build(options: { entry: string; outfile: string }) {
     define: {
       'process.env.NODE_ENV': "'production'"
     },
-    entryPoints: [options.entry],
     external: ['@nestjs/microservices', '@nestjs/websockets/socket-module', 'class-transformer', 'class-validator'],
     format: 'esm',
     keepNames: true,
@@ -182,9 +181,7 @@ async function build(options: { entry: string; outfile: string }) {
               },
               module: {
                 type: 'es6'
-              },
-              sourceFileName: args.path,
-              sourceMaps: true
+              }
             });
             return {
               contents: result.code,
@@ -194,6 +191,11 @@ async function build(options: { entry: string; outfile: string }) {
         }
       }
     ],
+    stdin: {
+      contents: `import appContainer from '${options.entry}'; export { appContainer };`,
+      loader: 'ts',
+      resolveDir: path.dirname(options.entry)
+    },
     target: ['node22', 'es2022']
   });
 }
