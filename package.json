@@ -115,6 +115,20 @@
       "@douglasneuroinformatics/semantic-release/commitlint-config"
     ]
   },
+  "knip": {
+    "entry": [
+      "example/app.ts",
+      "src/index.ts",
+      "src/user-config.ts",
+      "src/testing/index.ts"
+    ],
+    "ignoreDependencies": [
+      "@douglasneuroinformatics/tsconfig"
+    ],
+    "project": [
+      "{example,src}/**/*.{js,ts}"
+    ]
+  },
   "prettier": "@douglasneuroinformatics/prettier-config",
   "release": {
     "extends": [
