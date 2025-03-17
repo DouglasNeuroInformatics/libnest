@@ -10,6 +10,7 @@ const { args, process } = vi.hoisted(() => {
     get argv(): string[] {
       return ['node', 'main.js', ...args()];
     },
+    kill: vi.fn(),
     stderr: {
       write: vi.fn()
     },
