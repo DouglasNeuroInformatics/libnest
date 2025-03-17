@@ -1,23 +1,23 @@
-import * as module from 'node:module';
+import * as process from 'node:process';
 
-import { CommanderError, InvalidArgumentError, program } from 'commander';
+import { Command, InvalidArgumentError } from 'commander';
 
-module.register('@swc-node/register/esm', import.meta.url);
+const program = new Command();
 
 const { resolveAbsoluteImportPathFromCwd, runDev } = await import('../utils/meta.utils.js');
 
-// kill all processes in group to stop watch mode
-const kill = () => process.kill(0);
+// // kill all processes in group to stop watch mode
+// const kill = () => process.kill(0);
 
-program.exitOverride((err) => {
-  if (err instanceof CommanderError) {
-    kill();
-  }
-});
+// program.exitOverride((err) => {
+//   if (err instanceof CommanderError) {
+//     kill();
+//   }
+// });
 
-program.on('--help', () => {
-  kill();
-});
+// program.on('--help', () => {
+//   kill();
+// });
 
 program
   .requiredOption('-c, --config-file <path>', 'path to the config file', (filename) => {
@@ -34,4 +34,4 @@ program
     });
   });
 
-await program.parseAsync();
+await program.parseAsync(process.argv);

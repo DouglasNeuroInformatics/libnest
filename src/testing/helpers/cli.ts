@@ -4,11 +4,11 @@ import { CommanderError } from 'commander';
 import type { PartialDeep } from 'type-fest';
 import { vi } from 'vitest';
 
-const { args, process } = vi.hoisted(() => {
-  const args = vi.fn<() => string[]>();
+const { getArgv, process } = vi.hoisted(() => {
+  const getArgv = vi.fn<() => string[]>();
   const process = {
     get argv(): string[] {
-      return ['node', 'main.js', ...args()];
+      return getArgv();
     },
     kill: vi.fn(),
     stderr: {
@@ -19,7 +19,7 @@ const { args, process } = vi.hoisted(() => {
     }
   } satisfies PartialDeep<NodeJS.Process>;
   return {
-    args,
+    getArgv,
     process
   };
 });
@@ -47,8 +47,8 @@ export function setupCommandTest(options: { entry: string; root: string }) {
     };
   });
 
-  const exec = async (arguments_: string[]): Promise<CommanderError | undefined> => {
-    args.mockReturnValue(arguments_);
+  const exec = async (args: string[]): Promise<CommanderError | undefined> => {
+    getArgv.mockReturnValueOnce(['node', options.entry, ...args]);
     try {
       await import(path.resolve(options.root, options.entry));
     } catch (err) {
