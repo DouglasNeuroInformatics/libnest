@@ -1,0 +1,3 @@
+#!/usr/bin/env node --watch
+
+import '../libnest-dev.js';

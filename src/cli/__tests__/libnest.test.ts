@@ -3,7 +3,7 @@ import { describe, expect, it, test } from 'vitest';
 import { setupCommandTest } from '../../testing/helpers/cli.js';
 
 const cmd = setupCommandTest({
-  entry: '../bin.js',
+  entry: '../libnest.js',
   root: import.meta.dirname
 });
 

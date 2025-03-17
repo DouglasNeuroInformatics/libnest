@@ -1,7 +1,4 @@
-#!/usr/bin/env node --watch
-// @ts-check
-
-import module from 'node:module';
+import * as module from 'node:module';
 
 import { CommanderError, InvalidArgumentError, program } from 'commander';
 

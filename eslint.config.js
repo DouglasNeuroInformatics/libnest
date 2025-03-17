@@ -17,15 +17,8 @@ export default config(
   {
     rules: {
       '@typescript-eslint/consistent-type-definitions': 'off',
-      '@typescript-eslint/explicit-function-return-type': 'error',
       '@typescript-eslint/no-empty-object-type': 'off',
       '@typescript-eslint/no-namespace': 'off'
-    }
-  },
-  {
-    files: ['**/*.spec.ts', '**/*.test.ts', 'example/**/*'],
-    rules: {
-      '@typescript-eslint/explicit-function-return-type': 'off'
     }
   }
 );
