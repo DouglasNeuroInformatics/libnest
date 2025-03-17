@@ -7,7 +7,7 @@ import { CommanderError, InvalidArgumentError, program } from 'commander';
 
 module.register('@swc-node/register/esm', import.meta.url);
 
-const { resolveAbsoluteImportPath, runDev } = await import('../lib.js');
+const { resolveAbsoluteImportPathFromCwd, runDev } = await import('../../utils/meta.utils');
 
 // kill all processes in group to stop watch mode
 const kill = () => process.kill(0);
@@ -24,7 +24,7 @@ program.on('--help', () => {
 
 program
   .requiredOption('-c, --config-file <path>', 'path to the config file', (filename) => {
-    const result = resolveAbsoluteImportPath(filename);
+    const result = resolveAbsoluteImportPathFromCwd(filename);
     if (result.isErr()) {
       throw new InvalidArgumentError(result.error.message);
     }
