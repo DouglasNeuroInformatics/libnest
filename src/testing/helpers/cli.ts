@@ -33,7 +33,8 @@ const { getArgv, meta, process } = vi.hoisted(() => {
     }
   } satisfies PartialDeep<NodeJS.Process>;
   const meta = {
-    resolveAbsoluteImportPathFromCwd: vi.fn()
+    resolveAbsoluteImportPathFromCwd: vi.fn(),
+    runDev: vi.fn()
   };
   return {
     getArgv,

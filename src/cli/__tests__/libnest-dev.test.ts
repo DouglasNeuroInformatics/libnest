@@ -2,9 +2,9 @@
 
 import { describe, expect, it } from 'vitest';
 
-import { setupCommandTest } from '../../testing/helpers/cli.js';
+import { createExec, process } from '../../testing/helpers/cli.js';
 
-const { exec, process } = setupCommandTest({
+const exec = createExec({
   entry: '../libnest-dev.js',
   root: import.meta.dirname
 });
