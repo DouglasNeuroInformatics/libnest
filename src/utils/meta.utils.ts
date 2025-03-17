@@ -192,7 +192,7 @@ async function build(options: { entry: string; outfile: string }) {
       }
     ],
     stdin: {
-      contents: `import appContainer from '${options.entry}'; export { appContainer };`,
+      contents: `import appContainer from '${options.entry}';  await appContainer; await appContainer.bootstrap();`,
       loader: 'ts',
       resolveDir: path.dirname(options.entry)
     },
