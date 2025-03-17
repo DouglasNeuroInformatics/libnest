@@ -15,8 +15,7 @@ type CommandMocks = {
   stdout: Mock<(input: string) => void>;
 };
 
-type CommandTestHelpers = {
-  cmd: CommandMocks;
+type CommandTestHelpers = CommandMocks & {
   exec: (args: string[]) => Promise<CommanderError | undefined>;
 };
 
@@ -71,5 +70,5 @@ export const setupCommandTest = ({ entry, root }: CommandTestOptions): CommandTe
     return;
   };
 
-  return { cmd, exec };
+  return { ...cmd, exec };
 };
