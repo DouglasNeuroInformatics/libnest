@@ -123,7 +123,12 @@
       "src/testing/index.ts"
     ],
     "ignoreDependencies": [
-      "@douglasneuroinformatics/tsconfig"
+      "@douglasneuroinformatics/tsconfig",
+      "@swc-node/register",
+      "@swc/helpers"
+    ],
+    "ignore": [
+      "src/typings/globals.ts"
     ],
     "project": [
       "{example,src}/**/*.{js,ts}"
