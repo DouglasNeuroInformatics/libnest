@@ -145,7 +145,9 @@ function runDev(configFile: string): ResultAsync<void, typeof RuntimeException.I
     });
 }
 
-async function build(options: { entry: string; outfile: string }) {
+async function build(options: { configFile: string; outfile: string }) {
+  const { default: config } = (await import(options.configFile)) as { default: UserConfigOptions };
+  const entry = `const __appContainer = await (${config.entry.toString()})().then((mod) => mod.default);`;
   await esbuild.build({
     banner: {
       js: "Object.defineProperties(globalThis, { __dirname: { value: import.meta.dirname, writable: false }, __filename: { value: import.meta.filename, writable: false }, require: { value: (await import('module')).createRequire(import.meta.url), writable: false } });"
@@ -192,9 +194,9 @@ async function build(options: { entry: string; outfile: string }) {
       }
     ],
     stdin: {
-      contents: `import appContainer from '${options.entry}';  await appContainer; await appContainer.bootstrap();`,
+      contents: `${entry}; await __appContainer; await __appContainer.bootstrap();`,
       loader: 'ts',
-      resolveDir: path.dirname(options.entry)
+      resolveDir: path.dirname(options.configFile)
     },
     target: ['node22', 'es2022']
   });
