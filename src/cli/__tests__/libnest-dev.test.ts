@@ -3,6 +3,14 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { createExec, process } from '../../testing/helpers/cli.js';
 
+const { runDev } = vi.hoisted(() => ({
+  runDev: vi.fn()
+}));
+
+vi.mock('../../utils/meta.utils.js', () => ({
+  runDev
+}));
+
 const exec = createExec({
   entry: '../libnest-dev.js',
   root: import.meta.dirname

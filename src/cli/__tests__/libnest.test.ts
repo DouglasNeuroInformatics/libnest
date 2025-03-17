@@ -5,8 +5,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { createExec, process } from '../../testing/helpers/cli.js';
 
 const { resolveAbsoluteImportPathFromCwd } = vi.hoisted(() => ({
-  resolveAbsoluteImportPathFromCwd: vi.fn(),
-  runDev: vi.fn()
+  resolveAbsoluteImportPathFromCwd: vi.fn()
 }));
 
 vi.mock('../../utils/meta.utils.js', () => ({
