@@ -1,23 +1,20 @@
 import * as process from 'node:process';
 
-import { Command, InvalidArgumentError } from 'commander';
+import { Command, CommanderError, InvalidArgumentError } from 'commander';
 
 const program = new Command();
 
 const { resolveAbsoluteImportPathFromCwd, runDev } = await import('../utils/meta.utils.js');
 
-// // kill all processes in group to stop watch mode
-// const kill = () => process.kill(0);
+// kill all processes in group to stop watch mode
+const kill = () => process.kill(0);
 
-// program.exitOverride((err) => {
-//   if (err instanceof CommanderError) {
-//     kill();
-//   }
-// });
-
-// program.on('--help', () => {
-//   kill();
-// });
+program.exitOverride((err) => {
+  if (err instanceof CommanderError) {
+    kill();
+    throw err; // for test purposes
+  }
+});
 
 program
   .requiredOption('-c, --config-file <path>', 'path to the config file', (filename) => {
