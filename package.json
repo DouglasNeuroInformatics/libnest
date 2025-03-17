@@ -41,7 +41,8 @@
   "scripts": {
     "build": "rm -rf dist && tsc -b tsconfig.build.json && cp -r src/bin dist/bin",
     "docs:build": "typedoc",
-    "docs:dev": "concurrently \"typedoc --watch\" \"http-server docs -c-1\"",
+    "docs:dev": "concurrently \"typedoc --watch\" \"pnpm docs:serve\"",
+    "docs:serve": "http-server docs -c-1",
     "example:dev": "env-cmd  -f .env.example ./src/bin/libnest dev -c libnest.config.ts",
     "format": "prettier --write src",
     "knip": "knip",
@@ -95,7 +96,6 @@
     "@vitest/coverage-v8": "^3.0.8",
     "concurrently": "^9.1.2",
     "env-cmd": "^10.1.0",
-    "esbuild": "^0.24.2",
     "eslint": "9.19.0",
     "http-server": "^14.1.1",
     "husky": "^9.1.7",

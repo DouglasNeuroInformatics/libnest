@@ -16,15 +16,15 @@ import { ValidationPipe } from '../pipes/validation.pipe.js';
 import type { PrismaModuleOptions } from '../modules/prisma/prisma.config.js';
 import type { BaseEnv } from '../schemas/env.schema.js';
 
+type DynamicAppModule = DynamicModule & {
+  module: typeof AppModule;
+};
+
 export type ImportedModule = DynamicModule | Type<any>;
 
 export type ConditionalImport<TEnv extends BaseEnv = BaseEnv> = {
   module: ImportedModule;
   when: ConditionalKeys<TEnv, boolean | undefined>;
-};
-
-export type DynamicAppModule = DynamicModule & {
-  module: typeof AppModule;
 };
 
 export type CreateAppModuleOptions<TEnv extends BaseEnv = BaseEnv> = {

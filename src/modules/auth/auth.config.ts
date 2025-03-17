@@ -96,7 +96,6 @@ export type {
   AppAction,
   AppConditions,
   AppSubjectName,
-  AppSubjects,
   AuthModuleOptions,
   BaseLoginCredentials,
   BaseLoginCredentialsSchema,
