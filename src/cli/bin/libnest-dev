@@ -1,3 +1,7 @@
 #!/usr/bin/env node --watch
 
-import '../libnest-dev.js';
+import { register } from 'node:module';
+
+register('@swc-node/register/esm', import.meta.url);
+
+await import('../libnest-dev.js');

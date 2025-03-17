@@ -28,8 +28,7 @@ program
     return result.value;
   })
   .action(async function () {
-    /** @type {{ configFile: string }} */
-    const { configFile } = this.opts();
+    const { configFile } = this.opts<{ configFile: string }>();
     await runDev(configFile).mapErr((error) => {
       program.error(error.toString(), { exitCode: 1 });
     });

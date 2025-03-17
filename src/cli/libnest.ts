@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 /**
  * The purpose of this file structure is to force commander to
  * use the shebang, which is necessary to provide flags to Node. If
@@ -15,8 +13,7 @@ import { Command } from 'commander';
 
 const require = module.createRequire(import.meta.url);
 
-/** @type {{ name: string; version: string }} */
-const { name, version } = require('../../package.json');
+const { name, version } = require('../../package.json') as { name: string; version: string };
 
 const program = new Command();
 program.name(name);
