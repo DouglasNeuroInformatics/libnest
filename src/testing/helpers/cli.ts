@@ -1,36 +1,30 @@
 import * as path from 'node:path';
 
 import { CommanderError } from 'commander';
+import type { PartialDeep } from 'type-fest';
 import { vi } from 'vitest';
-import type { Mock } from 'vitest';
 
-type CommandTestOptions = {
-  entry: string;
-  root: string;
-};
-
-type CommandMocks = {
-  args: Mock<() => string[]>;
-  stderr: Mock<(input: string) => void>;
-  stdout: Mock<(input: string) => void>;
-};
-
-type CommandTestHelpers = CommandMocks & {
-  exec: (args: string[]) => Promise<CommanderError | undefined>;
-};
-
-const cmd: CommandMocks = vi.hoisted(() => ({
-  args: vi.fn<() => string[]>(),
-  stderr: vi.fn<(input: string) => void>(),
-  stdout: vi.fn<(input: string) => void>()
-}));
-
-export const setupCommandTest = ({ entry, root }: CommandTestOptions): CommandTestHelpers => {
-  vi.mock('node:process', () => ({
+const { args, process } = vi.hoisted(() => {
+  const args = vi.fn<() => string[]>();
+  const process = {
     get argv(): string[] {
-      return ['node', 'libnest', ...cmd.args()];
+      return ['node', 'main.js', ...args()];
+    },
+    stderr: {
+      write: vi.fn()
+    },
+    stdout: {
+      write: vi.fn()
     }
-  }));
+  } satisfies PartialDeep<NodeJS.Process>;
+  return {
+    args,
+    process
+  };
+});
+
+export function setupCommandTest(options: { entry: string; root: string }) {
+  vi.mock('node:process', () => process);
 
   vi.mock('commander', async (importOriginal) => {
     const { Command: DefaultCommand, ...module } = await importOriginal<typeof import('commander')>();
@@ -40,8 +34,8 @@ export const setupCommandTest = ({ entry, root }: CommandTestOptions): CommandTe
       constructor(name: string) {
         super(name);
         this.configureOutput({
-          writeErr: cmd.stderr,
-          writeOut: cmd.stdout
+          writeErr: process.stderr.write,
+          writeOut: process.stdout.write
         });
         this.exitOverride();
       }
@@ -52,15 +46,10 @@ export const setupCommandTest = ({ entry, root }: CommandTestOptions): CommandTe
     };
   });
 
-  /**
-   * Executes the CLI command with the given arguments.
-   * @param args - Command-line arguments
-   * @returns A `CommanderError` if the command fails, otherwise `undefined`
-   */
-  const exec = async (args: string[]): Promise<CommanderError | undefined> => {
-    cmd.args.mockReturnValue(args);
+  const exec = async (arguments_: string[]): Promise<CommanderError | undefined> => {
+    args.mockReturnValue(arguments_);
     try {
-      await import(path.resolve(root, entry));
+      await import(path.resolve(options.root, options.entry));
     } catch (err) {
       if (err instanceof CommanderError) {
         return err;
@@ -70,5 +59,5 @@ export const setupCommandTest = ({ entry, root }: CommandTestOptions): CommandTe
     return;
   };
 
-  return { ...cmd, exec };
-};
+  return { exec, process };
+}

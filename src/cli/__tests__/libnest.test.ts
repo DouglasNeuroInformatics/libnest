@@ -2,15 +2,17 @@ import { describe, expect, it } from 'vitest';
 
 import { setupCommandTest } from '../../testing/helpers/cli.js';
 
-const cmd = setupCommandTest({
+const { exec, process } = setupCommandTest({
   entry: '../libnest.js',
   root: import.meta.dirname
 });
 
 describe('libnest', () => {
   it('should output help', async () => {
-    const result = await cmd.exec(['--help']);
+    const result = await exec(['--help']);
     expect(result).toMatchObject({ exitCode: 0 });
-    expect(cmd.stdout).toHaveBeenCalledWith(expect.stringContaining('Usage: @douglasneuroinformatics/libnest'));
+    expect(process.stdout.write).toHaveBeenCalledWith(
+      expect.stringContaining('Usage: @douglasneuroinformatics/libnest')
+    );
   });
 });
