@@ -1,5 +1,5 @@
 import { Command } from 'commander';
-import { err } from 'neverthrow';
+import { err, ok } from 'neverthrow';
 import { describe, expect, it, vi } from 'vitest';
 
 import { createExec, process } from '../../testing/helpers/cli.js';
@@ -35,5 +35,15 @@ describe('libnest', () => {
     expect(parseAsync).toHaveBeenCalledExactlyOnceWith(['node', '../libnest.js', '-c', 'libnest.config.ts']);
     expect(resolveAbsoluteImportPathFromCwd).toHaveBeenLastCalledWith('libnest.config.ts');
     expect(result).toMatchObject({ code: 'commander.invalidArgument', exitCode: 1 });
+  });
+  it('should pass the resolved config file to the subcommand', async () => {
+    const hook = vi.spyOn(Command.prototype, 'hook');
+    resolveAbsoluteImportPathFromCwd.mockReturnValueOnce(ok('/root/path/to/file.js'));
+    await exec(['-c', 'libnest.config.ts']);
+    expect(hook).toHaveBeenCalledExactlyOnceWith('preSubcommand', expect.any(Function));
+    const callback = hook.mock.lastCall![1];
+    const getOptionValue = vi.fn();
+    await callback({ getOptionValue } as any, null!);
+    expect(getOptionValue).toHaveBeenCalled();
   });
 });

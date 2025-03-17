@@ -2,7 +2,6 @@ import * as path from 'node:path';
 
 import { isPlainObject } from '@douglasneuroinformatics/libjs';
 import { CommanderError } from 'commander';
-import type { PartialDeep } from 'type-fest';
 import { vi } from 'vitest';
 
 type ProcessExitTestResult = {
@@ -19,6 +18,7 @@ const { getArgv, process } = vi.hoisted(() => {
     get argv(): string[] {
       return getArgv();
     },
+    env: vi.fn(),
     exit: vi.fn((exitCode: number) => {
       // eslint-disable-next-line @typescript-eslint/only-throw-error
       throw { exitCode } satisfies ProcessExitTestResult;
@@ -31,7 +31,7 @@ const { getArgv, process } = vi.hoisted(() => {
     stdout: {
       write: vi.fn()
     }
-  } satisfies PartialDeep<NodeJS.Process>;
+  };
 
   return {
     getArgv,
