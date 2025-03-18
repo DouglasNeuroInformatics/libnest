@@ -1,10 +1,10 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 
-import { RuntimeException } from '@douglasneuroinformatics/libjs';
+import { isPlainObject, RuntimeException } from '@douglasneuroinformatics/libjs';
 import * as swc from '@swc/core';
 import esbuild from 'esbuild';
-import { fromAsyncThrowable, ok, Result, ResultAsync } from 'neverthrow';
+import { fromAsyncThrowable, ok, okAsync, Result, ResultAsync } from 'neverthrow';
 import { z } from 'zod';
 
 import { AppContainer } from '../app/app.container.js';
@@ -145,8 +145,13 @@ function runDev(configFile: string): ResultAsync<void, typeof RuntimeException.I
     });
 }
 
-async function build(options: { configFile: string; outfile: string }) {
-  const { default: config } = (await import(options.configFile)) as { default: UserConfigOptions };
+async function build({ configFile, outfile }: { configFile: string; outfile: string }) {
+  const config: unknown = await import(configFile).then((module: { [key: string]: unknown }) => module.default);
+  if (!isPlainObject(config)) {
+    return RuntimeException.asAsyncErr(`Invalid default export from file '${configFile}': not a plain object`);
+  } else if (typeof config.entry !== 'function') {
+    return RuntimeException.asAsyncErr(`Invalid default export from file '${configFile}': must be function`);
+  }
   const entry = `const __appContainer = await (${config.entry.toString()})().then((mod) => mod.default);`;
   await esbuild.build({
     banner: {
@@ -159,7 +164,7 @@ async function build(options: { configFile: string; outfile: string }) {
     external: ['@nestjs/microservices', '@nestjs/websockets/socket-module', 'class-transformer', 'class-validator'],
     format: 'esm',
     keepNames: true,
-    outfile: options.outfile,
+    outfile: outfile,
     platform: 'node',
     plugins: [
       {
@@ -196,10 +201,11 @@ async function build(options: { configFile: string; outfile: string }) {
     stdin: {
       contents: `${entry}; await __appContainer; await __appContainer.bootstrap();`,
       loader: 'ts',
-      resolveDir: path.dirname(options.configFile)
+      resolveDir: path.dirname(configFile)
     },
     target: ['node22', 'es2022']
   });
+  return okAsync();
 }
 
 export { build, findConfig, importDefault, loadAppContainer, loadConfig, resolveAbsoluteImportPathFromCwd, runDev };

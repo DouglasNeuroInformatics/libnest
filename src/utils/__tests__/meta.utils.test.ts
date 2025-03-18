@@ -7,6 +7,7 @@ import type { Mock } from 'vitest';
 
 import { AppContainer } from '../../app/app.container.js';
 import {
+  build,
   findConfig,
   importDefault,
   loadAppContainer,
@@ -217,5 +218,18 @@ describe('runDev', () => {
     expect(result.isOk()).toBe(true);
     expect(process.env.NODE_ENV).toBe('development');
     vi.unstubAllEnvs();
+  });
+});
+
+describe('build', () => {
+  it('should return an error if the default export from the config file is not a plain object', async () => {
+    vi.doMock('/foo.js', () => ({ default: '' }));
+    const result = await build({ configFile: '/foo.js', outfile: '/dev/null' });
+    expect(result.isErr() && result.error.message.includes('Invalid default export')).toBe(true);
+  });
+  it('should return an error if the config does not contain a function', async () => {
+    vi.doMock('/foo.js', () => ({ default: { entry: null } }));
+    const result = await build({ configFile: '/foo.js', outfile: '/dev/null' });
+    expect(result.isErr() && result.error.message.includes('Invalid default export')).toBe(true);
   });
 });
