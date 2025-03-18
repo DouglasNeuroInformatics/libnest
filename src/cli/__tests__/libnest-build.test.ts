@@ -7,7 +7,7 @@ const { bundle } = vi.hoisted(() => ({
   bundle: vi.fn()
 }));
 
-vi.mock('../../utils/meta.utils.js', () => ({
+vi.mock('../../utils/build.utils.js', () => ({
   bundle
 }));
 
