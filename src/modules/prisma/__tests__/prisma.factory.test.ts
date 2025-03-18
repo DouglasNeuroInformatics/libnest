@@ -42,8 +42,7 @@ test('ExtendedPrismaClient', () => {
         };
         query: {};
         result: {};
-      },
-      Prisma.PrismaClientOptions
+      }
     >
   >();
 });

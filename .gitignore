@@ -134,3 +134,6 @@ dist
 
 # local scripts for linking
 local/
+
+# example build
+build/

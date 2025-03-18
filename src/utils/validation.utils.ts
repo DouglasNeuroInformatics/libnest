@@ -14,7 +14,7 @@ export const { VALIDATION_SCHEMA_METADATA_KEY } = defineToken('VALIDATION_SCHEMA
 export function applyValidationSchema<T extends z.ZodType<{ [key: string]: unknown }>>(
   target: Class<z.TypeOf<T>>,
   schema: T
-) {
+): void {
   Reflect.defineMetadata(VALIDATION_SCHEMA_METADATA_KEY, schema, target);
 }
 

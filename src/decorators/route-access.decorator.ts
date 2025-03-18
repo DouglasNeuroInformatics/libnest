@@ -6,7 +6,7 @@ import type { AppAction, AppSubjectName } from '../modules/auth/auth.config.js';
 
 const { ROUTE_ACCESS_METADATA_KEY } = defineToken('ROUTE_ACCESS_METADATA_KEY');
 
-type PublicRouteAccess = 'public';
+export type PublicRouteAccess = 'public';
 
 export type ProtectedRoutePermissionSet = {
   action: AppAction;

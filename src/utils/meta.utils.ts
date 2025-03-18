@@ -11,11 +11,15 @@ import type { NodeEnv } from '../schemas/env.schema.js';
 import type { UserConfigOptions } from '../user-config.js';
 
 const $UserConfigOptions: z.ZodType<UserConfigOptions> = z.object({
-  entry: z.function().returns(z.promise(z.record(z.unknown()))),
+  build: z.object({
+    outfile: z.string().min(1)
+  }),
+  // cannot use zod function here as we cannot have any wrappers apply and screw up toString representation
+  entry: z.custom<(...args: any[]) => any>((arg) => typeof arg === 'function'),
   globals: z.record(z.unknown()).optional()
 });
 
-function resolveAbsoluteImportPath(filename: string): Result<string, typeof RuntimeException.Instance> {
+function resolveAbsoluteImportPathFromCwd(filename: string): Result<string, typeof RuntimeException.Instance> {
   const filepath = path.resolve(process.cwd(), filename);
   const extension = path.extname(filepath);
   if (!fs.existsSync(filepath)) {
@@ -26,6 +30,28 @@ function resolveAbsoluteImportPath(filename: string): Result<string, typeof Runt
     return RuntimeException.asErr(`Unexpected file extension '${extension}': must be '.js' or '.ts'`);
   }
   return ok(filepath);
+}
+
+function findConfig(baseDir: string): Result<string, typeof RuntimeException.Instance> {
+  const searched: string[] = [];
+
+  let searchDir = baseDir;
+  do {
+    const entries = fs.readdirSync(searchDir);
+    for (const entry of entries) {
+      if (/libnest\.config\.(t|j)s/.exec(entry)) {
+        return ok(path.resolve(searchDir, entry));
+      }
+    }
+    searched.push(searchDir);
+    searchDir = path.dirname(searchDir);
+  } while (searchDir !== searched.at(-1));
+
+  return RuntimeException.asErr('Failed to find libnest config file', {
+    details: {
+      searched
+    }
+  });
 }
 
 function importDefault(filepath: string): ResultAsync<unknown, typeof RuntimeException.Instance>;
@@ -41,7 +67,7 @@ function importDefault(
     importFn = argument;
     context = `module inferred as return value from function '${importFn.name || 'anonymous'}'`;
   } else {
-    importFn = () => import(argument);
+    importFn = (): Promise<{ [key: string]: unknown }> => import(argument);
     context = argument;
   }
   return fromAsyncThrowable(
@@ -64,19 +90,17 @@ function importDefault(
  * @returns A `ResultAsync` containing the config options on success, or an error message on failure.
  */
 function loadConfig(configFile: string): ResultAsync<UserConfigOptions, typeof RuntimeException.Instance> {
-  return resolveAbsoluteImportPath(configFile)
-    .asyncAndThen(importDefault)
-    .andThen((config) => {
-      const result = $UserConfigOptions.safeParse(config);
-      if (!result.success) {
-        return RuntimeException.asAsyncErr(`Invalid format for default export in config file: ${configFile}`, {
-          details: {
-            issues: result.error.issues
-          }
-        });
-      }
-      return ok(result.data);
-    });
+  return importDefault(configFile).andThen((config) => {
+    const result = $UserConfigOptions.safeParse(config);
+    if (!result.success) {
+      return RuntimeException.asAsyncErr(`Invalid format for default export in config file: ${configFile}`, {
+        details: {
+          issues: result.error.issues
+        }
+      });
+    }
+    return ok(result.data);
+  });
 }
 
 /**
@@ -84,7 +108,9 @@ function loadConfig(configFile: string): ResultAsync<UserConfigOptions, typeof R
  * @param config - The user config
  * @returns A `ResultAsync` containing the app container on success, or an error message on failure.
  */
-function loadAppContainer(config: UserConfigOptions): ResultAsync<AppContainer, typeof RuntimeException.Instance> {
+function loadAppContainer(
+  config: Pick<UserConfigOptions, 'entry'>
+): ResultAsync<AppContainer, typeof RuntimeException.Instance> {
   return importDefault(config.entry)
     .map(async (appContainer) => await appContainer)
     .andThen((appContainer) => {
@@ -106,19 +132,21 @@ function runDev(configFile: string): ResultAsync<void, typeof RuntimeException.I
   if (!process.env.NODE_ENV) {
     process.env.NODE_ENV = 'development' satisfies NodeEnv;
   }
-  return loadConfig(configFile).andThen((config) => {
-    return loadAppContainer(config).map(async (appContainer) => {
-      if (config.globals) {
-        Object.entries(config.globals).forEach(([key, value]) => {
-          Object.defineProperty(globalThis, key, {
-            value,
-            writable: false
+  return resolveAbsoluteImportPathFromCwd(configFile)
+    .asyncAndThen(loadConfig)
+    .andThen((config) => {
+      return loadAppContainer(config).map(async (appContainer) => {
+        if (config.globals) {
+          Object.entries(config.globals).forEach(([key, value]) => {
+            Object.defineProperty(globalThis, key, {
+              value,
+              writable: false
+            });
           });
-        });
-      }
-      await appContainer.bootstrap();
+        }
+        await appContainer.bootstrap();
+      });
     });
-  });
 }
 
-export { importDefault, loadAppContainer, loadConfig, resolveAbsoluteImportPath, runDev };
+export { findConfig, importDefault, loadAppContainer, loadConfig, resolveAbsoluteImportPathFromCwd, runDev };

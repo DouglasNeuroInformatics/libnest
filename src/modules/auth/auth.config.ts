@@ -1,14 +1,13 @@
 import { AbilityBuilder, PureAbility } from '@casl/ability';
 import type { RawRuleOf } from '@casl/ability';
 import type { PrismaQuery, Subjects } from '@casl/prisma';
+import type { FallbackIfNever } from '@douglasneuroinformatics/libjs';
 import { ConfigurableModuleBuilder } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import type { DefaultSelection } from '@prisma/client/runtime/library';
 import type { z } from 'zod';
 
 import { defineToken } from '../../utils/token.utils.js';
-
-type FallbackIfNever<T, U> = [T] extends [never] ? U : T;
 
 type AppAction = 'create' | 'delete' | 'manage' | 'read' | 'update';
 
@@ -52,13 +51,15 @@ interface JwtPayload {
   permissions: Permission[];
 }
 
+type UserQueryResult<TPayload extends { [key: string]: unknown } = { [key: string]: unknown }> = {
+  hashedPassword: string;
+  tokenPayload: TPayload;
+};
+
 type UserQuery<
   TLoginCredentials extends BaseLoginCredentials = BaseLoginCredentials,
   TPayload extends { [key: string]: unknown } = { [key: string]: unknown }
-> = (credentials: TLoginCredentials) => Promise<null | {
-  hashedPassword: string;
-  tokenPayload: TPayload;
-}>;
+> = (credentials: TLoginCredentials) => Promise<null | UserQueryResult<TPayload>>;
 
 type LoginResponseBody = {
   accessToken: string;
@@ -95,7 +96,6 @@ export type {
   AppAction,
   AppConditions,
   AppSubjectName,
-  AppSubjects,
   AuthModuleOptions,
   BaseLoginCredentials,
   BaseLoginCredentialsSchema,
@@ -103,5 +103,6 @@ export type {
   JwtPayload,
   LoginResponseBody,
   Permission,
-  UserQuery
+  UserQuery,
+  UserQueryResult
 };

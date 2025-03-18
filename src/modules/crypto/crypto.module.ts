@@ -10,7 +10,7 @@ import { CryptoService } from './crypto.service.js';
     {
       inject: [ConfigService],
       provide: CryptoService,
-      useFactory: (configService: ConfigService) => {
+      useFactory: (configService: ConfigService): CryptoService => {
         return new CryptoService({
           pbkdf2Params: {
             iterations: configService.get('DANGEROUSLY_DISABLE_PBKDF2_ITERATION') ? 1 : 100_000

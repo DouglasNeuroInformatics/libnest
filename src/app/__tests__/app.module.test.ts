@@ -9,7 +9,7 @@ import { CryptoService } from '../../modules/crypto/crypto.service.js';
 import { mockEnvConfig } from '../../testing/mocks/env-config.mock.js';
 import { AppModule } from '../app.module.js';
 
-import type { CryptoOptions } from '../../modules/crypto/crypto.service.js';
+import type { CryptoOptions } from '../../modules/crypto/crypto.config.js';
 import type { CreateAppModuleOptions } from '../app.module.js';
 
 vi.mock(import('../../middleware/delay.middleware.js'), async (importOriginal) => {

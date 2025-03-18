@@ -2,12 +2,7 @@ import { createHash, pbkdf2, randomBytes } from 'node:crypto';
 
 import { Injectable } from '@nestjs/common';
 
-export type CryptoOptions = {
-  pbkdf2Params?: {
-    iterations: number;
-  };
-  secretKey: string;
-};
+import type { CryptoOptions } from './crypto.config.js';
 
 @Injectable()
 export class CryptoService {
@@ -21,25 +16,25 @@ export class CryptoService {
     this.secretKey = options.secretKey;
   }
 
-  async comparePassword(password: string, hashedPassword: string) {
+  async comparePassword(password: string, hashedPassword: string): Promise<boolean> {
     const [hash, salt] = hashedPassword.split('$');
     const correctHash = await this.pbkdf2(password, salt!);
     return hash === correctHash;
   }
 
-  hash(source: string) {
+  hash(source: string): string {
     return createHash('sha256')
       .update(source + this.secretKey)
       .digest('hex');
   }
 
-  async hashPassword(password: string) {
+  async hashPassword(password: string): Promise<string> {
     const salt = this.genSalt();
     const hash = await this.pbkdf2(password, salt);
     return [hash, salt].join('$');
   }
 
-  private genSalt() {
+  private genSalt(): string {
     return randomBytes(16).toString('hex');
   }
 

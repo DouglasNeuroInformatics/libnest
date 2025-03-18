@@ -42,14 +42,14 @@ import type { AuthModuleOptions, BaseLoginCredentialsSchema } from './auth.confi
     {
       inject: [AUTH_MODULE_OPTIONS_TOKEN],
       provide: USER_QUERY_TOKEN,
-      useFactory: (options: AuthModuleOptions) => {
+      useFactory: (options: AuthModuleOptions): AuthModuleOptions['userQuery'] => {
         return options.userQuery;
       }
     },
     {
       inject: [AUTH_MODULE_OPTIONS_TOKEN],
       provide: DEFINE_ABILITY_TOKEN,
-      useFactory: (options: AuthModuleOptions) => {
+      useFactory: (options: AuthModuleOptions): AuthModuleOptions['defineAbility'] => {
         return options.defineAbility;
       }
     }
@@ -78,7 +78,7 @@ export class AuthModule extends ConfigurableAuthModule implements OnModuleInit {
     return super.forRootAsync(options);
   }
 
-  onModuleInit() {
+  onModuleInit(): void {
     applyValidationSchema(LoginCredentialsDto, this.loginCredentialsSchema);
   }
 }

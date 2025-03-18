@@ -8,7 +8,7 @@ import type { AppAbilities, AppAbility, DefineAbility, Permission } from './auth
 
 @Injectable()
 export class AbilityFactory {
-  private detectSubjectType = (obj: { [key: string]: unknown }) => {
+  private detectSubjectType = (obj: { [key: string]: unknown }): string => {
     if (typeof obj.__modelName === 'string') {
       return obj.__modelName;
     }

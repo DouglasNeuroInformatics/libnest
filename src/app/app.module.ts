@@ -16,15 +16,15 @@ import { ValidationPipe } from '../pipes/validation.pipe.js';
 import type { PrismaModuleOptions } from '../modules/prisma/prisma.config.js';
 import type { BaseEnv } from '../schemas/env.schema.js';
 
-type ImportedModule = DynamicModule | Type<any>;
-
-type ConditionalImport<TEnv extends BaseEnv = BaseEnv> = {
-  module: ImportedModule;
-  when: ConditionalKeys<TEnv, boolean | undefined>;
+type DynamicAppModule = DynamicModule & {
+  module: typeof AppModule;
 };
 
-export type DynamicAppModule = DynamicModule & {
-  module: typeof AppModule;
+export type ImportedModule = DynamicModule | Type<any>;
+
+export type ConditionalImport<TEnv extends BaseEnv = BaseEnv> = {
+  module: ImportedModule;
+  when: ConditionalKeys<TEnv, boolean | undefined>;
 };
 
 export type CreateAppModuleOptions<TEnv extends BaseEnv = BaseEnv> = {
@@ -105,7 +105,7 @@ export class AppModule implements NestModule {
     };
   }
 
-  configure(consumer: MiddlewareConsumer) {
+  configure(consumer: MiddlewareConsumer): void {
     const isProd = this.configService.get('NODE_ENV') === 'production';
     const responseDelay = this.configService.get('API_RESPONSE_DELAY');
     if (!isProd && responseDelay) {

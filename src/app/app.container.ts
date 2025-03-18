@@ -14,7 +14,7 @@ import type { BaseEnv } from '../schemas/env.schema.js';
 import type { CreateAppModuleOptions } from './app.module.js';
 import type { AppVersion, DocsConfig } from './docs.factory.js';
 
-type EnvSchema = z.ZodType<BaseEnv, z.ZodTypeDef, { [key: string]: string }>;
+type BaseEnvSchema = z.ZodType<BaseEnv, z.ZodTypeDef, { [key: string]: string }>;
 
 type InitAppContainerOptions = {
   docs?: {
@@ -25,7 +25,7 @@ type InitAppContainerOptions = {
   version: AppVersion;
 };
 
-export type CreateAppContainerOptions<TEnvSchema extends EnvSchema = EnvSchema> = Simplify<
+export type CreateAppContainerOptions<TEnvSchema extends BaseEnvSchema = BaseEnvSchema> = Simplify<
   Omit<CreateAppModuleOptions<z.TypeOf<TEnvSchema>>, 'envConfig'> &
     Pick<InitAppContainerOptions, 'docs' | 'version'> & {
       envSchema: TEnvSchema;
@@ -57,16 +57,27 @@ export class AppContainer {
     this.#port = envConfig.API_PORT;
   }
 
-  static async create<TEnvSchema extends EnvSchema>({
+  static async create<TEnvSchema extends BaseEnvSchema>({
     docs,
     envSchema,
     imports,
     prisma,
     providers,
     version
-  }: CreateAppContainerOptions<TEnvSchema>) {
+  }: CreateAppContainerOptions<TEnvSchema>): Promise<
+    AppContainer & {
+      __inferredEnvSchema: TEnvSchema;
+    }
+  > {
     const envConfigResult = safeParse(
-      filterObject(process.env, (value) => value !== ''),
+      filterObject(
+        {
+          ...process.env,
+          // this is required so that NODE_ENV can be statically replaced in the bundle
+          NODE_ENV: process.env.NODE_ENV
+        },
+        (value) => value !== ''
+      ),
       envSchema
     );
     if (envConfigResult.isErr()) {
@@ -84,14 +95,16 @@ export class AppContainer {
     };
   }
 
-  async bootstrap() {
+  async bootstrap(): Promise<void> {
     const logger = this.#app.get(JSONLogger);
     await this.#app.listen(this.#port);
     const url = await this.#app.getUrl();
     logger.log(`Application is running on: ${url}`);
   }
 
-  getApplicationInstance() {
+  getApplicationInstance(): NestExpressApplication {
     return this.#app;
   }
 }
+
+export type { BaseEnvSchema };

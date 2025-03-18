@@ -15,7 +15,7 @@ export class LoggingMiddleware implements NestMiddleware {
     this.logger = new JSONLogger('HTTP', options);
   }
 
-  use(req: Request, res: Response, next: NextFunction) {
+  use(req: Request, res: Response, next: NextFunction): void {
     const start = Date.now();
     res.on('finish', () => {
       const end = Date.now();

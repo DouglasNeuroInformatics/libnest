@@ -50,8 +50,7 @@ type InferExtendedClient<TArgs extends { [key: string]: unknown }> = DynamicClie
     }
   >,
   Prisma.TypeMapCb,
-  InferPrismaExtensionArgs<TArgs>,
-  Prisma.PrismaClientOptions
+  InferPrismaExtensionArgs<TArgs>
 >;
 
 export type ExtendedPrismaClient = InferExtendedClient<{ model: ModelExtArgs; result: ResultExtArgs }>;
@@ -80,7 +79,7 @@ export class PrismaFactory {
       Object.keys(Prisma.ModelName).forEach((modelName) => {
         result[getModelKey(modelName)] = {
           __modelName: {
-            compute: () => modelName
+            compute: (): string => modelName
           }
         };
       });

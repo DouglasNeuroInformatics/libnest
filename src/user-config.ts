@@ -7,6 +7,10 @@ import type { AppContainer } from './app/app.container.js';
  * Configuration options for a `libnest` application.
  */
 export type UserConfigOptions = {
+  /** Configuration options for the production build */
+  build: {
+    outfile: string;
+  };
   /**
    * The entry point for the `libnest` CLI.
    *
@@ -25,7 +29,7 @@ export type UserConfigOptions = {
  * @param config - The configuration options for the application.
  * @returns The same configuration options
  */
-export function defineUserConfig<T extends UserConfigOptions>(config: T) {
+export function defineUserConfig<T extends UserConfigOptions>(config: T): T {
   return config;
 }
 

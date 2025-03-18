@@ -2,7 +2,7 @@ import { createAccessibleByFactory } from '@casl/prisma/runtime';
 import { uncapitalize } from '@douglasneuroinformatics/libjs';
 
 import type { AppAbility, AppAction, AppConditions } from '../auth/auth.config.js';
-import type { PrismaModelKey, PrismaModelName, PrismaModelToken, PrismaModelWhereInputMap } from './prisma.types.js';
+import type { PrismaModelKey, PrismaModelName, PrismaModelWhereInputMap } from './prisma.types.js';
 
 const accessibleBy = createAccessibleByFactory<PrismaModelWhereInputMap, AppConditions>();
 
@@ -11,7 +11,7 @@ const accessibleBy = createAccessibleByFactory<PrismaModelWhereInputMap, AppCond
  * @param modelName - The name of the Prisma model.
  * @returns A injection token string.
  */
-export function getModelToken<T extends PrismaModelName>(modelName: T): PrismaModelToken<T> {
+export function getModelToken<T extends PrismaModelName>(modelName: T): `${T}PrismaModel` {
   return `${modelName}PrismaModel`;
 }
 

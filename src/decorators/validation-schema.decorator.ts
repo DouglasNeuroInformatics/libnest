@@ -16,7 +16,7 @@ export function ValidationSchema<T extends z.ZodRawShape>(shape: T): (target: Cl
  */
 export function ValidationSchema(shapeOrSchema: z.ZodRawShape | z.ZodType<{ [key: string]: any }>) {
   const schema = shapeOrSchema instanceof z.ZodType ? shapeOrSchema : z.object(shapeOrSchema);
-  return (target: Class<any>) => {
+  return (target: Class<any>): void => {
     applyValidationSchema(target, schema);
   };
 }

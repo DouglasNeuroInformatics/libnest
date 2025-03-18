@@ -42,7 +42,7 @@ export class MockFactory {
    * @param constructor - The class to mock.
    * @returns A mocked instance of the class.
    */
-  static createMock<T extends object>(constructor: Class<T>) {
+  static createMock<T extends object>(constructor: Class<T>): MockedInstance<T> {
     const prototype = constructor.prototype as { [key: string]: unknown };
     const obj: { [key: string]: unknown } = {};
     this.getAllPropertyNames(prototype)

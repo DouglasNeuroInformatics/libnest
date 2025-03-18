@@ -5,7 +5,7 @@ import { getValidationSchema, parseRequestBody } from '../utils/validation.utils
 
 @Injectable()
 export class ValidationPipe implements PipeTransform {
-  async transform(value: unknown, { metatype, type }: ArgumentMetadata) {
+  async transform(value: unknown, { metatype, type }: ArgumentMetadata): Promise<unknown> {
     if (type !== 'body') {
       return value;
     } else if (!metatype) {
@@ -14,7 +14,6 @@ export class ValidationPipe implements PipeTransform {
 
     const schema = getValidationSchema(metatype);
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return parseRequestBody(value, schema);
   }
 }
