@@ -158,15 +158,28 @@ function parseEntryFromFunction(entry: (...args: any[]) => any): Result<string, 
   const source = entry.toString();
   const [imports] = lexer.parse(source);
   if (imports.length !== 1) {
-    return RuntimeException.asErr(`Entry function must include exactly one import: found ${imports.length}`);
+    return RuntimeException.asErr(`Entry function must include exactly one import: found ${imports.length}`, {
+      details: {
+        source
+      }
+    });
   }
   const importSpecifier = imports[0]!;
   if (importSpecifier.t !== lexer.ImportType.Dynamic) {
     return RuntimeException.asErr(
-      `Entry function must contain dynamic import: found ${lexer.ImportType[importSpecifier.t]}`
+      `Entry function must contain dynamic import: found ${lexer.ImportType[importSpecifier.t]}`,
+      {
+        details: {
+          source
+        }
+      }
     );
   } else if (!importSpecifier.n) {
-    return RuntimeException.asErr('Dynamic import in entry function must import a string literal');
+    return RuntimeException.asErr('Dynamic import in entry function must import a string literal', {
+      details: {
+        source
+      }
+    });
   }
   return ok(importSpecifier.n);
 }
