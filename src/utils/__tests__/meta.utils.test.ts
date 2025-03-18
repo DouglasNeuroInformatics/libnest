@@ -25,9 +25,6 @@ const resolvedConfigFile = path.join(rootDir, configFile);
 const fs = vi.hoisted(() => ({
   existsSync: vi.fn(),
   lstatSync: vi.fn(),
-  promises: {
-    readFile: vi.fn()
-  },
   readdirSync: vi.fn()
 })) satisfies { [K in keyof typeof import('node:fs')]?: any };
 
