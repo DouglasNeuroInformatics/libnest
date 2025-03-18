@@ -79,6 +79,7 @@ const build = fromAsyncThrowable(
   async ({
     entrySpecifier,
     globals,
+    mode,
     outfile,
     resolveDir
   }: {
@@ -86,6 +87,7 @@ const build = fromAsyncThrowable(
     globals?: {
       [key: string]: Jsonifiable;
     };
+    mode?: 'module' | 'server';
     outfile: string;
     resolveDir: string;
   }) => {
@@ -109,7 +111,11 @@ const build = fromAsyncThrowable(
       platform: 'node',
       plugins: [swcPlugin()],
       stdin: {
-        contents: `import __appContainer from "${entrySpecifier}"; await __appContainer; await __appContainer.bootstrap();`,
+        contents: [
+          `import __appContainer from "${entrySpecifier}";`,
+          'await __appContainer;',
+          mode === 'module' ? 'export default __appContainer;' : 'await __appContainer.bootstrap();'
+        ].join('\n'),
         loader: 'ts',
         resolveDir: resolveDir
       },
@@ -129,6 +135,7 @@ function bundle({ configFile }: { configFile: string }): ResultAsync<void, typeo
       return build({
         entrySpecifier,
         globals: config.globals,
+        mode: config.build.mode,
         outfile: config.build.outfile,
         resolveDir: path.dirname(configFile)
       });

@@ -12,6 +12,7 @@ import type { UserConfigOptions } from '../user-config.js';
 
 const $UserConfigOptions: z.ZodType<UserConfigOptions> = z.object({
   build: z.object({
+    mode: z.enum(['module', 'server']).optional(),
     outfile: z.string().min(1)
   }),
   // cannot use zod function here as we cannot have any wrappers apply and screw up toString representation

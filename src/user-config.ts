@@ -9,6 +9,14 @@ import type { AppContainer } from './app/app.container.js';
 export type UserConfigOptions = {
   /** Configuration options for the production build */
   build: {
+    /**
+     * The type of bundle to generate. If set to `module`, the bundle will be a module with
+     * the AppContainer as the default export. If set to standalone, running the bundle will
+     * launch the production server.
+     * @default 'server'
+     */
+    mode?: 'module' | 'server';
+    /** The path where the bundle should be written */
     outfile: string;
   };
   /**
