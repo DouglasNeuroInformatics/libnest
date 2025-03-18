@@ -100,7 +100,9 @@ describe('build', () => {
     esbuild.build.mockImplementationOnce(() => {
       throw cause;
     });
-    await expect(build({ entrySpecifier: './app.ts', outfile: 'out.js', resolveDir: '/' })).resolves.toMatchObject({
+    await expect(
+      build({ config: { build: { outfile: 'out.js' } }, entrySpecifier: './app.ts', resolveDir: '/' })
+    ).resolves.toMatchObject({
       error: {
         cause,
         message: 'Failed to build application'
@@ -109,7 +111,11 @@ describe('build', () => {
   });
   it('should an ok result on success', async () => {
     esbuild.build.mockResolvedValueOnce({});
-    const result = await build({ entrySpecifier: './app.ts', outfile: 'out.js', resolveDir: '/' });
+    const result = await build({
+      config: { build: { outfile: 'out.js' } },
+      entrySpecifier: './app.ts',
+      resolveDir: '/'
+    });
     expect(result.isOk()).toBe(true);
   });
 });
@@ -117,6 +123,11 @@ describe('build', () => {
 describe('bundle', () => {
   let fsActual: typeof import('node:fs');
   let outdir: string;
+
+  const configFile = path.resolve(import.meta.dirname, '../../../libnest.config.js');
+  const entryFile = './example/app.js';
+  const entry = () => ({}) as any;
+  entry.toString = () => `() => import('${entryFile}')`;
 
   beforeAll(async () => {
     fsActual = await vi.importActual<typeof import('node:fs')>('node:fs');
@@ -135,14 +146,11 @@ describe('bundle', () => {
     expect(result.error.message.includes('Invalid format for default export in config file')).toBe(true);
   });
 
-  it('should correctly bundle the example application', { timeout: 10000 }, async () => {
-    const configFile = path.resolve(import.meta.dirname, '../../../libnest.config.js');
-    const entryFile = './example/app.js';
-    const entry = () => ({}) as any;
-    entry.toString = () => `() => import('${entryFile}')`;
+  it('should correctly bundle the example application ', { timeout: 10000 }, async () => {
     vi.doMock(configFile, () => ({
       default: {
         build: {
+          mode: 'module',
           outfile
         },
         entry
@@ -152,5 +160,27 @@ describe('bundle', () => {
     const result = await bundle({ configFile });
     expect(result.isOk()).toBe(true);
     expect(fsActual.existsSync(outfile)).toBe(true);
+  });
+
+  it('should correctly bundle the example application as a module', { timeout: 10000 }, async () => {
+    vi.doMock(configFile, () => ({
+      default: {
+        build: {
+          mode: 'module',
+          outfile
+        },
+        entry,
+        globals: {
+          __RELEASE__: {
+            version: 'Latest'
+          }
+        }
+      } satisfies UserConfigOptions
+    }));
+    const outfile = path.join(outdir, 'module.js');
+    const result = await bundle({ configFile });
+    expect(result.isOk()).toBe(true);
+    const appContainer = await import(outfile);
+    expect(appContainer).toBeDefined();
   });
 });

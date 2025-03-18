@@ -5,9 +5,10 @@ import { RuntimeException } from '@douglasneuroinformatics/libjs';
 import * as lexer from 'es-module-lexer';
 import type { Plugin } from 'esbuild';
 import { fromAsyncThrowable, ok, Result, ResultAsync } from 'neverthrow';
-import type { Jsonifiable } from 'type-fest';
 
 import { loadConfig } from './meta.utils.js';
+
+import type { UserConfigOptions } from '../user-config.js';
 
 await lexer.init;
 
@@ -77,26 +78,20 @@ const swcPlugin = (): Plugin => {
 
 const build = fromAsyncThrowable(
   async ({
+    config,
     entrySpecifier,
-    globals,
-    mode,
-    outfile,
     resolveDir
   }: {
+    config: Pick<UserConfigOptions, 'build' | 'globals'>;
     entrySpecifier: string;
-    globals?: {
-      [key: string]: Jsonifiable;
-    };
-    mode?: 'module' | 'server';
-    outfile: string;
     resolveDir: string;
   }) => {
     const esbuild = await import('esbuild');
     const define: { [key: string]: string } = {
       'process.env.NODE_ENV': "'production'"
     };
-    for (const key in globals) {
-      define[key] = JSON.stringify(globals[key]);
+    for (const key in config.globals) {
+      define[key] = JSON.stringify(config.globals[key]);
     }
     await esbuild.build({
       banner: {
@@ -107,14 +102,14 @@ const build = fromAsyncThrowable(
       external: ['@nestjs/microservices', '@nestjs/websockets/socket-module', 'class-transformer', 'class-validator'],
       format: 'esm',
       keepNames: true,
-      outfile: outfile,
+      outfile: config.build.outfile,
       platform: 'node',
       plugins: [swcPlugin()],
       stdin: {
         contents: [
           `import __appContainer from "${entrySpecifier}";`,
           'await __appContainer;',
-          mode === 'module' ? 'export default __appContainer;' : 'await __appContainer.bootstrap();'
+          config.build.mode === 'module' ? 'export default __appContainer;' : 'await __appContainer.bootstrap();'
         ].join('\n'),
         loader: 'ts',
         resolveDir: resolveDir
@@ -133,10 +128,8 @@ function bundle({ configFile }: { configFile: string }): ResultAsync<void, typeo
   return loadConfig(configFile).andThen((config) => {
     return parseEntryFromFunction(config.entry).asyncAndThen((entrySpecifier) => {
       return build({
+        config,
         entrySpecifier,
-        globals: config.globals,
-        mode: config.build.mode,
-        outfile: config.build.outfile,
         resolveDir: path.dirname(configFile)
       });
     });
