@@ -106,22 +106,16 @@ const build = fromAsyncThrowable(
   }
 );
 
-function bundle({
-  configFile,
-  outfile
-}: {
-  configFile: string;
-  outfile: string;
-}): ResultAsync<void, typeof RuntimeException.Instance> {
-  return loadConfig(configFile)
-    .andThen((config) => parseEntryFromFunction(config.entry))
-    .andThen((entrySpecifier) => {
+function bundle({ configFile }: { configFile: string }): ResultAsync<void, typeof RuntimeException.Instance> {
+  return loadConfig(configFile).andThen((config) => {
+    return parseEntryFromFunction(config.entry).asyncAndThen((entrySpecifier) => {
       return build({
         entrySpecifier,
-        outfile,
+        outfile: config.build.outfile,
         resolveDir: path.dirname(configFile)
       });
     });
+  });
 }
 
 export { build, bundle, parseEntryFromFunction, swcPlugin };

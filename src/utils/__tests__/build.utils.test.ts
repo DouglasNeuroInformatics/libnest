@@ -7,6 +7,8 @@ import type { Mock } from 'vitest';
 
 import { build, bundle, parseEntryFromFunction, swcPlugin } from '../build.utils.js';
 
+import type { UserConfigOptions } from '../../user-config.js';
+
 const fs = vi.hoisted(() => ({
   readFile: vi.fn()
 })) satisfies { [K in keyof typeof import('node:fs/promises')]?: Mock };
@@ -128,7 +130,7 @@ describe('bundle', () => {
 
   it('should return an error if the default export from the config file is not a plain object', async () => {
     vi.doMock('/foo.js', () => ({ default: '' }));
-    const result = (await bundle({ configFile: '/foo.js', outfile: '/dev/null' })) as Err<never, any>;
+    const result = (await bundle({ configFile: '/foo.js' })) as Err<never, any>;
     expect(result.isErr()).toBe(true);
     expect(result.error.message.includes('Invalid format for default export in config file')).toBe(true);
   });
@@ -136,15 +138,18 @@ describe('bundle', () => {
   it('should correctly bundle the example application', { timeout: 10000 }, async () => {
     const configFile = path.resolve(import.meta.dirname, '../../../libnest.config.js');
     const entryFile = './example/app.js';
-    const entry = () => ({});
+    const entry = () => ({}) as any;
     entry.toString = () => `() => import('${entryFile}')`;
     vi.doMock(configFile, () => ({
       default: {
+        build: {
+          outfile
+        },
         entry
-      }
+      } satisfies UserConfigOptions
     }));
     const outfile = path.join(outdir, 'server.js');
-    const result = await bundle({ configFile, outfile });
+    const result = await bundle({ configFile });
     expect(result.isOk()).toBe(true);
     expect(fsActual.existsSync(outfile)).toBe(true);
   });
