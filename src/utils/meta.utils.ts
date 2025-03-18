@@ -22,7 +22,8 @@ type BuildOptions = {
 };
 
 const $UserConfigOptions: z.ZodType<UserConfigOptions> = z.object({
-  entry: z.function().returns(z.promise(z.record(z.unknown()))),
+  // cannot use zod function here as we cannot have any wrappers apply and screw up toString representation
+  entry: z.custom<(...args: any[]) => any>((arg) => typeof arg === 'function'),
   globals: z.record(z.unknown()).optional()
 });
 
