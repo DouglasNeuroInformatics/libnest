@@ -164,7 +164,7 @@ function parseEntryFromUserConfig(
   } else if (!importSpecifier.n) {
     return RuntimeException.asErr('Dynamic import in entry function must import a string literal');
   }
-  return ok('');
+  return ok(importSpecifier.n);
 }
 
 async function build({ configFile, outfile }: { configFile: string; outfile: string }) {

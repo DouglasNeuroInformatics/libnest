@@ -252,6 +252,12 @@ describe('parseEntryFromUserConfig', () => {
       }
     });
   });
+  it('should return the result with the specifier', () => {
+    const entry = { toString: () => "() => import('./app.js')" } as any;
+    expect(parseEntryFromUserConfig({ entry })).toMatchObject({
+      value: './app.js'
+    });
+  });
 });
 
 describe('build', () => {
