@@ -3,7 +3,7 @@ import * as process from 'node:process';
 
 import { Command } from 'commander';
 
-import { bundle } from '../utils/meta.utils.js';
+import { bundle } from '../utils/build.utils.js';
 
 const program = new Command();
 
