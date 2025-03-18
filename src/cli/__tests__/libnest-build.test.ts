@@ -3,6 +3,14 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { createExec, process } from '../../testing/helpers/cli.js';
 
+const { bundle } = vi.hoisted(() => ({
+  bundle: vi.fn()
+}));
+
+vi.mock('../../utils/meta.utils.js', () => ({
+  bundle
+}));
+
 const exec = createExec({
   entry: '../libnest-build.js',
   root: import.meta.dirname
@@ -32,5 +40,19 @@ describe('libnest-build', () => {
         exitCode: 1
       })
     );
+  });
+  it('should call the bundle function', async () => {
+    const action = vi.spyOn(Command.prototype, 'action');
+    await exec([]);
+    const callback = action.mock.lastCall![0];
+    vi.spyOn(process.env as any, 'LIBNEST_CONFIG_FILEPATH', 'get').mockReturnValueOnce('/path/to/config.js');
+    const mapErr = vi.fn();
+    bundle.mockReturnValueOnce({ mapErr });
+    (callback as any)();
+    expect(bundle).toHaveBeenCalledOnce();
+    const programError = vi.spyOn(Command.prototype, 'error').mockImplementationOnce(() => null!);
+    const errorHandler = mapErr.mock.lastCall![0];
+    errorHandler(new Error('An error occurred'));
+    expect(programError).toHaveBeenCalledExactlyOnceWith('Error: An error occurred', { exitCode: 1 });
   });
 });
