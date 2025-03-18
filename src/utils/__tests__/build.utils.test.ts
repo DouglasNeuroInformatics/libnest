@@ -7,6 +7,7 @@ import type { Mock } from 'vitest';
 
 import { build, bundle, parseEntryFromFunction, swcPlugin } from '../build.utils.js';
 
+import type { AppContainer } from '../../app/app.container.js';
 import type { UserConfigOptions } from '../../user-config.js';
 
 const fs = vi.hoisted(() => ({
@@ -172,7 +173,7 @@ describe('bundle', () => {
         entry,
         globals: {
           __RELEASE__: {
-            version: 'Latest'
+            version: 'latest'
           }
         }
       } satisfies UserConfigOptions
@@ -180,7 +181,8 @@ describe('bundle', () => {
     const outfile = path.join(outdir, 'module.js');
     const result = await bundle({ configFile });
     expect(result.isOk()).toBe(true);
-    const appContainer = await import(outfile);
-    expect(appContainer).toBeDefined();
+    const appContainer = await import(outfile).then((module) => module.default as AppContainer);
+    const app = appContainer.getApplicationInstance();
+    expect(app).toBeDefined();
   });
 });
