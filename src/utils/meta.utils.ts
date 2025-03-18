@@ -12,6 +12,7 @@ import type { UserConfigOptions } from '../user-config.js';
 
 const $UserConfigOptions: z.ZodType<UserConfigOptions> = z.object({
   build: z.object({
+    esbuildOptions: z.record(z.any()).optional(),
     mode: z.enum(['module', 'server']).optional(),
     outfile: z.string().min(1)
   }),
