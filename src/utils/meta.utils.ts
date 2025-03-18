@@ -151,9 +151,18 @@ function runDev(configFile: string): ResultAsync<void, typeof RuntimeException.I
 function parseEntryFromUserConfig(
   config: Pick<UserConfigOptions, 'entry'>
 ): Result<string, typeof RuntimeException.Instance> {
-  const [imports] = lexer.parse(config.entry.toString());
+  const source = config.entry.toString();
+  const [imports] = lexer.parse(source);
   if (imports.length !== 1) {
     return RuntimeException.asErr(`Entry function must include exactly one import: found ${imports.length}`);
+  }
+  const importSpecifier = imports[0]!;
+  if (importSpecifier.t !== lexer.ImportType.Dynamic) {
+    return RuntimeException.asErr(
+      `Entry function must contain dynamic import: found ${lexer.ImportType[importSpecifier.t]}`
+    );
+  } else if (!importSpecifier.n) {
+    return RuntimeException.asErr('Dynamic import in entry function must import a string literal');
   }
   return ok('');
 }
