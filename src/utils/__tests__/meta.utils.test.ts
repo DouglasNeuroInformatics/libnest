@@ -310,6 +310,11 @@ describe('build', () => {
       }
     });
   });
+  it('should an ok result on success', async () => {
+    esbuild.build.mockResolvedValueOnce({});
+    const result = await build({ entrySpecifier: './app.ts', outfile: 'out.js', resolveDir: '/' });
+    expect(result.isOk()).toBe(true);
+  });
 });
 
 describe('bundle', () => {
