@@ -29,7 +29,13 @@ const fs = vi.hoisted(() => ({
   readdirSync: vi.fn()
 })) satisfies { [K in keyof typeof import('node:fs')]?: Mock };
 
+const esbuild = vi.hoisted(() => ({
+  build: vi.fn()
+}));
+
 vi.mock('node:fs', () => fs);
+
+vi.mock('esbuild', () => esbuild);
 
 beforeEach(() => {
   vi.spyOn(process, 'cwd').mockReturnValue(rootDir);
