@@ -1,4 +1,4 @@
-#!/usr/bin/env node --watch
+#!/usr/bin/env node --enable-source-maps --watch
 
 import { register } from 'node:module';
 
