@@ -1,11 +1,11 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 
-import { isPlainObject, RuntimeException } from '@douglasneuroinformatics/libjs';
+import { RuntimeException } from '@douglasneuroinformatics/libjs';
 import * as swc from '@swc/core';
 import * as lexer from 'es-module-lexer';
 import esbuild from 'esbuild';
-import { fromAsyncThrowable, ok, okAsync, Result, ResultAsync } from 'neverthrow';
+import { fromAsyncThrowable, ok, Result, ResultAsync } from 'neverthrow';
 import { z } from 'zod';
 
 import { AppContainer } from '../app/app.container.js';
@@ -14,6 +14,12 @@ import type { NodeEnv } from '../schemas/env.schema.js';
 import type { UserConfigOptions } from '../user-config.js';
 
 await lexer.init;
+
+type BuildOptions = {
+  entrySpecifier: string;
+  outfile: string;
+  resolveDir: string;
+};
 
 const $UserConfigOptions: z.ZodType<UserConfigOptions> = z.object({
   entry: z.function().returns(z.promise(z.record(z.unknown()))),
@@ -165,71 +171,89 @@ function parseEntryFromFunction(entry: (...args: any[]) => any): Result<string, 
   return ok(importSpecifier.n);
 }
 
-async function build({ configFile, outfile }: { configFile: string; outfile: string }) {
-  const config: unknown = await import(configFile).then((module: { [key: string]: unknown }) => module.default);
-  if (!isPlainObject(config)) {
-    return RuntimeException.asAsyncErr(`Invalid default export from file '${configFile}': not a plain object`);
-  } else if (typeof config.entry !== 'function') {
-    return RuntimeException.asAsyncErr(`Invalid default export from file '${configFile}': must be function`);
-  }
-  const entry = `const __appContainer = await (${config.entry.toString()})().then((mod) => mod.default);`;
-  await esbuild.build({
-    banner: {
-      js: "Object.defineProperties(globalThis, { __dirname: { value: import.meta.dirname, writable: false }, __filename: { value: import.meta.filename, writable: false }, require: { value: (await import('module')).createRequire(import.meta.url), writable: false } });"
-    },
-    bundle: true,
-    define: {
-      'process.env.NODE_ENV': "'production'"
-    },
-    external: ['@nestjs/microservices', '@nestjs/websockets/socket-module', 'class-transformer', 'class-validator'],
-    format: 'esm',
-    keepNames: true,
-    outfile: outfile,
-    platform: 'node',
-    plugins: [
-      {
-        name: 'esbuild-plugin-swc',
-        setup: (build) => {
-          build.onLoad({ filter: /\.(ts)$/ }, async (args) => {
-            const code = await fs.promises.readFile(args.path, 'utf-8');
-            const result = await swc.transform(code, {
-              filename: args.path,
-              isModule: true,
-              jsc: {
-                parser: {
-                  decorators: true,
-                  syntax: 'typescript'
+const build = fromAsyncThrowable(
+  async ({ entrySpecifier, outfile, resolveDir }: BuildOptions) => {
+    await esbuild.build({
+      banner: {
+        js: "Object.defineProperties(globalThis, { __dirname: { value: import.meta.dirname, writable: false }, __filename: { value: import.meta.filename, writable: false }, require: { value: (await import('module')).createRequire(import.meta.url), writable: false } });"
+      },
+      bundle: true,
+      define: {
+        'process.env.NODE_ENV': "'production'"
+      },
+      external: ['@nestjs/microservices', '@nestjs/websockets/socket-module', 'class-transformer', 'class-validator'],
+      format: 'esm',
+      keepNames: true,
+      outfile: outfile,
+      platform: 'node',
+      plugins: [
+        {
+          name: 'esbuild-plugin-swc',
+          setup: (build) => {
+            build.onLoad({ filter: /\.(ts)$/ }, async (args) => {
+              const code = await fs.promises.readFile(args.path, 'utf-8');
+              const result = await swc.transform(code, {
+                filename: args.path,
+                isModule: true,
+                jsc: {
+                  parser: {
+                    decorators: true,
+                    syntax: 'typescript'
+                  },
+                  target: 'esnext',
+                  transform: {
+                    decoratorMetadata: true,
+                    legacyDecorator: true
+                  }
                 },
-                target: 'esnext',
-                transform: {
-                  decoratorMetadata: true,
-                  legacyDecorator: true
+                module: {
+                  type: 'es6'
                 }
-              },
-              module: {
-                type: 'es6'
-              }
+              });
+              return {
+                contents: result.code,
+                loader: 'js'
+              };
             });
-            return {
-              contents: result.code,
-              loader: 'js'
-            };
-          });
+          }
         }
-      }
-    ],
-    stdin: {
-      contents: `${entry}; await __appContainer; await __appContainer.bootstrap();`,
-      loader: 'ts',
-      resolveDir: path.dirname(configFile)
-    },
-    target: ['node22', 'es2022']
-  });
-  return okAsync();
+      ],
+      stdin: {
+        contents: `import __appContainer from "${entrySpecifier}"; await __appContainer; await __appContainer.bootstrap();`,
+        loader: 'ts',
+        resolveDir: resolveDir
+      },
+      target: ['node22', 'es2022']
+    });
+  },
+  (err) => {
+    return new RuntimeException('Failed to build application', {
+      cause: err
+    });
+  }
+);
+
+function bundle({
+  configFile,
+  outfile
+}: {
+  configFile: string;
+  outfile: string;
+}): ResultAsync<void, typeof RuntimeException.Instance> {
+  return loadConfig(configFile)
+    .andThen((config) => parseEntryFromFunction(config.entry))
+    .andThen((entrySpecifier) => {
+      return build({
+        entrySpecifier,
+        outfile,
+        resolveDir: path.dirname(configFile)
+      });
+    });
 }
 
 export {
   build,
+  bundle,
   findConfig,
   importDefault,
   loadAppContainer,

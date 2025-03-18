@@ -8,6 +8,7 @@ import type { Mock } from 'vitest';
 import { AppContainer } from '../../app/app.container.js';
 import {
   build,
+  bundle,
   findConfig,
   importDefault,
   loadAppContainer,
@@ -30,9 +31,12 @@ const fs = vi.hoisted(() => ({
   readdirSync: vi.fn()
 })) satisfies { [K in keyof typeof import('node:fs')]?: Mock };
 
-const esbuild = vi.hoisted(() => ({
-  build: vi.fn()
-}));
+const esbuild = vi.hoisted(() => {
+  const esbuild = {
+    build: vi.fn()
+  };
+  return { ...esbuild, default: esbuild };
+});
 
 vi.mock('node:fs', () => fs);
 
@@ -261,14 +265,25 @@ describe('parseEntryFromFunction', () => {
 });
 
 describe('build', () => {
+  it('should return an error if esbuild throws', async () => {
+    const cause = new Error('Something went wrong');
+    esbuild.build.mockImplementationOnce(() => {
+      throw cause;
+    });
+    await expect(build({ entrySpecifier: './app.ts', outfile: 'out.js', resolveDir: '/' })).resolves.toMatchObject({
+      error: {
+        cause,
+        message: 'Failed to build application'
+      }
+    });
+  });
+});
+
+describe('bundle', () => {
   it('should return an error if the default export from the config file is not a plain object', async () => {
     vi.doMock('/foo.js', () => ({ default: '' }));
-    const result = await build({ configFile: '/foo.js', outfile: '/dev/null' });
-    expect(result.isErr() && result.error.message.includes('Invalid default export')).toBe(true);
-  });
-  it('should return an error if the config does not contain a function', async () => {
-    vi.doMock('/foo.js', () => ({ default: { entry: null } }));
-    const result = await build({ configFile: '/foo.js', outfile: '/dev/null' });
-    expect(result.isErr() && result.error.message.includes('Invalid default export')).toBe(true);
+    const result = (await bundle({ configFile: '/foo.js', outfile: '/dev/null' })) as Err<never, any>;
+    expect(result.isErr()).toBe(true);
+    expect(result.error.message.includes('Invalid format for default export in config file')).toBe(true);
   });
 });
