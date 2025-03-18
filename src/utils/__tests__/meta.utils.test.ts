@@ -12,6 +12,7 @@ import {
   importDefault,
   loadAppContainer,
   loadConfig,
+  parseEntryFromUserConfig,
   resolveAbsoluteImportPathFromCwd,
   runDev
 } from '../meta.utils.js';
@@ -224,6 +225,16 @@ describe('runDev', () => {
     expect(result.isOk()).toBe(true);
     expect(process.env.NODE_ENV).toBe('development');
     vi.unstubAllEnvs();
+  });
+});
+
+describe('parseEntryFromUserConfig', () => {
+  it('should return an error if there are no imports in the entry function', () => {
+    expect(parseEntryFromUserConfig({ entry: () => Promise.resolve({}) })).toMatchObject({
+      error: {
+        message: `Entry function must include exactly one import: found 0`
+      }
+    });
   });
 });
 

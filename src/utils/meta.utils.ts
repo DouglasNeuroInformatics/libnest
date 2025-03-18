@@ -3,6 +3,7 @@ import * as path from 'node:path';
 
 import { isPlainObject, RuntimeException } from '@douglasneuroinformatics/libjs';
 import * as swc from '@swc/core';
+import * as lexer from 'es-module-lexer';
 import esbuild from 'esbuild';
 import { fromAsyncThrowable, ok, okAsync, Result, ResultAsync } from 'neverthrow';
 import { z } from 'zod';
@@ -11,6 +12,8 @@ import { AppContainer } from '../app/app.container.js';
 
 import type { NodeEnv } from '../schemas/env.schema.js';
 import type { UserConfigOptions } from '../user-config.js';
+
+await lexer.init;
 
 const $UserConfigOptions: z.ZodType<UserConfigOptions> = z.object({
   entry: z.function().returns(z.promise(z.record(z.unknown()))),
@@ -145,6 +148,16 @@ function runDev(configFile: string): ResultAsync<void, typeof RuntimeException.I
     });
 }
 
+function parseEntryFromUserConfig(
+  config: Pick<UserConfigOptions, 'entry'>
+): Result<string, typeof RuntimeException.Instance> {
+  const [imports] = lexer.parse(config.entry.toString());
+  if (imports.length !== 1) {
+    return RuntimeException.asErr(`Entry function must include exactly one import: found ${imports.length}`);
+  }
+  return ok('');
+}
+
 async function build({ configFile, outfile }: { configFile: string; outfile: string }) {
   const config: unknown = await import(configFile).then((module: { [key: string]: unknown }) => module.default);
   if (!isPlainObject(config)) {
@@ -208,4 +221,13 @@ async function build({ configFile, outfile }: { configFile: string; outfile: str
   return okAsync();
 }
 
-export { build, findConfig, importDefault, loadAppContainer, loadConfig, resolveAbsoluteImportPathFromCwd, runDev };
+export {
+  build,
+  findConfig,
+  importDefault,
+  loadAppContainer,
+  loadConfig,
+  parseEntryFromUserConfig,
+  resolveAbsoluteImportPathFromCwd,
+  runDev
+};
