@@ -5,6 +5,7 @@ import { RuntimeException } from '@douglasneuroinformatics/libjs';
 import * as swc from '@swc/core';
 import * as lexer from 'es-module-lexer';
 import esbuild from 'esbuild';
+import type { Plugin } from 'esbuild';
 import { fromAsyncThrowable, ok, Result, ResultAsync } from 'neverthrow';
 import { z } from 'zod';
 
@@ -185,6 +186,39 @@ function parseEntryFromFunction(entry: (...args: any[]) => any): Result<string, 
   return ok(importSpecifier.n);
 }
 
+const swcPlugin = (): Plugin => {
+  return {
+    name: 'esbuild-plugin-swc',
+    setup: (build) => {
+      build.onLoad({ filter: /\.(ts)$/ }, async (args) => {
+        const code = await fs.promises.readFile(args.path, 'utf-8');
+        const result = await swc.transform(code, {
+          filename: args.path,
+          isModule: true,
+          jsc: {
+            parser: {
+              decorators: true,
+              syntax: 'typescript'
+            },
+            target: 'esnext',
+            transform: {
+              decoratorMetadata: true,
+              legacyDecorator: true
+            }
+          },
+          module: {
+            type: 'es6'
+          }
+        });
+        return {
+          contents: result.code,
+          loader: 'js'
+        };
+      });
+    }
+  };
+};
+
 const build = fromAsyncThrowable(
   async ({ entrySpecifier, outfile, resolveDir }: BuildOptions) => {
     await esbuild.build({
@@ -200,38 +234,7 @@ const build = fromAsyncThrowable(
       keepNames: true,
       outfile: outfile,
       platform: 'node',
-      plugins: [
-        {
-          name: 'esbuild-plugin-swc',
-          setup: (build) => {
-            build.onLoad({ filter: /\.(ts)$/ }, async (args) => {
-              const code = await fs.promises.readFile(args.path, 'utf-8');
-              const result = await swc.transform(code, {
-                filename: args.path,
-                isModule: true,
-                jsc: {
-                  parser: {
-                    decorators: true,
-                    syntax: 'typescript'
-                  },
-                  target: 'esnext',
-                  transform: {
-                    decoratorMetadata: true,
-                    legacyDecorator: true
-                  }
-                },
-                module: {
-                  type: 'es6'
-                }
-              });
-              return {
-                contents: result.code,
-                loader: 'js'
-              };
-            });
-          }
-        }
-      ],
+      plugins: [swcPlugin()],
       stdin: {
         contents: `import __appContainer from "${entrySpecifier}"; await __appContainer; await __appContainer.bootstrap();`,
         loader: 'ts',
