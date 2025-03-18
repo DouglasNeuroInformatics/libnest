@@ -277,5 +277,6 @@ export {
   loadConfig,
   parseEntryFromFunction,
   resolveAbsoluteImportPathFromCwd,
-  runDev
+  runDev,
+  swcPlugin
 };

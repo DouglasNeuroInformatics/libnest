@@ -15,7 +15,8 @@ import {
   loadConfig,
   parseEntryFromFunction,
   resolveAbsoluteImportPathFromCwd,
-  runDev
+  runDev,
+  swcPlugin
 } from '../meta.utils.js';
 
 import type { UserConfigOptions } from '../../user-config.js';
@@ -28,8 +29,11 @@ const resolvedConfigFile = path.join(rootDir, configFile);
 const fs = vi.hoisted(() => ({
   existsSync: vi.fn(),
   lstatSync: vi.fn(),
+  promises: {
+    readFile: vi.fn()
+  },
   readdirSync: vi.fn()
-})) satisfies { [K in keyof typeof import('node:fs')]?: Mock };
+})) satisfies { [K in keyof typeof import('node:fs')]?: any };
 
 const esbuild = vi.hoisted(() => {
   const esbuild = {
@@ -38,9 +42,15 @@ const esbuild = vi.hoisted(() => {
   return { ...esbuild, default: esbuild };
 });
 
+const swc = vi.hoisted(() => ({
+  transform: vi.fn()
+}));
+
 vi.mock('node:fs', () => fs);
 
 vi.mock('esbuild', () => esbuild);
+
+vi.mock('@swc/core', () => swc);
 
 beforeEach(() => {
   vi.spyOn(process, 'cwd').mockReturnValue(rootDir);
@@ -261,6 +271,29 @@ describe('parseEntryFromFunction', () => {
     expect(parseEntryFromFunction(entry)).toMatchObject({
       value: './app.js'
     });
+  });
+});
+
+describe('swcPlugin', () => {
+  it('should transform TypeScript code using SWC', async () => {
+    const mockTsCode = `const x: number = 42;`;
+    const mockTransformedCode = `const x = 42;`;
+    fs.promises.readFile.mockResolvedValueOnce(mockTsCode);
+    swc.transform.mockResolvedValue({ code: mockTransformedCode });
+
+    const plugin = swcPlugin();
+
+    const buildMock = {
+      onLoad: vi.fn((_options, callback) => {
+        callback({ path: 'test.ts' }).then((result: any) => {
+          expect(fs.promises.readFile).toHaveBeenCalledWith('test.ts', 'utf-8');
+          expect(swc.transform).toHaveBeenCalledWith(mockTsCode, expect.any(Object));
+          expect(result).toEqual({ contents: mockTransformedCode, loader: 'js' });
+        });
+      })
+    };
+    await plugin.setup(buildMock as any);
+    expect(buildMock.onLoad).toHaveBeenCalledWith({ filter: /\.(ts)$/ }, expect.any(Function));
   });
 });
 
