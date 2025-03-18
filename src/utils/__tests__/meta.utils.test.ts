@@ -26,7 +26,7 @@ const fs = vi.hoisted(() => ({
   existsSync: vi.fn(),
   lstatSync: vi.fn(),
   readdirSync: vi.fn()
-})) satisfies { [K in keyof typeof import('node:fs')]?: any };
+})) satisfies { [K in keyof typeof import('node:fs')]?: Mock };
 
 vi.mock('node:fs', () => fs);
 

@@ -1,8 +1,7 @@
-import * as fs from 'node:fs';
+import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 
 import { RuntimeException } from '@douglasneuroinformatics/libjs';
-import * as swc from '@swc/core';
 import * as lexer from 'es-module-lexer';
 import type { Plugin } from 'esbuild';
 import { fromAsyncThrowable, ok, Result, ResultAsync } from 'neverthrow';
@@ -44,10 +43,11 @@ function parseEntryFromFunction(entry: (...args: any[]) => any): Result<string, 
 const swcPlugin = (): Plugin => {
   return {
     name: 'esbuild-plugin-swc',
-    setup: (build) => {
+    setup: async (build) => {
+      const { transform } = await import('@swc/core');
       build.onLoad({ filter: /\.(ts)$/ }, async (args) => {
-        const code = await fs.promises.readFile(args.path, 'utf-8');
-        const result = await swc.transform(code, {
+        const code = await fs.readFile(args.path, 'utf-8');
+        const result = await transform(code, {
           filename: args.path,
           isModule: true,
           jsc: {
