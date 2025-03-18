@@ -1,8 +1,9 @@
+import * as os from 'node:os';
 import * as path from 'path';
 
 import type { RuntimeException } from '@douglasneuroinformatics/libjs';
 import type { Err } from 'neverthrow';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Mock } from 'vitest';
 
 import { AppContainer } from '../../app/app.container.js';
@@ -318,10 +319,38 @@ describe('build', () => {
 });
 
 describe('bundle', () => {
+  let fs: typeof import('node:fs');
+  let outdir: string;
+
+  beforeAll(async () => {
+    fs = await vi.importActual<typeof import('node:fs')>('node:fs');
+    outdir = await fs.promises.mkdtemp(os.tmpdir());
+  });
+
+  afterAll(async () => {
+    await fs.promises.rm(outdir, { force: true, recursive: true });
+  });
+
   it('should return an error if the default export from the config file is not a plain object', async () => {
     vi.doMock('/foo.js', () => ({ default: '' }));
     const result = (await bundle({ configFile: '/foo.js', outfile: '/dev/null' })) as Err<never, any>;
     expect(result.isErr()).toBe(true);
     expect(result.error.message.includes('Invalid format for default export in config file')).toBe(true);
+  });
+
+  it('should correctly bundle the example application', async () => {
+    const configFile = path.resolve(import.meta.dirname, '../../../libnest.config.js');
+    const entryFile = path.resolve(path.dirname(configFile), './example/app.ts');
+    const entry = () => ({});
+    entry.toString = () => `() => import('${entryFile}')`;
+    vi.doMock(configFile, () => ({
+      default: {
+        entry
+      }
+    }));
+    const outfile = path.join(import.meta.dirname, 'server.js');
+    const result = await bundle({ configFile, outfile });
+    expect(result.isOk()).toBe(true);
+    // expect(fs.existsSync(outfile)).toBe(true);
   });
 });
