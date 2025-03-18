@@ -5,6 +5,7 @@ import { RuntimeException } from '@douglasneuroinformatics/libjs';
 import * as lexer from 'es-module-lexer';
 import type { Plugin } from 'esbuild';
 import { fromAsyncThrowable, ok, Result, ResultAsync } from 'neverthrow';
+import type { Jsonifiable } from 'type-fest';
 
 import { loadConfig } from './meta.utils.js';
 
@@ -75,16 +76,32 @@ const swcPlugin = (): Plugin => {
 };
 
 const build = fromAsyncThrowable(
-  async ({ entrySpecifier, outfile, resolveDir }: { entrySpecifier: string; outfile: string; resolveDir: string }) => {
+  async ({
+    entrySpecifier,
+    globals,
+    outfile,
+    resolveDir
+  }: {
+    entrySpecifier: string;
+    globals?: {
+      [key: string]: Jsonifiable;
+    };
+    outfile: string;
+    resolveDir: string;
+  }) => {
     const esbuild = await import('esbuild');
+    const define: { [key: string]: string } = {
+      'process.env.NODE_ENV': "'production'"
+    };
+    for (const key in globals) {
+      define[key] = JSON.stringify(globals[key]);
+    }
     await esbuild.build({
       banner: {
         js: "Object.defineProperties(globalThis, { __dirname: { value: import.meta.dirname, writable: false }, __filename: { value: import.meta.filename, writable: false }, require: { value: (await import('module')).createRequire(import.meta.url), writable: false } });"
       },
       bundle: true,
-      define: {
-        'process.env.NODE_ENV': "'production'"
-      },
+      define,
       external: ['@nestjs/microservices', '@nestjs/websockets/socket-module', 'class-transformer', 'class-validator'],
       format: 'esm',
       keepNames: true,
@@ -111,6 +128,7 @@ function bundle({ configFile }: { configFile: string }): ResultAsync<void, typeo
     return parseEntryFromFunction(config.entry).asyncAndThen((entrySpecifier) => {
       return build({
         entrySpecifier,
+        globals: config.globals,
         outfile: config.build.outfile,
         resolveDir: path.dirname(configFile)
       });

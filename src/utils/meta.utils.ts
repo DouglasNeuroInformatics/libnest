@@ -16,7 +16,7 @@ const $UserConfigOptions: z.ZodType<UserConfigOptions> = z.object({
   }),
   // cannot use zod function here as we cannot have any wrappers apply and screw up toString representation
   entry: z.custom<(...args: any[]) => any>((arg) => typeof arg === 'function'),
-  globals: z.record(z.unknown()).optional()
+  globals: z.record(z.any()).optional()
 });
 
 function resolveAbsoluteImportPathFromCwd(filename: string): Result<string, typeof RuntimeException.Instance> {

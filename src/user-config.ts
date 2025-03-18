@@ -1,4 +1,4 @@
-import type { Promisable } from 'type-fest';
+import type { Jsonifiable, Promisable } from 'type-fest';
 import type { z } from 'zod';
 
 import type { AppContainer } from './app/app.container.js';
@@ -21,7 +21,7 @@ export type UserConfigOptions = {
   /**
    * Optional global variables that should be defined at runtime.
    */
-  globals?: { [key: string]: unknown };
+  globals?: { [key: string]: Jsonifiable };
 };
 
 /**
