@@ -79,6 +79,7 @@
     "@swc/helpers": "^0.5.15",
     "chalk": "^5.4.1",
     "commander": "^13.1.0",
+    "es-module-lexer": "^1.6.0",
     "esbuild": "^0.25.1",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
