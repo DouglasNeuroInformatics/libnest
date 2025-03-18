@@ -3,7 +3,7 @@ import * as process from 'node:process';
 
 import { Command } from 'commander';
 
-import { build } from '../utils/meta.utils.js';
+import { bundle } from '../utils/meta.utils.js';
 
 const program = new Command();
 
@@ -12,9 +12,11 @@ program.action(async function () {
   if (!configFile) {
     return program.error(`error: environment variable 'LIBNEST_CONFIG_FILEPATH' must be defined`);
   }
-  await build({
+  await bundle({
     configFile,
     outfile: path.resolve(import.meta.dirname, '../../build/server.js')
+  }).mapErr((error) => {
+    program.error(error.toString(), { exitCode: 1 });
   });
 });
 
