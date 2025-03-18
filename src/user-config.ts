@@ -1,3 +1,4 @@
+import type { BuildOptions } from 'esbuild';
 import type { Jsonifiable, Promisable } from 'type-fest';
 import type { z } from 'zod';
 
@@ -9,6 +10,8 @@ import type { AppContainer } from './app/app.container.js';
 export type UserConfigOptions = {
   /** Configuration options for the production build */
   build: {
+    /** Additional options to pass to esbuild */
+    esbuildOptions?: Pick<BuildOptions, 'footer'>;
     /**
      * The type of bundle to generate. If set to `module`, the bundle will be a module with
      * the AppContainer as the default export. If set to standalone, running the bundle will

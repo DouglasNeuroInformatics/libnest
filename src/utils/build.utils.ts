@@ -94,6 +94,7 @@ const build = fromAsyncThrowable(
       define[key] = JSON.stringify(config.globals[key]);
     }
     await esbuild.build({
+      ...config.build.esbuildOptions,
       banner: {
         js: "Object.defineProperties(globalThis, { __dirname: { value: import.meta.dirname, writable: false }, __filename: { value: import.meta.filename, writable: false }, require: { value: (await import('module')).createRequire(import.meta.url), writable: false } });"
       },
