@@ -181,6 +181,9 @@ describe('runDev', () => {
     bootstrap = vi.fn();
     vi.doMock(resolvedConfigFile, () => ({
       default: {
+        build: {
+          outfile: 'server.js'
+        },
         entry: () => {
           return Promise.resolve({
             default: Object.create(AppContainer.prototype, {

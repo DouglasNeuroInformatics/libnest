@@ -11,6 +11,9 @@ import type { NodeEnv } from '../schemas/env.schema.js';
 import type { UserConfigOptions } from '../user-config.js';
 
 const $UserConfigOptions: z.ZodType<UserConfigOptions> = z.object({
+  build: z.object({
+    outfile: z.string().min(1)
+  }),
   // cannot use zod function here as we cannot have any wrappers apply and screw up toString representation
   entry: z.custom<(...args: any[]) => any>((arg) => typeof arg === 'function'),
   globals: z.record(z.unknown()).optional()
@@ -105,7 +108,9 @@ function loadConfig(configFile: string): ResultAsync<UserConfigOptions, typeof R
  * @param config - The user config
  * @returns A `ResultAsync` containing the app container on success, or an error message on failure.
  */
-function loadAppContainer(config: UserConfigOptions): ResultAsync<AppContainer, typeof RuntimeException.Instance> {
+function loadAppContainer(
+  config: Pick<UserConfigOptions, 'entry'>
+): ResultAsync<AppContainer, typeof RuntimeException.Instance> {
   return importDefault(config.entry)
     .map(async (appContainer) => await appContainer)
     .andThen((appContainer) => {
