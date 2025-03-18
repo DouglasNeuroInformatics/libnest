@@ -4,7 +4,6 @@ import * as path from 'node:path';
 import { RuntimeException } from '@douglasneuroinformatics/libjs';
 import * as swc from '@swc/core';
 import * as lexer from 'es-module-lexer';
-import esbuild from 'esbuild';
 import type { Plugin } from 'esbuild';
 import { fromAsyncThrowable, ok, Result, ResultAsync } from 'neverthrow';
 import { z } from 'zod';
@@ -221,6 +220,7 @@ const swcPlugin = (): Plugin => {
 
 const build = fromAsyncThrowable(
   async ({ entrySpecifier, outfile, resolveDir }: BuildOptions) => {
+    const esbuild = await import('esbuild');
     await esbuild.build({
       banner: {
         js: "Object.defineProperties(globalThis, { __dirname: { value: import.meta.dirname, writable: false }, __filename: { value: import.meta.filename, writable: false }, require: { value: (await import('module')).createRequire(import.meta.url), writable: false } });"
