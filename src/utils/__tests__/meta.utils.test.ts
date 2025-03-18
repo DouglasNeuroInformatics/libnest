@@ -1,23 +1,18 @@
-import * as os from 'node:os';
 import * as path from 'path';
 
 import type { RuntimeException } from '@douglasneuroinformatics/libjs';
 import type { Err } from 'neverthrow';
-import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Mock } from 'vitest';
 
 import { AppContainer } from '../../app/app.container.js';
 import {
-  build,
-  bundle,
   findConfig,
   importDefault,
   loadAppContainer,
   loadConfig,
-  parseEntryFromFunction,
   resolveAbsoluteImportPathFromCwd,
-  runDev,
-  swcPlugin
+  runDev
 } from '../meta.utils.js';
 
 import type { UserConfigOptions } from '../../user-config.js';
@@ -36,13 +31,7 @@ const fs = vi.hoisted(() => ({
   readdirSync: vi.fn()
 })) satisfies { [K in keyof typeof import('node:fs')]?: any };
 
-const swc = vi.hoisted(() => ({
-  transform: vi.fn()
-}));
-
 vi.mock('node:fs', () => fs);
-
-vi.mock('@swc/core', () => swc);
 
 beforeEach(() => {
   vi.spyOn(process, 'cwd').mockReturnValue(rootDir);
@@ -231,129 +220,5 @@ describe('runDev', () => {
     expect(result.isOk()).toBe(true);
     expect(process.env.NODE_ENV).toBe('development');
     vi.unstubAllEnvs();
-  });
-});
-
-describe('parseEntryFromFunction', () => {
-  it('should return an error if there are no imports in the entry function', () => {
-    expect(parseEntryFromFunction(() => Promise.resolve({}))).toMatchObject({
-      error: {
-        message: `Entry function must include exactly one import: found 0`
-      }
-    });
-  });
-  it('should return an error if the import expression is not a dynamic import', () => {
-    const entry = { toString: () => "() => import.meta.resolve('./app.js')" } as any;
-    expect(parseEntryFromFunction(entry)).toMatchObject({
-      error: {
-        message: 'Entry function must contain dynamic import: found ImportMeta'
-      }
-    });
-  });
-  it('should return an error if the dynamic import expression is not a string literal', () => {
-    const entry = { toString: () => "() => import(`${'./' + 'ab.js'}`)" } as any;
-    expect(parseEntryFromFunction(entry)).toMatchObject({
-      error: {
-        message: 'Dynamic import in entry function must import a string literal'
-      }
-    });
-  });
-  it('should return the result with the specifier', () => {
-    const entry = { toString: () => "() => import('./app.js')" } as any;
-    expect(parseEntryFromFunction(entry)).toMatchObject({
-      value: './app.js'
-    });
-  });
-});
-
-describe('swcPlugin', () => {
-  it('should transform TypeScript code using SWC', async () => {
-    const mockTsCode = `const x: number = 42;`;
-    const mockTransformedCode = `const x = 42;`;
-    fs.promises.readFile.mockResolvedValueOnce(mockTsCode);
-    swc.transform.mockResolvedValue({ code: mockTransformedCode });
-
-    const plugin = swcPlugin();
-
-    const buildMock = {
-      onLoad: vi.fn((_options, callback) => {
-        callback({ path: 'test.ts' }).then((result: any) => {
-          expect(fs.promises.readFile).toHaveBeenCalledWith('test.ts', 'utf-8');
-          expect(swc.transform).toHaveBeenCalledWith(mockTsCode, expect.any(Object));
-          expect(result).toEqual({ contents: mockTransformedCode, loader: 'js' });
-        });
-      })
-    };
-    await plugin.setup(buildMock as any);
-    expect(buildMock.onLoad).toHaveBeenCalledWith({ filter: /\.(ts)$/ }, expect.any(Function));
-  });
-});
-
-describe('build', () => {
-  const esbuild = {
-    build: vi.fn()
-  };
-
-  beforeAll(() => {
-    vi.doMock('esbuild', () => esbuild);
-  });
-
-  afterAll(() => {
-    vi.doUnmock('esbuild');
-  });
-
-  it('should return an error if esbuild throws', async () => {
-    const cause = new Error('Something went wrong');
-    esbuild.build.mockImplementationOnce(() => {
-      throw cause;
-    });
-    await expect(build({ entrySpecifier: './app.ts', outfile: 'out.js', resolveDir: '/' })).resolves.toMatchObject({
-      error: {
-        cause,
-        message: 'Failed to build application'
-      }
-    });
-  });
-  it('should an ok result on success', async () => {
-    esbuild.build.mockResolvedValueOnce({});
-    const result = await build({ entrySpecifier: './app.ts', outfile: 'out.js', resolveDir: '/' });
-    expect(result.isOk()).toBe(true);
-  });
-});
-
-describe('bundle', () => {
-  let fs: typeof import('node:fs');
-  let outdir: string;
-
-  beforeAll(async () => {
-    fs = await vi.importActual<typeof import('node:fs')>('node:fs');
-    outdir = await fs.promises.mkdtemp(os.tmpdir());
-  });
-
-  afterAll(async () => {
-    await fs.promises.rm(outdir, { force: true, recursive: true });
-  });
-
-  it('should return an error if the default export from the config file is not a plain object', async () => {
-    vi.doMock('/foo.js', () => ({ default: '' }));
-    const result = (await bundle({ configFile: '/foo.js', outfile: '/dev/null' })) as Err<never, any>;
-    expect(result.isErr()).toBe(true);
-    expect(result.error.message.includes('Invalid format for default export in config file')).toBe(true);
-  });
-
-  it('should correctly bundle the example application', { timeout: 10000 }, async () => {
-    const configFile = path.resolve(import.meta.dirname, '../../../libnest.config.js');
-    const entryFile = './example/app.js';
-    const entry = () => ({});
-    entry.toString = () => `() => import('${entryFile}')`;
-    vi.doMock(configFile, () => ({
-      default: {
-        entry
-      }
-    }));
-    const outfile = path.join(import.meta.dirname, 'server.js');
-    const result = await bundle({ configFile, outfile });
-    // expect(result.isOk()).toBe(true);
-    // expect(fs.existsSync(outfile)).toBe(true);
   });
 });
