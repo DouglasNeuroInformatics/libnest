@@ -148,10 +148,8 @@ function runDev(configFile: string): ResultAsync<void, typeof RuntimeException.I
     });
 }
 
-function parseEntryFromUserConfig(
-  config: Pick<UserConfigOptions, 'entry'>
-): Result<string, typeof RuntimeException.Instance> {
-  const source = config.entry.toString();
+function parseEntryFromFunction(entry: (...args: any[]) => any): Result<string, typeof RuntimeException.Instance> {
+  const source = entry.toString();
   const [imports] = lexer.parse(source);
   if (imports.length !== 1) {
     return RuntimeException.asErr(`Entry function must include exactly one import: found ${imports.length}`);
@@ -236,7 +234,7 @@ export {
   importDefault,
   loadAppContainer,
   loadConfig,
-  parseEntryFromUserConfig,
+  parseEntryFromFunction,
   resolveAbsoluteImportPathFromCwd,
   runDev
 };
