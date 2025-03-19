@@ -3,7 +3,9 @@ import { ok } from 'neverthrow';
 import type { ResultAsync } from 'neverthrow';
 import { z } from 'zod';
 
+import { AppContainer } from '../app/app.container.js';
 import { importDefault } from './import.js';
+import { parseEntryFromFunction } from './parse.js';
 
 import type { UserConfigOptions } from '../user-config.js';
 
@@ -37,4 +39,26 @@ export function loadUserConfig(configFile: string): ResultAsync<UserConfigOption
     }
     return ok(result.data);
   });
+}
+
+/**
+ * Load the app container from a user config
+ * @param config - The user config
+ * @returns A `ResultAsync` containing the app container on success, or an error message on failure.
+ */
+export function loadAppContainer(
+  config: Pick<UserConfigOptions, 'entry'>
+): ResultAsync<AppContainer, typeof RuntimeException.Instance> {
+  return parseEntryFromFunction(config.entry)
+    .asyncAndThen(importDefault)
+    .map(async (defaultExport) => {
+      const appContainer = await defaultExport;
+      return appContainer;
+    })
+    .andThen((appContainer) => {
+      if (!(appContainer instanceof AppContainer)) {
+        return RuntimeException.asAsyncErr('Default export from entry module is not an AppContainer');
+      }
+      return ok(appContainer);
+    });
 }
