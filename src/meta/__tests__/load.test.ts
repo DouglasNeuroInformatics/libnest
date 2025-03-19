@@ -2,7 +2,7 @@ import { RuntimeException } from '@douglasneuroinformatics/libjs';
 import { ok, okAsync } from 'neverthrow';
 import { describe, expect, it, vi } from 'vitest';
 
-import { loadAppContainer, loadUserConfig } from '../load.js';
+import { loadAppContainer, loadEntry, loadUserConfig } from '../load.js';
 
 const dummyFilepath = '/root/src/app.js';
 
@@ -42,6 +42,20 @@ describe('loadUserConfig', () => {
     importDefault.mockReturnValueOnce(okAsync(userConfig));
     const result = await loadUserConfig(dummyFilepath);
     expect(result.isOk()).toBe(true);
+  });
+});
+
+describe('loadEntry', () => {
+  it('should return an error if the entry function throws', async () => {
+    await expect(
+      loadEntry(() => {
+        throw new Error('Something went wrong');
+      })
+    ).resolves.toMatchObject({
+      error: {
+        message: 'Entry function throw an unexpected error'
+      }
+    });
   });
 });
 

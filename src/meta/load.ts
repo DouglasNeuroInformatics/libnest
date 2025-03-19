@@ -33,7 +33,9 @@ type UserConfigWithBaseDir = UserConfigOptions & {
  * @param configFile - The path to the config file.
  * @returns A `ResultAsync` containing the config options on success, or an error message on failure.
  */
-function loadUserConfig(configFile: string): ResultAsync<UserConfigWithBaseDir, typeof RuntimeException.Instance> {
+export function loadUserConfig(
+  configFile: string
+): ResultAsync<UserConfigWithBaseDir, typeof RuntimeException.Instance> {
   return importDefault(configFile).andThen((config) => {
     const result = $UserConfigOptions.safeParse(config);
     if (!result.success) {
@@ -47,9 +49,9 @@ function loadUserConfig(configFile: string): ResultAsync<UserConfigWithBaseDir, 
   });
 }
 
-const loadConfigEntry = fromAsyncThrowable(
-  (config: Pick<UserConfigWithBaseDir, 'entry'>) => {
-    return config.entry().then((exports) => exports.default as unknown);
+export const loadEntry = fromAsyncThrowable(
+  (entry: (...args: any[]) => Promise<{ [key: string]: unknown }>) => {
+    return entry().then((exports) => exports.default);
   },
   (err) => {
     return new RuntimeException('Entry function throw an unexpected error', {
@@ -63,13 +65,13 @@ const loadConfigEntry = fromAsyncThrowable(
  * @param config - The user config
  * @returns A `ResultAsync` containing the app container on success, or an error message on failure.
  */
-function loadAppContainer(
+export function loadAppContainer(
   config: Pick<UserConfigWithBaseDir, 'baseDir' | 'entry'>,
   method: 'dynamic' | 'static' = 'static'
 ): ResultAsync<AppContainer, typeof RuntimeException.Instance> {
   let defaultExport: ResultAsync<unknown, typeof RuntimeException.Instance>;
   if (method === 'dynamic') {
-    defaultExport = loadConfigEntry(config);
+    defaultExport = loadEntry(config.entry);
   } else {
     defaultExport = parseEntryFromFunction(config.entry)
       .map((importPath) => path.join(config.baseDir, importPath))
@@ -88,5 +90,4 @@ function loadAppContainer(
     });
 }
 
-export { loadAppContainer, loadUserConfig };
 export type { UserConfigWithBaseDir };
