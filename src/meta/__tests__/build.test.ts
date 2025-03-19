@@ -15,16 +15,16 @@ const { loadUserConfig, parseEntryFromFunction } = vi.hoisted(() => ({
   parseEntryFromFunction: vi.fn()
 }));
 
+const esbuildMock = {
+  build: vi.fn()
+};
+
 vi.mock('../load.js', () => ({ loadUserConfig }));
 vi.mock('../parse.js', () => ({ parseEntryFromFunction }));
 
 describe('bundle', () => {
-  const esbuild = {
-    build: vi.fn()
-  };
-
   beforeAll(() => {
-    vi.doMock('esbuild', () => esbuild);
+    vi.doMock('esbuild', () => esbuildMock);
   });
 
   afterAll(() => {
@@ -33,7 +33,7 @@ describe('bundle', () => {
 
   it('should return an error if esbuild throws', async () => {
     const cause = new Error('Something went wrong');
-    esbuild.build.mockImplementationOnce(() => {
+    esbuildMock.build.mockImplementationOnce(() => {
       throw cause;
     });
     await expect(
@@ -47,7 +47,7 @@ describe('bundle', () => {
   });
 
   it('should an ok result on success', async () => {
-    esbuild.build.mockResolvedValueOnce({});
+    esbuildMock.build.mockResolvedValueOnce({});
     const result = await bundle({
       config: { build: { outfile: 'out.js' } },
       entrySpecifier: './app.ts',
@@ -98,10 +98,12 @@ describe('buildProd', () => {
 
   it('should correctly bundle the example application as a module', { timeout: 10000 }, async () => {
     const outfile = path.join(outdir, 'module.js');
+    const onComplete = vi.fn();
     loadUserConfig.mockReturnValue(
       okAsync({
         build: {
           mode: 'module',
+          onComplete,
           outfile
         },
         entry: vi.fn(),
@@ -118,5 +120,35 @@ describe('buildProd', () => {
     const appContainer = await import(outfile).then((module) => module.default as AppContainer);
     const app = appContainer.getApplicationInstance();
     expect(app).toBeDefined();
+    expect(onComplete).toHaveBeenCalledOnce();
+  });
+
+  it('should handle errors in the onComplete callback', async () => {
+    vi.doMock('esbuild', () => esbuildMock);
+    const callbackError = new Error('Something went wrong');
+    const onComplete = vi.fn().mockImplementation(() => {
+      throw callbackError;
+    });
+    loadUserConfig.mockReturnValue(
+      okAsync({
+        build: {
+          mode: 'module',
+          onComplete,
+          outfile: '/dev/null'
+        },
+        entry: vi.fn()
+      } satisfies UserConfigOptions)
+    );
+    parseEntryFromFunction.mockReturnValueOnce(ok('./example/app.js'));
+    const result = await buildProd({ configFile });
+    expect(result.isErr()).toBe(true);
+    expect(result).toMatchObject({
+      error: {
+        cause: callbackError,
+        message: 'An error occurred in the user-specified `onComplete` callback'
+      }
+    });
+    expect(onComplete).toHaveBeenCalledOnce();
+    vi.doUnmock('esbuild');
   });
 });
