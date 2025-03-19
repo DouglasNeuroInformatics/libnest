@@ -3,12 +3,12 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { createExec, process } from '../../testing/helpers/cli.js';
 
-const { bundle } = vi.hoisted(() => ({
-  bundle: vi.fn()
+const { buildProd } = vi.hoisted(() => ({
+  buildProd: vi.fn()
 }));
 
-vi.mock('../../utils/build.utils.js', () => ({
-  bundle
+vi.mock('../../meta/build.js', () => ({
+  buildProd
 }));
 
 const exec = createExec({
@@ -47,9 +47,9 @@ describe('libnest-build', () => {
     const callback = action.mock.lastCall![0];
     vi.spyOn(process.env as any, 'LIBNEST_CONFIG_FILEPATH', 'get').mockReturnValueOnce('/path/to/config.js');
     const mapErr = vi.fn();
-    bundle.mockReturnValueOnce({ mapErr });
+    buildProd.mockReturnValueOnce({ mapErr });
     (callback as any)();
-    expect(bundle).toHaveBeenCalledOnce();
+    expect(buildProd).toHaveBeenCalledOnce();
     const programError = vi.spyOn(Command.prototype, 'error').mockImplementationOnce(() => null!);
     const errorHandler = mapErr.mock.lastCall![0];
     errorHandler(new Error('An error occurred'));

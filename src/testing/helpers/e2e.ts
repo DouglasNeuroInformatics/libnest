@@ -15,9 +15,10 @@ export function e2e(fn: (it: SuiteAPI<EndToEndContext>) => void): void {
   let server: Server<typeof IncomingMessage, typeof ServerResponse>;
 
   beforeAll(async () => {
-    const { findConfig, loadAppContainer, loadConfig } = await import('../../utils/meta.utils.js');
-    const result = await findConfig(import.meta.dirname)
-      .asyncAndThen(loadConfig)
+    const { loadAppContainer, loadUserConfig } = await import('../../meta/load.js');
+    const { resolveUserConfig } = await import('../../meta/resolve.js');
+    const result = await resolveUserConfig(import.meta.dirname)
+      .asyncAndThen(loadUserConfig)
       .andThen(loadAppContainer);
     if (result.isErr()) {
       throw result.error;

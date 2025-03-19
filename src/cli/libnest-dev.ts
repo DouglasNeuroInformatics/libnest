@@ -4,7 +4,7 @@ import { Command } from 'commander';
 
 const program = new Command();
 
-const { runDev } = await import('../utils/meta.utils.js');
+const { runDev } = await import('../meta/dev.js');
 
 program.exitOverride((err) => {
   process.kill(process.ppid);
