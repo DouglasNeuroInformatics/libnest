@@ -1,5 +1,40 @@
 # Changelog
 
+## [2.2.0](https://github.com/DouglasNeuroInformatics/libnest/compare/v2.1.0...v2.2.0) (2025-03-19)
+
+### Features
+
+* add build function ([eccd804](https://github.com/DouglasNeuroInformatics/libnest/commit/eccd804f4c172897a5fac7797304659a9a1cfbae))
+* add build mode option ([6547616](https://github.com/DouglasNeuroInformatics/libnest/commit/654761629d48ade23918e83a9e1d510f8d448fde))
+* add build to libnest options ([fa41330](https://github.com/DouglasNeuroInformatics/libnest/commit/fa4133096b4fe14a4346d602514424ec0bbfc2a4))
+* add e2e helper ([aeeb8f2](https://github.com/DouglasNeuroInformatics/libnest/commit/aeeb8f277e2238d5a2a66bc0b5dabd44e30a7bc8))
+* add esbuildOptions for build ([24dec97](https://github.com/DouglasNeuroInformatics/libnest/commit/24dec9768b83f3df9da0eaacb724a94920fb2ef1))
+* add globals to build ([a0a67ec](https://github.com/DouglasNeuroInformatics/libnest/commit/a0a67ec93b4fdf7da1634e54a184e6a826a50fb8))
+* add source map support in cli ([78ed3b7](https://github.com/DouglasNeuroInformatics/libnest/commit/78ed3b73f8fe1faa4f41827175a1727146274b8e))
+
+### Bug Fixes
+
+* add baseDir to load ([7e5cca8](https://github.com/DouglasNeuroInformatics/libnest/commit/7e5cca8ac6a3f7a8e452c0f9c6ecfe0ff29f3c53))
+* add dynamic app container load method ([db07c86](https://github.com/DouglasNeuroInformatics/libnest/commit/db07c865eca48d3919fede1ad17d7d25b2ec68fd))
+* auto init app in test ([95a4e64](https://github.com/DouglasNeuroInformatics/libnest/commit/95a4e64027a84bfa32357d88589db69f58ff2837))
+* await of appContainer if promise ([e0b06c2](https://github.com/DouglasNeuroInformatics/libnest/commit/e0b06c26a462c4c9654e77485dcbd7ea035fede3))
+* build based on entry ([b9098ba](https://github.com/DouglasNeuroInformatics/libnest/commit/b9098ba27b2cafe730c77caf5a0678fca2a4153d))
+* check for absolute path ([2934647](https://github.com/DouglasNeuroInformatics/libnest/commit/293464772407254cc636988c9d10377bab0109b9))
+* entry wrapper ([0f1d603](https://github.com/DouglasNeuroInformatics/libnest/commit/0f1d603249055d261d7270742dc285d47bf06130))
+* export referenced tokens ([13d2be8](https://github.com/DouglasNeuroInformatics/libnest/commit/13d2be8e431ccca8c516c4dbe73b22aed96ed70c))
+* forgot to remove tmp hardcoded outfile ([89e4b94](https://github.com/DouglasNeuroInformatics/libnest/commit/89e4b94fdfe8cd7a28d3c26699d431affbe3cf40))
+* handle change in prisma types ([3d6e0b2](https://github.com/DouglasNeuroInformatics/libnest/commit/3d6e0b2ccf96633fb7ea46ab021a8b5e608da88a))
+* inject PRISMA_QUERY_ENGINE_LIBRARY token ([4cc521f](https://github.com/DouglasNeuroInformatics/libnest/commit/4cc521f3c58569d0986ff8903b53b34db812b3b1))
+* inject query path at build ([cc68c99](https://github.com/DouglasNeuroInformatics/libnest/commit/cc68c991d1faa67779a562d7aaec1d8359705a7a))
+* inject query path in banner ([37378e0](https://github.com/DouglasNeuroInformatics/libnest/commit/37378e0369aa7bf7a72334044e214cb2db80f187))
+* kill on end ([f07e7b3](https://github.com/DouglasNeuroInformatics/libnest/commit/f07e7b3f53fc19dff98e6c8d5daeb4a022a4b143))
+* outdir ([fe8c45f](https://github.com/DouglasNeuroInformatics/libnest/commit/fe8c45f96e7edd9551b3aa674636e3cf0835f236))
+* permissions issue during test on github runner ([7464500](https://github.com/DouglasNeuroInformatics/libnest/commit/7464500f6aae266bc81e101d1b6b359b998b5f46))
+* remove broken link ([7df8ff0](https://github.com/DouglasNeuroInformatics/libnest/commit/7df8ff033dd9d1bc58dbdd381ffd9600c47c04d7))
+* typo in param name ([180cb15](https://github.com/DouglasNeuroInformatics/libnest/commit/180cb15eb55eba6cdfc50d0bae917c0b0efbbd57))
+* update user config schema for esbuild options ([f3fe204](https://github.com/DouglasNeuroInformatics/libnest/commit/f3fe20494dd0a8e05048abce5a9b82fd711fb4f6))
+* use prefix for tmpdir to fix tests on linux ([95ab6a8](https://github.com/DouglasNeuroInformatics/libnest/commit/95ab6a85760e0b645116004f63ec8cb05ee2797e))
+
 ## [2.1.0](https://github.com/DouglasNeuroInformatics/libnest/compare/v2.0.1...v2.1.0) (2025-03-14)
 
 ### Features
