@@ -103,6 +103,9 @@ const build = fromAsyncThrowable(
       external: ['@nestjs/microservices', '@nestjs/websockets/socket-module', 'class-transformer', 'class-validator'],
       format: 'esm',
       keepNames: true,
+      loader: {
+        '.node': 'copy'
+      },
       outfile: config.build.outfile,
       platform: 'node',
       plugins: [swcPlugin()],
