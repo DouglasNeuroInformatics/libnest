@@ -65,11 +65,26 @@ export const bundle = fromAsyncThrowable(
 export function buildProd({ configFile }: { configFile: string }): ResultAsync<void, typeof RuntimeException.Instance> {
   return loadUserConfig(configFile).andThen((config) => {
     return parseEntryFromFunction(config.entry).asyncAndThen((entrySpecifier) => {
-      return bundle({
+      const result = bundle({
         config,
         entrySpecifier,
         resolveDir: path.dirname(configFile)
       });
+      const { onComplete } = config.build;
+      if (onComplete) {
+        const callback = fromAsyncThrowable(
+          async () => {
+            await onComplete();
+          },
+          (err) => {
+            return new RuntimeException('An error occurred in the user-specified `onComplete` callback', {
+              cause: err
+            });
+          }
+        );
+        return result.andThen(callback);
+      }
+      return result;
     });
   });
 }

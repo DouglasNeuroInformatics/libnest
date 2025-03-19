@@ -19,6 +19,8 @@ export type UserConfigOptions = {
      * @default 'server'
      */
     mode?: 'module' | 'server';
+    /** A callback function to invoke when the build is complete */
+    onComplete?: () => Promisable<void>;
     /** The path where the bundle should be written */
     outfile: string;
   };

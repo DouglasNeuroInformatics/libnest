@@ -18,6 +18,7 @@ const $UserConfigOptions: z.ZodType<UserConfigOptions> = z.object({
   build: z.object({
     esbuildOptions: z.record(z.any()).optional(),
     mode: z.enum(['module', 'server']).optional(),
+    onComplete: z.function().returns(z.any()).optional(),
     outfile: z.string().min(1)
   }),
   entry: $EntryFunction,
