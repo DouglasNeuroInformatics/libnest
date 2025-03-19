@@ -5,6 +5,16 @@ import { importDefault } from '../import.js';
 const dummyFilepath = '/root/bar/foo.js';
 
 describe('importDefault', () => {
+  it('should return an error if attempting to import a non-absolute path', async () => {
+    const relpath = './path/to/file.js';
+    const result = await importDefault('./path/to/file.js');
+    expect(result).toMatchObject({
+      error: {
+        message: `Expected absolute path: ${relpath}`
+      }
+    });
+  });
+
   it('should return an error if the module does not exist', async () => {
     const result = await importDefault(dummyFilepath);
     expect(result.isErr() && result.error.message === `Failed to import module: ${dummyFilepath}`).toBe(true);

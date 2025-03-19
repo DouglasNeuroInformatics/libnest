@@ -1,8 +1,13 @@
+import * as path from 'node:path';
+
 import { RuntimeException } from '@douglasneuroinformatics/libjs';
 import { fromAsyncThrowable, ok } from 'neverthrow';
 import type { ResultAsync } from 'neverthrow';
 
 function importDefault(filepath: string): ResultAsync<unknown, typeof RuntimeException.Instance> {
+  if (!path.isAbsolute(filepath)) {
+    return RuntimeException.asAsyncErr(`Expected absolute path: ${filepath}`);
+  }
   return fromAsyncThrowable(
     () => import(filepath),
     (error) =>
