@@ -1,7 +1,7 @@
 import * as path from 'node:path';
 
 import type { PluginBuild } from 'esbuild';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { prismaPlugin } from '../prisma.js';
 
@@ -43,40 +43,29 @@ vi.mock('node:module', () => ({
 describe('prismaPlugin', () => {
   const build = {
     initialOptions: {
+      define: {},
       outdir: '/app'
     },
     onEnd: vi.fn()
   } satisfies Partial<{ [K in keyof PluginBuild]: any }>;
-  const plugin = prismaPlugin();
-
-  beforeEach(async () => {
-    await plugin.setup(build as any);
-  });
 
   afterEach(() => {
     vi.clearAllMocks();
   });
 
-  it('should register the onEnd callback', () => {
-    expect(build.onEnd).toHaveBeenCalledExactlyOnceWith(expect.any(Function));
-  });
-
-  it('should return an error if it cannot find the engine', async () => {
+  it('should throw an error if it cannot find the engine', async () => {
     fs.readdir.mockResolvedValueOnce([]);
-    const onEnd = build.onEnd.mock.lastCall![0] as () => Promise<void>;
-    const result = await onEnd();
-    expect(result).toStrictEqual({
-      errors: [
-        {
-          text: `Failed to find prisma query engine for target '${mockBinaryTarget}' in directory '${mockEnginesPath}'`
-        }
-      ]
-    });
-    expect(fs.readdir).toHaveBeenCalledExactlyOnceWith(mockEnginesPath);
+    const plugin = prismaPlugin();
+    await expect(() => plugin.setup(build as any)).rejects.toThrowError(
+      `Failed to find prisma query engine for target '${mockBinaryTarget}' in directory '${mockEnginesPath}'`
+    );
   });
 
   it('should copy the binary to the target directory', async () => {
     fs.readdir.mockResolvedValueOnce([mockTargetFile]);
+    const plugin = prismaPlugin();
+    await plugin.setup(build as any);
+    expect(build.onEnd).toHaveBeenCalledOnce();
     const onEnd = build.onEnd.mock.lastCall![0] as () => Promise<void>;
     await onEnd();
     expect(fs.copyFile).toHaveBeenCalledExactlyOnceWith(
