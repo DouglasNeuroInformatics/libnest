@@ -63,16 +63,20 @@ describe('buildProd', () => {
   const configFile = path.resolve(import.meta.dirname, '../../../libnest.config.js');
 
   beforeAll(async () => {
-    try {
-      outdir = await fs.promises.mkdtemp(os.tmpdir());
-    } catch {
-      outdir = path.resolve(import.meta.dirname, '__tmp__');
-      await fs.promises.mkdir(outdir);
-    }
+    outdir = await fs.promises.mkdtemp(path.join(os.tmpdir(), '-foo'));
   });
 
   afterAll(async () => {
-    await fs.promises.rm(outdir, { force: true, recursive: true });
+    await new Promise<void>((resolve, reject) => {
+      setTimeout(() => {
+        fs.rm(outdir, { force: true, recursive: true }, (err) => {
+          if (err) {
+            reject(err);
+          }
+          resolve();
+        });
+      }, 500);
+    });
   });
 
   it('should correctly bundle the example application ', { timeout: 10000 }, async () => {
