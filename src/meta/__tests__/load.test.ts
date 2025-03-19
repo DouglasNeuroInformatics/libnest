@@ -37,6 +37,12 @@ describe('loadUserConfig', () => {
       }
     });
   });
+  it('should successful parse the example config', async () => {
+    const { default: userConfig } = await import('../../../libnest.config.js');
+    importDefault.mockReturnValueOnce(okAsync(userConfig));
+    const result = await loadUserConfig(dummyFilepath);
+    expect(result.isOk()).toBe(true);
+  });
 });
 
 describe('loadAppContainer', () => {
