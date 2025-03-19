@@ -1,7 +1,7 @@
 import * as path from 'node:path';
 
 import { RuntimeException } from '@douglasneuroinformatics/libjs';
-import { ok } from 'neverthrow';
+import { fromAsyncThrowable, ok } from 'neverthrow';
 import type { ResultAsync } from 'neverthrow';
 import { z } from 'zod';
 
@@ -55,11 +55,25 @@ export function loadUserConfig(
  * @returns A `ResultAsync` containing the app container on success, or an error message on failure.
  */
 export function loadAppContainer(
-  config: Pick<UserConfigWithBaseDir, 'baseDir' | 'entry'>
+  config: Pick<UserConfigWithBaseDir, 'baseDir' | 'entry'>,
+  method: 'dynamic' | 'static' = 'static'
 ): ResultAsync<AppContainer, typeof RuntimeException.Instance> {
-  return parseEntryFromFunction(config.entry)
-    .map((importPath) => path.join(config.baseDir, importPath))
-    .asyncAndThen(importDefault)
+  let defaultExport: ResultAsync<unknown, typeof RuntimeException.Instance>;
+  if (method === 'dynamic') {
+    defaultExport = fromAsyncThrowable(
+      () => config.entry().then((exports) => exports.default as unknown),
+      (err) => {
+        return new RuntimeException('Entry function throw an unexpected error', {
+          cause: err
+        });
+      }
+    )();
+  } else {
+    defaultExport = parseEntryFromFunction(config.entry)
+      .map((importPath) => path.join(config.baseDir, importPath))
+      .asyncAndThen(importDefault);
+  }
+  return defaultExport
     .map(async (defaultExport) => {
       const appContainer = await defaultExport;
       return appContainer;

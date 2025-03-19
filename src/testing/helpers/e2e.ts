@@ -19,7 +19,7 @@ export function e2e(fn: (it: SuiteAPI<EndToEndContext>) => void): void {
     const { resolveUserConfig } = await import('../../meta/resolve.js');
     const result = await resolveUserConfig(import.meta.dirname)
       .asyncAndThen(loadUserConfig)
-      .andThen(loadAppContainer);
+      .andThen((config) => loadAppContainer(config, 'dynamic'));
     if (result.isErr()) {
       throw result.error;
     }
