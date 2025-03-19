@@ -43,7 +43,9 @@ vi.mock('node:module', () => ({
 describe('prismaPlugin', () => {
   const build = {
     initialOptions: {
-      define: {},
+      banner: {
+        js: ''
+      },
       outdir: '/app'
     },
     onEnd: vi.fn()
