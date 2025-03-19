@@ -5,6 +5,7 @@ import { fromAsyncThrowable, ResultAsync } from 'neverthrow';
 
 import { loadUserConfig } from './load.js';
 import { parseEntryFromFunction } from './parse.js';
+import { prismaPlugin } from './plugins/prisma.js';
 import { swcPlugin } from './plugins/swc.js';
 
 import type { UserConfigOptions } from '../user-config.js';
@@ -41,7 +42,12 @@ export const bundle = fromAsyncThrowable(
       },
       outfile: config.build.outfile,
       platform: 'node',
-      plugins: [swcPlugin()],
+      plugins: [
+        prismaPlugin({
+          outdir: path.resolve(path.dirname(config.build.outfile), 'prisma/client')
+        }),
+        swcPlugin()
+      ],
       stdin: {
         contents: [
           `import __appContainerExport from "${entrySpecifier}";`,

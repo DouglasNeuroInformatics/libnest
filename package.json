@@ -74,6 +74,8 @@
     "@nestjs/passport": "^11.0.5",
     "@nestjs/swagger": "^11.0.6",
     "@nestjs/throttler": "^6.4.0",
+    "@prisma/engines": "^6.5.0",
+    "@prisma/get-platform": "^6.5.0",
     "@swc-node/register": "^1.10.10",
     "@swc/core": "^1.11.10",
     "@swc/helpers": "^0.5.15",
