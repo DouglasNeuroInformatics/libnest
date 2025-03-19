@@ -59,7 +59,7 @@ describe('loadAppContainer', () => {
     });
   });
 
-  it('should return an error if the entry does not result an AppContainer', async () => {
+  it('should return an error if the entry does not return an AppContainer', async () => {
     parseEntryFromFunction.mockReturnValue(ok(dummyFilepath));
     importDefault.mockReturnValueOnce(okAsync({}));
     const result = await loadAppContainer({ baseDir: '/', entry: () => Promise.resolve({ default: {} }) });
