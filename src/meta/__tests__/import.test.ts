@@ -10,7 +10,7 @@ describe('importDefault', () => {
     const result = await importDefault('./path/to/file.js');
     expect(result).toMatchObject({
       error: {
-        message: `Expected absolute path: ${relpath}`
+        message: `Expected absolute path for import: ${relpath}`
       }
     });
   });

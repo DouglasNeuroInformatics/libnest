@@ -6,7 +6,7 @@ import type { ResultAsync } from 'neverthrow';
 
 function importDefault(filepath: string): ResultAsync<unknown, typeof RuntimeException.Instance> {
   if (!path.isAbsolute(filepath)) {
-    return RuntimeException.asAsyncErr(`Expected absolute path: ${filepath}`);
+    return RuntimeException.asAsyncErr(`Expected absolute path for import: ${filepath}`);
   }
   return fromAsyncThrowable(
     () => import(filepath),
