@@ -73,8 +73,9 @@ export class AppContainer {
       filterObject(
         {
           ...process.env,
-          // this is required so that NODE_ENV can be statically replaced in the bundle
-          NODE_ENV: process.env.NODE_ENV
+          // this is required so that these can be statically replaced in the bundle
+          NODE_ENV: process.env.NODE_ENV,
+          PRISMA_QUERY_ENGINE_LIBRARY: process.env.PRISMA_QUERY_ENGINE_LIBRARY
         },
         (value) => value !== ''
       ),
