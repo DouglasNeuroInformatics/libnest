@@ -42,12 +42,7 @@ export const bundle = fromAsyncThrowable(
       },
       outfile: config.build.outfile,
       platform: 'node',
-      plugins: [
-        prismaPlugin({
-          outdir: path.resolve(path.dirname(config.build.outfile), 'prisma/client')
-        }),
-        swcPlugin()
-      ],
+      plugins: [prismaPlugin(), swcPlugin()],
       stdin: {
         contents: [
           `import __appContainerExport from "${entrySpecifier}";`,
