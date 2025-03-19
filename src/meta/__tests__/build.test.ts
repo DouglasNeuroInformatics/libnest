@@ -67,7 +67,16 @@ describe('buildProd', () => {
   });
 
   afterAll(async () => {
-    await fs.promises.rm(outdir, { force: true, recursive: true });
+    await new Promise<void>((resolve, reject) => {
+      setTimeout(() => {
+        fs.rm(outdir, { force: true, recursive: true }, (err) => {
+          if (err) {
+            reject(err);
+          }
+          resolve();
+        });
+      }, 500);
+    });
   });
 
   it('should correctly bundle the example application ', { timeout: 10000 }, async () => {
