@@ -22,7 +22,6 @@ export const $BaseEnv = z.object({
   MONGO_URI: $UrlLike,
   MONGO_WRITE_CONCERN: z.enum(['majority']).optional(),
   NODE_ENV: z.enum(['development', 'production', 'test']),
-  PRISMA_QUERY_ENGINE_LIBRARY: z.string().optional(),
   SECRET_KEY: z.string().min(16),
   THROTTLER_ENABLED: $BooleanLike.default(true),
   VERBOSE: $BooleanLike.optional()
