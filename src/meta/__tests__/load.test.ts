@@ -1,4 +1,5 @@
 import { RuntimeException } from '@douglasneuroinformatics/libjs';
+import { okAsync } from 'neverthrow';
 import { describe, expect, it, vi } from 'vitest';
 
 import { loadUserConfig } from '../load.js';
@@ -17,6 +18,18 @@ describe('loadUserConfig', () => {
     expect(result).toMatchObject({
       error: {
         message: 'Something went wrong'
+      }
+    });
+  });
+  it('should return an error if the config file does not match the expected schema', async () => {
+    importDefault.mockReturnValueOnce(okAsync({}));
+    const result = await loadUserConfig(dummyFilepath);
+    expect(result).toMatchObject({
+      error: {
+        details: {
+          issues: expect.any(Array)
+        },
+        message: `Invalid format for user options in config file: ${dummyFilepath}`
       }
     });
   });

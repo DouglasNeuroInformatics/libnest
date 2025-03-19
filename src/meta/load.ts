@@ -29,7 +29,7 @@ export function loadUserConfig(configFile: string): ResultAsync<UserConfigOption
   return importDefault(configFile).andThen((config) => {
     const result = $UserConfigOptions.safeParse(config);
     if (!result.success) {
-      return RuntimeException.asAsyncErr(`Invalid format for default export in config file: ${configFile}`, {
+      return RuntimeException.asAsyncErr(`Invalid format for user options in config file: ${configFile}`, {
         details: {
           issues: result.error.issues
         }
