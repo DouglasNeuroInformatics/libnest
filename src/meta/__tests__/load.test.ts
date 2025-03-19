@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { loadAppContainer, loadUserConfig } from '../load.js';
 
-const dummyFilepath = '/root/bar/foo.js';
+const dummyFilepath = '/root/src/app.js';
 
 const { importDefault, parseEntryFromFunction } = vi.hoisted(() => ({
   importDefault: vi.fn(),
@@ -49,6 +49,7 @@ describe('loadAppContainer', () => {
   it('should return an error if the config entry cannot be parsed', async () => {
     parseEntryFromFunction.mockReturnValueOnce(RuntimeException.asErr('Failed to parse function'));
     const result = await loadAppContainer({
+      baseDir: '/root',
       entry: () => Promise.resolve({})
     });
     expect(result).toMatchObject({
@@ -61,7 +62,7 @@ describe('loadAppContainer', () => {
   it('should return an error if the entry does not result an AppContainer', async () => {
     parseEntryFromFunction.mockReturnValue(ok(dummyFilepath));
     importDefault.mockReturnValueOnce(okAsync({}));
-    const result = await loadAppContainer({ entry: () => Promise.resolve({ default: {} }) });
+    const result = await loadAppContainer({ baseDir: '/', entry: () => Promise.resolve({ default: {} }) });
     expect(result).toMatchObject({
       error: {
         message: 'Default export from entry module is not an AppContainer'
@@ -73,7 +74,7 @@ describe('loadAppContainer', () => {
     const { default: appContainer } = await import('../../../example/app.js');
     parseEntryFromFunction.mockReturnValue(ok(dummyFilepath));
     importDefault.mockReturnValueOnce(okAsync(appContainer));
-    const result = await loadAppContainer({ entry: () => Promise.resolve({ default: {} }) });
+    const result = await loadAppContainer({ baseDir: '/', entry: () => Promise.resolve({ default: {} }) });
     expect(result.isOk()).toBe(true);
   });
 });

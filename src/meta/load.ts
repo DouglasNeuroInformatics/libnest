@@ -55,9 +55,10 @@ export function loadUserConfig(
  * @returns A `ResultAsync` containing the app container on success, or an error message on failure.
  */
 export function loadAppContainer(
-  config: Pick<UserConfigOptions, 'entry'>
+  config: Pick<UserConfigWithBaseDir, 'baseDir' | 'entry'>
 ): ResultAsync<AppContainer, typeof RuntimeException.Instance> {
   return parseEntryFromFunction(config.entry)
+    .map((importPath) => path.join(config.baseDir, importPath))
     .asyncAndThen(importDefault)
     .map(async (defaultExport) => {
       const appContainer = await defaultExport;
