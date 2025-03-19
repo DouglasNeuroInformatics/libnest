@@ -18,6 +18,7 @@ const { getArgv, process } = vi.hoisted(() => {
     get argv(): string[] {
       return getArgv();
     },
+    cwd: vi.fn(),
     env: {
       LIBNEST_CONFIG_FILEPATH: vi.fn()
     },

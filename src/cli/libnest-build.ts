@@ -2,7 +2,7 @@ import * as process from 'node:process';
 
 import { Command } from 'commander';
 
-import { bundle } from '../utils/build.utils.js';
+import { buildProd } from '../meta/build.js';
 
 const program = new Command();
 
@@ -11,7 +11,7 @@ program.action(async function () {
   if (!configFile) {
     return program.error(`error: environment variable 'LIBNEST_CONFIG_FILEPATH' must be defined`);
   }
-  await bundle({ configFile }).mapErr((error) => {
+  await buildProd({ configFile }).mapErr((error) => {
     program.error(error.toString(), { exitCode: 1 });
   });
 });

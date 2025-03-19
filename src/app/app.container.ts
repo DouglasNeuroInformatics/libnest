@@ -73,7 +73,7 @@ export class AppContainer {
       filterObject(
         {
           ...process.env,
-          // this is required so that NODE_ENV can be statically replaced in the bundle
+          // this is required so that these can be statically replaced in the bundle
           NODE_ENV: process.env.NODE_ENV
         },
         (value) => value !== ''

@@ -4,12 +4,12 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { createExec, process } from '../../testing/helpers/cli.js';
 
-const { resolveAbsoluteImportPathFromCwd } = vi.hoisted(() => ({
-  resolveAbsoluteImportPathFromCwd: vi.fn()
+const { resolveAbsoluteImportPath } = vi.hoisted(() => ({
+  resolveAbsoluteImportPath: vi.fn()
 }));
 
-vi.mock('../../utils/meta.utils.js', () => ({
-  resolveAbsoluteImportPathFromCwd
+vi.mock('../../meta/resolve.js', () => ({
+  resolveAbsoluteImportPath
 }));
 
 const exec = createExec({
@@ -28,16 +28,17 @@ describe('libnest', () => {
     );
   });
   it('should throw an InvalidArgumentError if the config path cannot be resolved', async () => {
+    process.cwd.mockReturnValueOnce('/app');
     const parseAsync = vi.spyOn(Command.prototype, 'parseAsync');
-    resolveAbsoluteImportPathFromCwd.mockReturnValueOnce(err('Failed'));
+    resolveAbsoluteImportPath.mockReturnValueOnce(err('Failed'));
     const result = await exec(['-c', 'libnest.config.ts']);
     expect(parseAsync).toHaveBeenCalledExactlyOnceWith(['node', '../libnest.js', '-c', 'libnest.config.ts']);
-    expect(resolveAbsoluteImportPathFromCwd).toHaveBeenLastCalledWith('libnest.config.ts');
+    expect(resolveAbsoluteImportPath).toHaveBeenLastCalledWith('libnest.config.ts', '/app');
     expect(result).toMatchObject({ code: 'commander.invalidArgument', exitCode: 1 });
   });
   it('should pass the resolved config file to the subcommand', async () => {
     const hook = vi.spyOn(Command.prototype, 'hook');
-    resolveAbsoluteImportPathFromCwd.mockReturnValueOnce(ok('/root/path/to/file.js'));
+    resolveAbsoluteImportPath.mockReturnValueOnce(ok('/root/path/to/file.js'));
     await exec(['-c', 'libnest.config.ts']);
     expect(hook).toHaveBeenCalledExactlyOnceWith('preSubcommand', expect.any(Function));
     const callback = hook.mock.lastCall![1];

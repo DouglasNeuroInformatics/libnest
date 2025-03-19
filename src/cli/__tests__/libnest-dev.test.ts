@@ -7,7 +7,7 @@ const { runDev } = vi.hoisted(() => ({
   runDev: vi.fn()
 }));
 
-vi.mock('../../utils/meta.utils.js', () => ({
+vi.mock('../../meta/dev.js', () => ({
   runDev
 }));
 

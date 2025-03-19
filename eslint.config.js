@@ -9,6 +9,7 @@ export default config(
       es2021: true,
       node: true
     },
+    exclude: ['build/**/*', 'dist/**/*'],
     typescript: {
       enabled: true,
       project: path.resolve(import.meta.dirname, 'tsconfig.json')
