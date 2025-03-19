@@ -111,8 +111,8 @@ const build = fromAsyncThrowable(
       plugins: [swcPlugin()],
       stdin: {
         contents: [
-          `import __appContainer from "${entrySpecifier}";`,
-          'await __appContainer;',
+          `import __appContainerExport from "${entrySpecifier}";`,
+          'const __appContainer = await __appContainerExport;',
           config.build.mode === 'module' ? 'export default __appContainer;' : 'await __appContainer.bootstrap();'
         ].join('\n'),
         loader: 'ts',
