@@ -2,31 +2,16 @@ import { RuntimeException } from '@douglasneuroinformatics/libjs';
 import { fromAsyncThrowable, ok } from 'neverthrow';
 import type { ResultAsync } from 'neverthrow';
 
-function importDefault(filepath: string): ResultAsync<unknown, typeof RuntimeException.Instance>;
-function importDefault(
-  importFn: () => Promise<{ [key: string]: unknown }>
-): ResultAsync<unknown, typeof RuntimeException.Instance>;
-function importDefault(
-  argument: (() => Promise<{ [key: string]: unknown }>) | string
-): ResultAsync<unknown, typeof RuntimeException.Instance> {
-  let importFn: () => Promise<{ [key: string]: unknown }>;
-  let context: string;
-  if (typeof argument === 'function') {
-    importFn = argument;
-    context = `module inferred as return value from function '${importFn.name || 'anonymous'}'`;
-  } else {
-    importFn = (): Promise<{ [key: string]: unknown }> => import(argument);
-    context = argument;
-  }
+function importDefault(filepath: string): ResultAsync<unknown, typeof RuntimeException.Instance> {
   return fromAsyncThrowable(
-    importFn,
+    () => import(filepath),
     (error) =>
-      new RuntimeException(`Failed to import module: ${context}`, {
+      new RuntimeException(`Failed to import module: ${filepath}`, {
         cause: error
       })
   )().andThen(({ default: defaultExport }) => {
     if (defaultExport === undefined) {
-      return RuntimeException.asErr(`Missing required default export in module: ${context}`);
+      return RuntimeException.asErr(`Missing required default export in module: ${filepath}`);
     }
     return ok(defaultExport);
   });
