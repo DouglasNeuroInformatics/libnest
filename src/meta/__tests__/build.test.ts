@@ -63,12 +63,7 @@ describe('buildProd', () => {
   const configFile = path.resolve(import.meta.dirname, '../../../libnest.config.js');
 
   beforeAll(async () => {
-    try {
-      outdir = await fs.promises.mkdtemp(os.tmpdir());
-    } catch {
-      outdir = path.resolve(import.meta.dirname, '__tmp__');
-      await fs.promises.mkdir(outdir);
-    }
+    outdir = await fs.promises.mkdtemp(path.join(os.tmpdir(), '-foo'));
   });
 
   afterAll(async () => {
