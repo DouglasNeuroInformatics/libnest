@@ -68,4 +68,12 @@ describe('loadAppContainer', () => {
       }
     });
   });
+
+  it('should successfully load the example app container', async () => {
+    const { default: appContainer } = await import('../../../example/app.js');
+    parseEntryFromFunction.mockReturnValue(ok(dummyFilepath));
+    importDefault.mockReturnValueOnce(okAsync(appContainer));
+    const result = await loadAppContainer({ entry: () => Promise.resolve({ default: {} }) });
+    expect(result.isOk()).toBe(true);
+  });
 });
