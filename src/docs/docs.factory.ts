@@ -35,7 +35,8 @@ export class DocsFactory {
     httpAdapter.get(config.path + 'spec.json', (_, res) => {
       res.send(document);
     });
-    const html = await fs.readFile(path.resolve(import.meta.dirname, 'assets/index.html'), 'utf-8');
+    let html = await fs.readFile(path.resolve(import.meta.dirname, 'assets/index.html'), 'utf-8');
+    html = html.replace('{{TITLE}}', config.title);
     httpAdapter.get(config.path, (_, res) => {
       res.set('Content-Type', 'text/html');
       res.send(html);
