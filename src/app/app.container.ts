@@ -47,11 +47,7 @@ export class AppContainer {
     });
     app.use(json({ limit: '50MB' }));
     if (docs) {
-      const document = DocsFactory.createDocs(app, { ...docs.config, version });
-      const httpAdapter = app.getHttpAdapter().getInstance();
-      httpAdapter.get(docs.path, (_, res) => {
-        res.send(document);
-      });
+      DocsFactory.configureDocs(app, docs.config, docs.path);
     }
     this.#app = app;
     this.#port = envConfig.API_PORT;

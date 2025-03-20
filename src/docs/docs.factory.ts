@@ -25,6 +25,14 @@ export type DocsConfig = {
 };
 
 export class DocsFactory {
+  static configureDocs(app: NestExpressApplication, config: DocsConfig, path: string) {
+    const document = this.createDocs(app, config);
+    const httpAdapter = app.getHttpAdapter().getInstance();
+    httpAdapter.get(path, (_, res) => {
+      res.send(document);
+    });
+  }
+
   static createDocs(
     app: NestExpressApplication,
     { contact, description, externalDoc, license, tags, title, version }: DocsConfig
