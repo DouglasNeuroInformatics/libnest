@@ -3,7 +3,9 @@ import * as process from 'node:process';
 
 import { Command, InvalidArgumentError } from 'commander';
 
-import { resolveAbsoluteImportPath } from '../meta/resolve.js';
+module.register('@swc-node/register/esm', import.meta.url);
+
+const { resolveAbsoluteImportPath } = await import('../meta/resolve.js');
 
 const require = module.createRequire(import.meta.url);
 
