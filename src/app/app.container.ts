@@ -33,7 +33,7 @@ export class AppContainer {
   readonly #app: NestExpressApplication;
   readonly #port: number;
 
-  private constructor(app: NestExpressApplication, { docs, envConfig, version }: InitAppContainerOptions) {
+  private constructor(app: NestExpressApplication, { envConfig, version }: InitAppContainerOptions) {
     const logger = app.get(JSONLogger);
     app.useLogger(logger);
     app.enableCors();
@@ -43,9 +43,6 @@ export class AppContainer {
       type: VersioningType.URI
     });
     app.use(json({ limit: '50MB' }));
-    if (docs) {
-      DocsFactory.configureDocs(app, { ...docs, version });
-    }
     this.#app = app;
     this.#port = envConfig.API_PORT;
   }
@@ -83,6 +80,9 @@ export class AppContainer {
     const app = await NestFactory.create<NestExpressApplication>(module, {
       bufferLogs: true
     });
+    if (docs) {
+      await DocsFactory.configureDocs(app, { ...docs, version });
+    }
     return new this(app, { docs, envConfig, version }) as AppContainer & {
       __inferredEnvSchema: TEnvSchema;
     };

@@ -1,3 +1,4 @@
+import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 
 import type { NestExpressApplication } from '@nestjs/platform-express';
@@ -28,13 +29,17 @@ export type DocsConfig = {
 };
 
 export class DocsFactory {
-  static configureDocs(app: NestExpressApplication, config: DocsConfig) {
+  static async configureDocs(app: NestExpressApplication, config: DocsConfig) {
     const document = this.createDocs(app, config);
     const httpAdapter = app.getHttpAdapter().getInstance();
     httpAdapter.get(config.path + 'spec.json', (_, res) => {
       res.send(document);
     });
-    app.useStaticAssets(path.resolve(import.meta.dirname, 'static'));
+    const html = await fs.readFile(path.resolve(import.meta.dirname, 'assets/index.html'), 'utf-8');
+    httpAdapter.get(config.path, (_, res) => {
+      res.set('Content-Type', 'text/html');
+      res.send(html);
+    });
   }
 
   private static createDocs(

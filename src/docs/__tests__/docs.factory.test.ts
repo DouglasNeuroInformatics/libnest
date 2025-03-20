@@ -25,6 +25,10 @@ type MockDocumentBuilderInstance = typeof NestSwaggerModule.DocumentBuilderProto
 
 vi.mock('@nestjs/swagger', () => NestSwaggerModule);
 
+vi.mock('node:fs/promises', () => ({
+  readFile: vi.fn()
+}));
+
 describe('DocsFactory', () => {
   const { DocumentBuilder, SwaggerModule } = NestSwaggerModule;
 
@@ -45,8 +49,8 @@ describe('DocsFactory', () => {
     vi.resetAllMocks();
   });
 
-  it('should set all provided configuration options', () => {
-    DocsFactory.configureDocs(mockApp, {
+  it('should set all provided configuration options', async () => {
+    await DocsFactory.configureDocs(mockApp, {
       contact: {
         email: 'john.doe@example.com',
         name: 'John Doe',
@@ -80,9 +84,9 @@ describe('DocsFactory', () => {
     expect(documentBuilder.addTag).toHaveBeenCalledWith('tag2');
   });
 
-  it('should create the document using the SwaggerModule', () => {
+  it('should create the document using the SwaggerModule', async () => {
     NestSwaggerModule.DocumentBuilderPrototype.build.mockReturnValueOnce('BUILD_RESULT');
-    DocsFactory.configureDocs(mockApp, {
+    await DocsFactory.configureDocs(mockApp, {
       path: '/',
       title: 'Test API'
     });
