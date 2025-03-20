@@ -9,9 +9,14 @@ import type { CreateCatDto } from './cats/dto/create-cat.dto.js';
 
 e2e((describe) => {
   describe('/spec.json', (it) => {
-    it('should configure the documentation', async ({ api, expect }) => {
+    it('should configure the documentation spec', async ({ api, expect }) => {
       const response = await api.get('/spec.json');
       expect(response.status).toBe(200);
+    });
+    it('should configure the documentation html', async ({ api, expect }) => {
+      const response = await api.get('/');
+      expect(response.status).toBe(200);
+      expect(response.type).toBe('text/html');
     });
   });
 
