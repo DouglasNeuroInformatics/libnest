@@ -25,10 +25,6 @@ type MockDocumentBuilderInstance = typeof NestSwaggerModule.DocumentBuilderProto
 
 vi.mock('@nestjs/swagger', () => NestSwaggerModule);
 
-vi.mock('node:fs/promises', () => ({
-  readFile: vi.fn()
-}));
-
 describe('DocsFactory', () => {
   const { DocumentBuilder, SwaggerModule } = NestSwaggerModule;
 
