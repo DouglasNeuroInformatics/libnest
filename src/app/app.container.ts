@@ -17,10 +17,7 @@ import type { CreateAppModuleOptions } from './app.module.js';
 type BaseEnvSchema = z.ZodType<BaseEnv, z.ZodTypeDef, { [key: string]: string }>;
 
 type InitAppContainerOptions = {
-  docs?: {
-    config: Omit<DocsConfig, 'version'>;
-    path: `/${string}.json`;
-  };
+  docs?: Omit<DocsConfig, 'version'>;
   envConfig: BaseEnv;
   version: AppVersion;
 };
@@ -47,7 +44,7 @@ export class AppContainer {
     });
     app.use(json({ limit: '50MB' }));
     if (docs) {
-      DocsFactory.configureDocs(app, docs.config, docs.path);
+      DocsFactory.configureDocs(app, { ...docs, version });
     }
     this.#app = app;
     this.#port = envConfig.API_PORT;

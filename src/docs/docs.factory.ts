@@ -1,3 +1,5 @@
+import * as path from 'node:path';
+
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import type { OpenAPIObject } from '@nestjs/swagger';
@@ -19,18 +21,20 @@ export type DocsConfig = {
     name: string;
     url: string;
   };
+  path: `${string}/`;
   tags?: string[];
   title: string;
   version?: AppVersion;
 };
 
 export class DocsFactory {
-  static configureDocs(app: NestExpressApplication, config: DocsConfig, path: string) {
+  static configureDocs(app: NestExpressApplication, config: DocsConfig) {
     const document = this.createDocs(app, config);
     const httpAdapter = app.getHttpAdapter().getInstance();
-    httpAdapter.get(path, (_, res) => {
+    httpAdapter.get(config.path + 'spec.json', (_, res) => {
       res.send(document);
     });
+    app.useStaticAssets(path.resolve(import.meta.dirname, 'static'));
   }
 
   private static createDocs(
