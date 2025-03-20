@@ -1,8 +1,11 @@
+import * as module from 'node:module';
 import * as process from 'node:process';
 
 import { Command } from 'commander';
 
-import { buildProd } from '../meta/build.js';
+module.register('@swc-node/register/esm', import.meta.url);
+
+const { buildProd } = await import('../meta/build.js');
 
 const program = new Command();
 
