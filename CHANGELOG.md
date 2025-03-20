@@ -1,5 +1,17 @@
 # Changelog
 
+## [3.0.0](https://github.com/DouglasNeuroInformatics/libnest/compare/v2.3.1...v3.0.0) (2025-03-20)
+
+### ⚠ BREAKING CHANGES
+
+* Adjust docs config
+
+### Features
+
+* add title to html template ([22efd2b](https://github.com/DouglasNeuroInformatics/libnest/commit/22efd2b40e24d6eeabb2ebc3ba32f3c63bf89986))
+* copy assets on build ([501a488](https://github.com/DouglasNeuroInformatics/libnest/commit/501a48805c1eba53eea0aa902086f68f7ccc4e58))
+* implement static assets in docs ([40265da](https://github.com/DouglasNeuroInformatics/libnest/commit/40265da0d7479dc20320039b14e678f5e4bfe4f0))
+
 ## [2.3.1](https://github.com/DouglasNeuroInformatics/libnest/compare/v2.3.0...v2.3.1) (2025-03-20)
 
 ### Bug Fixes
