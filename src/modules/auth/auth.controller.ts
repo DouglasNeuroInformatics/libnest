@@ -1,4 +1,5 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import { ApiOperation } from '@nestjs/swagger';
 
 import { RouteAccess } from '../../decorators/route-access.decorator.js';
 import { AuthService } from './auth.service.js';
@@ -10,6 +11,7 @@ import type { LoginResponseBody } from './auth.config.js';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @ApiOperation({ summary: 'Login' })
   @HttpCode(HttpStatus.OK)
   @Post('login')
   @RouteAccess('public')
