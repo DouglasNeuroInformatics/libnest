@@ -1,5 +1,15 @@
 # Changelog
 
+## [2.3.1](https://github.com/DouglasNeuroInformatics/libnest/compare/v2.3.0...v2.3.1) (2025-03-20)
+
+### Bug Fixes
+
+* register swc ([a06bdac](https://github.com/DouglasNeuroInformatics/libnest/commit/a06bdaca81cc32c2ff28a2024e59498e5b08124a))
+* specify exe ([243be15](https://github.com/DouglasNeuroInformatics/libnest/commit/243be158d002438ab5d1e9bfbfb9bc881c27bb34))
+* use shell script for libnest ([52cd37d](https://github.com/DouglasNeuroInformatics/libnest/commit/52cd37d1dc76237eed58da0e154ced78e4a513a3))
+* use shell script for libnest build ([90f88fd](https://github.com/DouglasNeuroInformatics/libnest/commit/90f88fdd16024733eb8cd2fb537d32b0283a6f8d))
+* use shell script for libnest-dev ([e6afee3](https://github.com/DouglasNeuroInformatics/libnest/commit/e6afee3a5e10a62a63b6ec9078dabfd000ebc2ae))
+
 ## [2.3.0](https://github.com/DouglasNeuroInformatics/libnest/compare/v2.2.0...v2.3.0) (2025-03-19)
 
 ### Features
