@@ -6,21 +6,18 @@ import { json } from 'express';
 import type { Simplify } from 'type-fest';
 import type { z } from 'zod';
 
+import { DocsFactory } from '../docs/docs.factory.js';
 import { JSONLogger } from '../modules/logging/json.logger.js';
 import { AppModule } from './app.module.js';
-import { DocsFactory } from './docs.factory.js';
 
+import type { AppVersion, DocsConfig } from '../docs/docs.factory.js';
 import type { BaseEnv } from '../schemas/env.schema.js';
 import type { CreateAppModuleOptions } from './app.module.js';
-import type { AppVersion, DocsConfig } from './docs.factory.js';
 
 type BaseEnvSchema = z.ZodType<BaseEnv, z.ZodTypeDef, { [key: string]: string }>;
 
 type InitAppContainerOptions = {
-  docs?: {
-    config: Omit<DocsConfig, 'version'>;
-    path: `/${string}.json`;
-  };
+  docs?: Omit<DocsConfig, 'version'>;
   envConfig: BaseEnv;
   version: AppVersion;
 };
@@ -36,7 +33,7 @@ export class AppContainer {
   readonly #app: NestExpressApplication;
   readonly #port: number;
 
-  private constructor(app: NestExpressApplication, { docs, envConfig, version }: InitAppContainerOptions) {
+  private constructor(app: NestExpressApplication, { envConfig, version }: InitAppContainerOptions) {
     const logger = app.get(JSONLogger);
     app.useLogger(logger);
     app.enableCors();
@@ -46,13 +43,6 @@ export class AppContainer {
       type: VersioningType.URI
     });
     app.use(json({ limit: '50MB' }));
-    if (docs) {
-      const document = DocsFactory.createDocs(app, { ...docs.config, version });
-      const httpAdapter = app.getHttpAdapter().getInstance();
-      httpAdapter.get(docs.path, (_, res) => {
-        res.send(document);
-      });
-    }
     this.#app = app;
     this.#port = envConfig.API_PORT;
   }
@@ -90,6 +80,9 @@ export class AppContainer {
     const app = await NestFactory.create<NestExpressApplication>(module, {
       bufferLogs: true
     });
+    if (docs) {
+      await DocsFactory.configureDocs(app, { ...docs, version });
+    }
     return new this(app, { docs, envConfig, version }) as AppContainer & {
       __inferredEnvSchema: TEnvSchema;
     };

@@ -1,5 +1,4 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import type { Mock } from 'vitest';
 
 import { DocsFactory } from '../docs.factory.js';
 
@@ -29,18 +28,25 @@ vi.mock('@nestjs/swagger', () => NestSwaggerModule);
 describe('DocsFactory', () => {
   const { DocumentBuilder, SwaggerModule } = NestSwaggerModule;
 
-  let mockApp: Mock;
+  let mockApp: any;
 
   beforeEach(() => {
-    mockApp = vi.fn();
+    mockApp = {
+      getHttpAdapter: vi.fn().mockImplementation(() => ({
+        getInstance: vi.fn().mockImplementation(() => ({
+          get: vi.fn()
+        }))
+      })),
+      useStaticAssets: vi.fn()
+    };
   });
 
   afterEach(() => {
     vi.resetAllMocks();
   });
 
-  it('should set all provided configuration options', () => {
-    DocsFactory.createDocs(mockApp as any, {
+  it('should set all provided configuration options', async () => {
+    await DocsFactory.configureDocs(mockApp, {
       contact: {
         email: 'john.doe@example.com',
         name: 'John Doe',
@@ -55,6 +61,7 @@ describe('DocsFactory', () => {
         name: 'MIT',
         url: 'https://opensource.org/license/MIT'
       },
+      path: '/',
       tags: ['tag1', 'tag2'],
       title: 'Test API',
       version: '1'
@@ -73,9 +80,10 @@ describe('DocsFactory', () => {
     expect(documentBuilder.addTag).toHaveBeenCalledWith('tag2');
   });
 
-  it('should create the document using the SwaggerModule', () => {
+  it('should create the document using the SwaggerModule', async () => {
     NestSwaggerModule.DocumentBuilderPrototype.build.mockReturnValueOnce('BUILD_RESULT');
-    DocsFactory.createDocs(mockApp as any, {
+    await DocsFactory.configureDocs(mockApp, {
+      path: '/',
       title: 'Test API'
     });
     expect(SwaggerModule.createDocument).toHaveBeenLastCalledWith(mockApp, 'BUILD_RESULT');

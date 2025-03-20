@@ -5,10 +5,8 @@ import { CatsModule } from './cats/cats.module.js';
 
 export default await AppContainer.create({
   docs: {
-    config: {
-      title: 'Example API'
-    },
-    path: '/spec.json'
+    path: '/',
+    title: 'Example API'
   },
   envSchema: $BaseEnv,
   imports: [
