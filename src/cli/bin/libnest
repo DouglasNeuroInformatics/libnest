@@ -1,7 +1,6 @@
-#!/usr/bin/env node
+#!/bin/sh
 
-import { register } from 'node:module';
+DIR="$(dirname "$(realpath "$0")")"
+PARENT_DIR="$(dirname "$DIR")"
 
-register('@swc-node/register/esm', import.meta.url);
-
-await import('../libnest.js');
+node --enable-source-maps "${PARENT_DIR}"/libnest.js "$@"

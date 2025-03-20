@@ -1,11 +1,3 @@
-/**
- * The purpose of this file structure is to force commander to
- * use the shebang, which is necessary to provide flags to Node. If
- * the files do not have an extension, TypeScript won't check them, while
- * if they have an extension, Commander executes them with Node to accommodate
- * Windows users.
- */
-
 import * as module from 'node:module';
 import * as process from 'node:process';
 
@@ -15,7 +7,7 @@ import { resolveAbsoluteImportPath } from '../meta/resolve.js';
 
 const require = module.createRequire(import.meta.url);
 
-const { name, version } = require('../../package.json') as { name: string; version: string };
+const { name, version } = require('../../package.json');
 
 const program = new Command();
 program.name(name);
@@ -34,7 +26,7 @@ program.command('build', 'build application for production');
 program.command('dev', 'run application in development mode');
 
 program.hook('preSubcommand', (command) => {
-  const configFile = command.getOptionValue('configFile') as string;
+  const configFile = command.getOptionValue('configFile');
   process.env.LIBNEST_CONFIG_FILEPATH = configFile;
 });
 
