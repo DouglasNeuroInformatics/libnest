@@ -38,7 +38,7 @@
     "node": "22.x"
   },
   "scripts": {
-    "build": "rm -rf dist && tsc -b tsconfig.build.json && cp -r src/cli/bin dist/cli/bin",
+    "build": "rm -rf dist && tsc -b tsconfig.build.json && cp -r src/cli/bin dist/cli/bin && cp -r src/docs/assets dist/docs/assets",
     "docs:build": "typedoc",
     "docs:dev": "concurrently \"typedoc --watch\" \"pnpm docs:serve\"",
     "docs:serve": "http-server docs -c-1",
