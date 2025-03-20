@@ -1,4 +1,5 @@
 import * as module from 'node:module';
+import * as path from 'node:path';
 import * as process from 'node:process';
 
 import { Command, InvalidArgumentError } from 'commander';
@@ -15,7 +16,7 @@ const program = new Command();
 program.name(name);
 program.version(version);
 program.allowExcessArguments(false);
-program.allowUnknownOption(false);
+program.allowUnknownOption(true);
 program.requiredOption('-c, --config-file <path>', 'path to the config file', (filename) => {
   const result = resolveAbsoluteImportPath(filename, process.cwd());
   if (result.isErr()) {
@@ -24,8 +25,12 @@ program.requiredOption('-c, --config-file <path>', 'path to the config file', (f
   return result.value;
 });
 
-program.command('build', 'build application for production');
-program.command('dev', 'run application in development mode');
+program.command('build', 'build application for production', {
+  executableFile: path.resolve(import.meta.dirname, 'bin/libnest-build')
+});
+program.command('dev', 'run application in development mode', {
+  executableFile: path.resolve(import.meta.dirname, 'bin/libnest-dev')
+});
 
 program.hook('preSubcommand', (command) => {
   const configFile = command.getOptionValue('configFile');
