@@ -1,5 +1,11 @@
 # Changelog
 
+## [3.0.1](https://github.com/DouglasNeuroInformatics/libnest/compare/v3.0.0...v3.0.1) (2025-03-20)
+
+### Bug Fixes
+
+* copy assets to build dir ([860b37f](https://github.com/DouglasNeuroInformatics/libnest/commit/860b37f59f6a106416762f48bb3e2273a9d0d34a))
+
 ## [3.0.0](https://github.com/DouglasNeuroInformatics/libnest/compare/v2.3.1...v3.0.0) (2025-03-20)
 
 ### ⚠ BREAKING CHANGES
