@@ -33,7 +33,7 @@ export class DocsFactory {
     });
   }
 
-  static createDocs(
+  private static createDocs(
     app: NestExpressApplication,
     { contact, description, externalDoc, license, tags, title, version }: DocsConfig
   ): OpenAPIObject {

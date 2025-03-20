@@ -1,5 +1,4 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import type { Mock } from 'vitest';
 
 import { DocsFactory } from '../docs.factory.js';
 
@@ -29,10 +28,16 @@ vi.mock('@nestjs/swagger', () => NestSwaggerModule);
 describe('DocsFactory', () => {
   const { DocumentBuilder, SwaggerModule } = NestSwaggerModule;
 
-  let mockApp: Mock;
+  let mockApp: any;
 
   beforeEach(() => {
-    mockApp = vi.fn();
+    mockApp = {
+      getHttpAdapter: vi.fn().mockImplementation(() => ({
+        getInstance: vi.fn().mockImplementation(() => ({
+          get: vi.fn()
+        }))
+      }))
+    };
   });
 
   afterEach(() => {
@@ -40,25 +45,29 @@ describe('DocsFactory', () => {
   });
 
   it('should set all provided configuration options', () => {
-    DocsFactory.createDocs(mockApp as any, {
-      contact: {
-        email: 'john.doe@example.com',
-        name: 'John Doe',
-        url: 'https://example.com'
+    DocsFactory.configureDocs(
+      mockApp,
+      {
+        contact: {
+          email: 'john.doe@example.com',
+          name: 'John Doe',
+          url: 'https://example.com'
+        },
+        description: 'This is a test API',
+        externalDoc: {
+          description: 'Find more info here',
+          url: 'https://example.com/docs'
+        },
+        license: {
+          name: 'MIT',
+          url: 'https://opensource.org/license/MIT'
+        },
+        tags: ['tag1', 'tag2'],
+        title: 'Test API',
+        version: '1'
       },
-      description: 'This is a test API',
-      externalDoc: {
-        description: 'Find more info here',
-        url: 'https://example.com/docs'
-      },
-      license: {
-        name: 'MIT',
-        url: 'https://opensource.org/license/MIT'
-      },
-      tags: ['tag1', 'tag2'],
-      title: 'Test API',
-      version: '1'
-    });
+      '/'
+    );
 
     expect(DocumentBuilder).toHaveBeenCalledOnce();
 
@@ -75,9 +84,13 @@ describe('DocsFactory', () => {
 
   it('should create the document using the SwaggerModule', () => {
     NestSwaggerModule.DocumentBuilderPrototype.build.mockReturnValueOnce('BUILD_RESULT');
-    DocsFactory.createDocs(mockApp as any, {
-      title: 'Test API'
-    });
+    DocsFactory.configureDocs(
+      mockApp,
+      {
+        title: 'Test API'
+      },
+      '/'
+    );
     expect(SwaggerModule.createDocument).toHaveBeenLastCalledWith(mockApp, 'BUILD_RESULT');
   });
 });
