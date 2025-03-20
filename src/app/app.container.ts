@@ -6,13 +6,13 @@ import { json } from 'express';
 import type { Simplify } from 'type-fest';
 import type { z } from 'zod';
 
+import { DocsFactory } from '../docs/docs.factory.js';
 import { JSONLogger } from '../modules/logging/json.logger.js';
 import { AppModule } from './app.module.js';
-import { DocsFactory } from './docs.factory.js';
 
+import type { AppVersion, DocsConfig } from '../docs/docs.factory.js';
 import type { BaseEnv } from '../schemas/env.schema.js';
 import type { CreateAppModuleOptions } from './app.module.js';
-import type { AppVersion, DocsConfig } from './docs.factory.js';
 
 type BaseEnvSchema = z.ZodType<BaseEnv, z.ZodTypeDef, { [key: string]: string }>;
 

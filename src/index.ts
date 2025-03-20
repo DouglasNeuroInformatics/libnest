@@ -1,7 +1,6 @@
 export { AppContainer } from './app/app.container.js';
 export type { BaseEnvSchema } from './app/app.container.js';
 export type { ConditionalImport, ImportedModule } from './app/app.module.js';
-export type { AppVersion, DocsConfig } from './app/docs.factory.js';
 export { CurrentUser } from './decorators/current-user.decorator.js';
 export { RouteAccess } from './decorators/route-access.decorator.js';
 export type {
@@ -11,6 +10,7 @@ export type {
   RouteAccessType
 } from './decorators/route-access.decorator.js';
 export { ValidationSchema } from './decorators/validation-schema.decorator.js';
+export type { AppVersion, DocsConfig } from './docs/docs.factory.js';
 export { DataTransferObject } from './mixins/data-transfer-object.mixin.js';
 export type {
   AppAbility,
