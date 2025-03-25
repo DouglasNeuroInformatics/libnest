@@ -29,7 +29,7 @@ export { CryptoService } from './modules/crypto/crypto.service.js';
 export type { LoggingOptions } from './modules/logging/logging.config.js';
 export { LoggingService } from './modules/logging/logging.service.js';
 export type { PrismaModuleOptions } from './modules/prisma/prisma.config.js';
-export { InjectModel } from './modules/prisma/prisma.decorators.js';
+export { InjectModel, InjectPrismaClient } from './modules/prisma/prisma.decorators.js';
 export type { ExtendedPrismaClient } from './modules/prisma/prisma.factory.js';
 export { PrismaService } from './modules/prisma/prisma.service.js';
 export type { Model, PrismaModelName } from './modules/prisma/prisma.types.js';
