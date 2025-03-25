@@ -23,7 +23,7 @@ describe('InjectModel', () => {
 });
 
 describe('InjectPrismaClient', () => {
-  it('should call Inject with the correct model token', () => {
+  it('should call Inject with the correct token', () => {
     const model = InjectPrismaClient();
     expect(Inject).toHaveBeenCalledWith(PRISMA_CLIENT_TOKEN);
     expect(model).toBe('INJECTED');
