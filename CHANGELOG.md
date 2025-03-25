@@ -1,5 +1,11 @@
 # Changelog
 
+## [3.1.0](https://github.com/DouglasNeuroInformatics/libnest/compare/v3.0.1...v3.1.0) (2025-03-25)
+
+### Features
+
+* add InjectPrismaClient ([3a8026b](https://github.com/DouglasNeuroInformatics/libnest/commit/3a8026bdc152dabdabb119d4fb0048dc76ba0b17))
+
 ## [3.0.1](https://github.com/DouglasNeuroInformatics/libnest/compare/v3.0.0...v3.0.1) (2025-03-20)
 
 ### Bug Fixes
