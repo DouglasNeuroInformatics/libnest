@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { InjectModel } from '../prisma.decorators.js';
+import { PRISMA_CLIENT_TOKEN } from '../prisma.config.js';
+import { InjectModel, InjectPrismaClient } from '../prisma.decorators.js';
 
 import type { PrismaModelName } from '../prisma.types.js';
 
@@ -17,6 +18,14 @@ describe('InjectModel', () => {
     const model = InjectModel(modelName);
     expect(getModelToken).toHaveBeenCalledWith(modelName);
     expect(Inject).toHaveBeenCalledWith(`MockToken_${modelName}`);
+    expect(model).toBe('INJECTED');
+  });
+});
+
+describe('InjectPrismaClient', () => {
+  it('should call Inject with the correct model token', () => {
+    const model = InjectPrismaClient();
+    expect(Inject).toHaveBeenCalledWith(PRISMA_CLIENT_TOKEN);
     expect(model).toBe('INJECTED');
   });
 });
