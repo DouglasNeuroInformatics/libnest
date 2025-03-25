@@ -1,5 +1,11 @@
 # Changelog
 
+## [3.1.1](https://github.com/DouglasNeuroInformatics/libnest/compare/v3.1.0...v3.1.1) (2025-03-25)
+
+### Bug Fixes
+
+* move supertest to prod deps ([3194f0b](https://github.com/DouglasNeuroInformatics/libnest/commit/3194f0b9e5cdd96212b316c9985005aa47f78d45))
+
 ## [3.1.0](https://github.com/DouglasNeuroInformatics/libnest/compare/v3.0.1...v3.1.0) (2025-03-25)
 
 ### Features
