@@ -1,5 +1,11 @@
 # Changelog
 
+## [3.2.0](https://github.com/DouglasNeuroInformatics/libnest/compare/v3.1.1...v3.2.0) (2025-03-26)
+
+### Features
+
+* implement mail module ([7d7bf3d](https://github.com/DouglasNeuroInformatics/libnest/commit/7d7bf3d3075bd78c36007705b2eb73d36b75874d))
+
 ## [3.1.1](https://github.com/DouglasNeuroInformatics/libnest/compare/v3.1.0...v3.1.1) (2025-03-25)
 
 ### Bug Fixes
