@@ -83,6 +83,7 @@
     "commander": "^13.1.0",
     "es-module-lexer": "^1.6.0",
     "esbuild": "^0.25.1",
+    "mongodb-memory-server": "^10.1.4",
     "nodemailer": "^6.10.0",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
@@ -154,6 +155,7 @@
       "@prisma/engines",
       "@swc/core",
       "esbuild",
+      "mongodb-memory-server",
       "prisma"
     ],
     "ignoredBuiltDependencies": [
