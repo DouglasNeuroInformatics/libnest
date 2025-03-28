@@ -6,7 +6,7 @@ import { Test } from '@nestjs/testing';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { fromAsyncThrowable } from 'neverthrow';
 import request from 'supertest';
-import type TestAgent from 'supertest/lib/agent.js';
+import type SupertestAgent from 'supertest/lib/agent.js';
 import { afterAll, beforeAll, beforeEach, describe, vi } from 'vitest';
 import type { SuiteAPI } from 'vitest';
 
@@ -15,6 +15,35 @@ import { loadAppContainer, loadUserConfig } from '../../meta/load.js';
 import { resolveUserConfig } from '../../meta/resolve.js';
 import { PRISMA_CLIENT_TOKEN } from '../../modules/prisma/prisma.config.js';
 import { PrismaFactory } from '../../modules/prisma/prisma.factory.js';
+
+interface TestResponse {
+  [key: string]: any;
+  body: any;
+  headers: {
+    [key: string]: string;
+  };
+  ok: boolean;
+  status: number;
+  text: string;
+  type: string;
+}
+
+interface TestRequest extends PromiseLike<TestResponse> {
+  [key: string]: any;
+  method: string;
+  url: string;
+}
+
+interface TestAgentMethods {
+  delete: (url: string) => TestRequest;
+  get: (url: string) => TestRequest;
+  patch: (url: string) => TestRequest;
+  post: (url: string) => TestRequest;
+  put: (url: string) => TestRequest;
+}
+
+// this is so we don't have to include the garbage supertest types in production
+type TestAgent = SupertestAgent extends TestAgentMethods ? TestAgentMethods : never;
 
 export type EndToEndContext = {
   api: TestAgent;
