@@ -1,9 +1,9 @@
 import { z } from 'zod';
 
-import { $BaseEnv, AppContainer, AuthModule, CryptoService } from '../src/index.js';
+import { $BaseEnv, AppFactory, AuthModule, CryptoService } from '../src/index.js';
 import { CatsModule } from './cats/cats.module.js';
 
-export default await AppContainer.create({
+export default AppFactory.create({
   docs: {
     path: '/',
     title: 'Example API'
@@ -45,7 +45,7 @@ export default await AppContainer.create({
     CatsModule
   ],
   prisma: {
-    dbPrefix: null
+    dbPrefix: 'libnest-example'
   },
   version: '1'
 });
