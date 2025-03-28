@@ -5,7 +5,7 @@ import { fromAsyncThrowable, ok } from 'neverthrow';
 import type { ResultAsync } from 'neverthrow';
 import { z } from 'zod';
 
-import { AppContainer } from '../app/app.container.js';
+import { AbstractAppContainer } from '../app/app.base.js';
 import { importDefault } from './import.js';
 import { parseEntryFromFunction } from './parse.js';
 
@@ -35,9 +35,10 @@ type UserConfigWithBaseDir = UserConfigOptions & {
  * @returns A `ResultAsync` containing the config options on success, or an error message on failure.
  */
 export function loadUserConfig(
-  configFile: string
+  configFile: string,
+  loader: (configFile: string) => ResultAsync<unknown, typeof RuntimeException.Instance> = importDefault
 ): ResultAsync<UserConfigWithBaseDir, typeof RuntimeException.Instance> {
-  return importDefault(configFile).andThen((config) => {
+  return loader(configFile).andThen((config) => {
     const result = $UserConfigOptions.safeParse(config);
     if (!result.success) {
       return RuntimeException.asAsyncErr(`Invalid format for user options in config file: ${configFile}`, {
@@ -69,7 +70,7 @@ export const loadEntry = fromAsyncThrowable(
 export function loadAppContainer(
   config: Pick<UserConfigWithBaseDir, 'baseDir' | 'entry'>,
   method: 'dynamic' | 'static' = 'static'
-): ResultAsync<AppContainer, typeof RuntimeException.Instance> {
+): ResultAsync<AbstractAppContainer, typeof RuntimeException.Instance> {
   let defaultExport: ResultAsync<unknown, typeof RuntimeException.Instance>;
   if (method === 'dynamic') {
     defaultExport = loadEntry(config.entry);
@@ -84,10 +85,10 @@ export function loadAppContainer(
       return appContainer;
     })
     .andThen((appContainer) => {
-      if (!(appContainer instanceof AppContainer)) {
+      if (!(appContainer instanceof AbstractAppContainer)) {
         return RuntimeException.asAsyncErr('Default export from entry module is not an AppContainer');
       }
-      return ok(appContainer);
+      return ok(appContainer as AbstractAppContainer);
     });
 }
 

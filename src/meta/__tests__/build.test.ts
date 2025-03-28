@@ -7,7 +7,6 @@ import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { buildProd, bundle } from '../build.js';
 
-import type { AppContainer } from '../../app/app.container.js';
 import type { UserConfigOptions } from '../../user-config.js';
 
 const { loadUserConfig, parseEntryFromFunction } = vi.hoisted(() => ({
@@ -117,9 +116,9 @@ describe('buildProd', () => {
     parseEntryFromFunction.mockReturnValueOnce(ok('./example/app.js'));
     const result = await buildProd({ configFile });
     expect(result.isOk()).toBe(true);
-    const appContainer = await import(outfile).then((module) => module.default as AppContainer);
-    const app = appContainer.getApplicationInstance();
-    expect(app).toBeDefined();
+    const appContainer = await import(outfile).then((module) => module.default);
+    // Cannot check instanceof because prototype is different in bundle
+    expect(appContainer.constructor.name).toBe('AppContainer');
     expect(onComplete).toHaveBeenCalledOnce();
   });
 
