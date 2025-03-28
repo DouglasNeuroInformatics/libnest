@@ -30,7 +30,11 @@ interface TestResponse {
 
 interface TestRequest extends PromiseLike<TestResponse> {
   [key: string]: any;
+  accept(type: string): this;
+  auth(token: string, options: { type: 'bearer' }): this;
   method: string;
+  send(data?: object | string): this;
+  set(field: string, val: string): this;
   url: string;
 }
 
