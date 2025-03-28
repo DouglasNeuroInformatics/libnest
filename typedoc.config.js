@@ -23,12 +23,12 @@ export default {
   cleanOutputDir: true,
   entryPoints,
   intentionallyNotExported: [
+    'AppContainer',
     'AppAbilities',
     'AppConditions',
     'AppSubjects',
     'InferExtendedClient',
     'ModelExtArgs',
-    'PrismaModelWhereInputMap',
     'ResultExtArgs'
   ],
   out: path.resolve(import.meta.dirname, 'docs'),
