@@ -1,8 +1,8 @@
 import type { BuildOptions } from 'esbuild';
 import type { Jsonifiable, Promisable } from 'type-fest';
-import type { z } from 'zod';
 
 import type { AppContainer } from './app/app.container.js';
+import type { BaseEnv } from './schemas/env.schema.js';
 
 /**
  * Configuration options for a `libnest` application.
@@ -47,13 +47,11 @@ export function defineUserConfig<T extends UserConfigOptions>(config: T): T {
 }
 
 export type InferUserConfig<T extends UserConfigOptions> = T extends {
-  entry: () => Promise<{ default: infer U extends Promisable<AppContainer> }>;
+  entry: () => Promise<{ default: AppContainer<infer U extends BaseEnv> }>;
 }
-  ? Awaited<U> extends { __inferredEnvSchema: infer TSchema extends z.ZodTypeAny }
-    ? {
-        RuntimeEnv: z.TypeOf<TSchema>;
-      }
-    : never
+  ? {
+      RuntimeEnv: U;
+    }
   : never;
 
 export interface UserConfig {}

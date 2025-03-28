@@ -1,6 +1,5 @@
-export { AppContainer } from './app/app.container.js';
-export type { BaseEnvSchema } from './app/app.container.js';
-export type { ConditionalImport, ImportedModule } from './app/app.module.js';
+export type { ConditionalImport, ImportedModule } from './app/app.base.js';
+export { AppFactory } from './app/app.factory.js';
 export { CurrentUser } from './decorators/current-user.decorator.js';
 export { RouteAccess } from './decorators/route-access.decorator.js';
 export type {
@@ -43,3 +42,4 @@ export { VirtualizationService } from './modules/virtualization/virtualization.s
 export { ParseSchemaPipe } from './pipes/parse-schema.pipe.js';
 export { $BaseEnv } from './schemas/env.schema.js';
 export type { BaseEnv } from './schemas/env.schema.js';
+export type { BaseEnvSchema } from './utils/env.utils.js';

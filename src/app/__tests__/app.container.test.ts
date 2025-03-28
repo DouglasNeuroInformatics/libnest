@@ -1,81 +1,97 @@
-import { ValidationException } from '@douglasneuroinformatics/libjs';
+import { VersioningType } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import type { NestExpressApplication } from '@nestjs/platform-express';
-import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeAll, describe, expect, it, vi } from 'vitest';
 
-import { $BaseEnv } from '../../schemas/env.schema.js';
+import { DocsFactory } from '../../docs/docs.factory.js';
+import { JSONLogger } from '../../modules/logging/json.logger.js';
 import { AppContainer } from '../app.container.js';
 
-import type { BaseEnv } from '../../schemas/env.schema.js';
 import type { MockedInstance } from '../../testing/index.js';
-import type { CreateAppContainerOptions } from '../app.container.js';
-
-const env = {
-  API_PORT: '5500',
-  DEBUG: 'false',
-  MONGO_URI: 'mongodb://localhost:27017',
-  NODE_ENV: 'test',
-  SECRET_KEY: '2622d72669dd194b98cffd9098b0d04b',
-  VERBOSE: 'false'
-} satisfies { [K in keyof BaseEnv]?: string };
-
-const createAppContainer = (options?: Partial<CreateAppContainerOptions>) => {
-  return AppContainer.create({
-    envSchema: $BaseEnv,
-    prisma: {
-      dbPrefix: null
-    },
-    version: '1',
-    ...options
-  });
-};
 
 describe('AppContainer', () => {
-  describe('create', () => {
-    beforeAll(() => {
-      Object.entries(env).forEach(([key, value]) => {
-        vi.stubEnv(key, value);
+  let mockApp: MockedInstance<NestExpressApplication>;
+  let mockLogger: MockedInstance<JSONLogger>;
+
+  beforeAll(() => {
+    mockLogger = {
+      log: vi.fn()
+    } as MockedInstance<JSONLogger>;
+
+    mockApp = {
+      enableCors: vi.fn(),
+      enableShutdownHooks: vi.fn(),
+      enableVersioning: vi.fn(),
+      get: vi.fn().mockReturnValue(mockLogger),
+      getUrl: vi.fn().mockResolvedValue('http://localhost:3000'),
+      listen: vi.fn(),
+      use: vi.fn(),
+      useLogger: vi.fn()
+    } as MockedInstance<NestExpressApplication>;
+    vi.spyOn(NestFactory, 'create').mockResolvedValue(mockApp as any);
+  });
+
+  describe('createApplicationInstance', () => {
+    it('should create and configure the application instance with correct settings', async () => {
+      const appContainer = new AppContainer({
+        envConfig: { API_PORT: 3000 } as any,
+        module: {} as any,
+        version: '1' as const
       });
+
+      const app = await appContainer.createApplicationInstance();
+
+      expect(app).toBe(mockApp);
+      expect(mockApp.enableCors).toHaveBeenCalled();
+      expect(mockApp.enableShutdownHooks).toHaveBeenCalled();
+      expect(mockApp.enableVersioning).toHaveBeenCalledWith({
+        defaultVersion: '1',
+        type: VersioningType.URI
+      });
+      expect(mockApp.use).toHaveBeenCalledWith(expect.any(Function));
     });
 
-    it('should throw an error if it cannot parse the schema', async () => {
-      vi.stubEnv('VERBOSE', '1');
-      await expect(() => createAppContainer()).rejects.toThrow(
-        expect.objectContaining({
-          cause: expect.any(ValidationException),
-          message: 'Failed to parse environment config'
-        })
-      );
-      vi.stubEnv('VERBOSE', env.VERBOSE);
+    it('should configure docs when provided', async () => {
+      const mockDocsFactory = {
+        configureDocs: vi.fn()
+      };
+      vi.spyOn(DocsFactory, 'configureDocs').mockImplementation(mockDocsFactory.configureDocs);
+
+      const appContainer = new AppContainer({
+        docs: {
+          description: 'Test Description',
+          path: 'docs/',
+          title: 'Test API'
+        },
+        envConfig: { API_PORT: 3000 } as any,
+        module: {} as any,
+        version: '1'
+      });
+
+      await appContainer.createApplicationInstance();
+
+      expect(mockDocsFactory.configureDocs).toHaveBeenCalledWith(mockApp, {
+        description: 'Test Description',
+        path: 'docs/',
+        title: 'Test API',
+        version: '1'
+      });
     });
   });
 
   describe('bootstrap', () => {
-    let mockApp: MockedInstance<NestExpressApplication>;
+    it('should bootstrap the application with correct configuration', async () => {
+      const appContainer = new AppContainer({
+        envConfig: { API_PORT: 3000 } as any,
+        module: {} as any,
+        version: '1' as const
+      });
 
-    beforeEach(() => {
-      mockApp = {
-        enableCors: vi.fn(),
-        enableShutdownHooks: vi.fn(),
-        enableVersioning: vi.fn(),
-        get: vi.fn(),
-        getUrl: vi.fn(),
-        listen: vi.fn(),
-        use: vi.fn(),
-        useLogger: vi.fn()
-      } as MockedInstance<NestExpressApplication>;
-      vi.spyOn(NestFactory, 'create').mockReturnValue(mockApp as any);
-    });
-
-    it('should listen on the port and log the url', async () => {
-      const appContainer = await createAppContainer();
-      const mockLogger = { log: vi.fn() };
-      const mockUrl = 'http://localhost:5500';
-      mockApp.get.mockReturnValueOnce(mockLogger);
-      mockApp.getUrl.mockReturnValueOnce(mockUrl);
       await appContainer.bootstrap();
-      expect(mockApp.listen).toHaveBeenCalledExactlyOnceWith(5500);
-      expect(mockLogger.log).toHaveBeenCalledExactlyOnceWith(`Application is running on: ${mockUrl}`);
+
+      expect(mockApp.useLogger).toHaveBeenCalledWith(mockLogger);
+      expect(mockApp.listen).toHaveBeenCalledWith(3000);
+      expect(mockLogger.log).toHaveBeenCalledWith('Application is running on: http://localhost:3000');
     });
   });
 });

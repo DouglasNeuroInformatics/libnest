@@ -74,7 +74,11 @@ export class PrismaFactory {
         url.searchParams.append(key, String(value));
       }
     }
-    return new PrismaClient({ datasourceUrl: url.href }).$extends((client) => {
+    return this.instantiateExtendedClient({ datasourceUrl: url.href });
+  }
+
+  instantiateExtendedClient(options: Prisma.PrismaClientOptions) {
+    return new PrismaClient(options).$extends((client) => {
       const result = {} as ResultExtArgs;
       Object.keys(Prisma.ModelName).forEach((modelName) => {
         result[getModelKey(modelName)] = {

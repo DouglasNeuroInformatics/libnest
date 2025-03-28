@@ -1,11 +1,14 @@
 import { randomBytes } from 'crypto';
 
-import { beforeEach } from 'vitest';
+import { beforeEach, vi } from 'vitest';
 
 import { e2e } from '../src/testing/index.js';
 
 import type { EndToEndContext } from '../src/testing/index.js';
 import type { CreateCatDto } from './cats/dto/create-cat.dto.js';
+import type { Cat } from './cats/schemas/cat.schema.js';
+
+vi.unmock('@prisma/client');
 
 e2e((describe) => {
   describe('/spec.json', (it) => {
@@ -56,6 +59,7 @@ e2e((describe) => {
 
   describe('/cats', (it) => {
     let accessToken: string;
+    let createdCat: Cat;
 
     beforeEach<EndToEndContext>(async ({ api }) => {
       const response = await api.post('/v1/auth/login').send({ password: 'password', username: 'admin' });
@@ -72,11 +76,6 @@ e2e((describe) => {
       expect(response.status).toBe(401);
     });
 
-    it('should allow a GET request', async ({ api, expect }) => {
-      const response = await api.get('/v1/cats').set('Authorization', `Bearer ${accessToken}`);
-      expect(response.status).toBe(200);
-    });
-
     it('should allow a POST request', async ({ api, expect }) => {
       const response = await api
         .post('/v1/cats')
@@ -86,6 +85,18 @@ e2e((describe) => {
           name: 'Winston'
         } satisfies CreateCatDto);
       expect(response.status).toBe(201);
+      expect(response.body).toMatchObject({
+        _id: expect.any(String),
+        age: expect.any(Number),
+        name: expect.any(String)
+      } satisfies Cat);
+      createdCat = response.body;
+    });
+
+    it('should allow a GET request', async ({ api, expect }) => {
+      const response = await api.get('/v1/cats').set('Authorization', `Bearer ${accessToken}`);
+      expect(response.status).toBe(200);
+      expect(response.body).toStrictEqual([createdCat]);
     });
   });
 });
