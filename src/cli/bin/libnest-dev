@@ -3,4 +3,15 @@
 DIR="$(dirname "$(realpath "$0")")"
 PARENT_DIR="$(dirname "$DIR")"
 
-node --enable-source-maps --watch --watch-preserve-output "${PARENT_DIR}"/libnest-dev.js "$@"
+WATCH_FLAGS="--watch --watch-preserve-output"
+ARGS=()
+
+for arg in "$@"; do
+  if [ "$arg" = "--no-watch" ]; then
+    WATCH_FLAGS=""
+  else
+    ARGS+=("$arg")
+  fi
+done
+
+node --enable-source-maps $WATCH_FLAGS "${PARENT_DIR}/libnest-dev.js" "${ARGS[@]}"
