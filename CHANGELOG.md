@@ -1,5 +1,23 @@
 # Changelog
 
+## [4.0.0](https://github.com/DouglasNeuroInformatics/libnest/compare/v3.2.0...v4.0.0) (2025-03-28)
+
+### ⚠ BREAKING CHANGES
+
+* Users now need to call AppFactory.create instead of AppContainer.create
+
+### Features
+
+* implement mongo-memory-server in test ([e156fc5](https://github.com/DouglasNeuroInformatics/libnest/commit/e156fc5b2cd2c61e085ad78b2702707ae427c50f))
+
+### Bug Fixes
+
+* issue where dev server crashed on syntax error ([c1a310e](https://github.com/DouglasNeuroInformatics/libnest/commit/c1a310e2cd1ff9caf7a7c9d0da265021e84807cd))
+
+### Code Refactoring
+
+* adjust AppContainer implementation ([f479516](https://github.com/DouglasNeuroInformatics/libnest/commit/f47951636ea881dce4075170b5ddea2487af613a))
+
 ## [3.2.0](https://github.com/DouglasNeuroInformatics/libnest/compare/v3.1.1...v3.2.0) (2025-03-26)
 
 ### Features
