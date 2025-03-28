@@ -3,7 +3,7 @@ import type { IncomingMessage, Server, ServerResponse } from 'http';
 import { RuntimeException } from '@douglasneuroinformatics/libjs';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import { Test } from '@nestjs/testing';
-import { MongoMemoryServer } from 'mongodb-memory-server';
+import { MongoMemoryReplSet } from 'mongodb-memory-server';
 import { fromAsyncThrowable } from 'neverthrow';
 import request from 'supertest';
 import type SupertestAgent from 'supertest/lib/agent.js';
@@ -55,7 +55,7 @@ export type EndToEndContext = {
 
 export function e2e(fn: (it: SuiteAPI<EndToEndContext>) => void): void {
   let app: NestExpressApplication;
-  let mongodb: MongoMemoryServer;
+  let mongodb: MongoMemoryReplSet;
   let server: Server<typeof IncomingMessage, typeof ServerResponse>;
 
   beforeAll(async () => {
@@ -82,7 +82,11 @@ export function e2e(fn: (it: SuiteAPI<EndToEndContext>) => void): void {
 
     const { docs, module, version } = result.value;
 
-    mongodb = await MongoMemoryServer.create();
+    mongodb = await MongoMemoryReplSet.create({
+      replSet: {
+        count: 1
+      }
+    });
 
     const moduleRef = await Test.createTestingModule({
       imports: [module]
