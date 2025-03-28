@@ -3,4 +3,4 @@
 DIR="$(dirname "$(realpath "$0")")"
 PARENT_DIR="$(dirname "$DIR")"
 
-node --enable-source-maps --watch "${PARENT_DIR}"/libnest-dev.js "$@"
+node --enable-source-maps --watch --watch-preserve-output "${PARENT_DIR}"/libnest-dev.js "$@"

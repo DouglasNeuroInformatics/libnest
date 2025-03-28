@@ -10,8 +10,10 @@ const { runDev } = await import('../meta/dev.js');
 const program = new Command();
 
 program.exitOverride((err) => {
-  process.kill(process.ppid);
-  process.exit(err.exitCode);
+  if (err.code !== 'LIBNEST_DEV_ERROR') {
+    process.kill(process.ppid);
+    process.exit(err.exitCode);
+  }
 });
 
 program.action(async function () {
@@ -20,7 +22,7 @@ program.action(async function () {
     return program.error(`error: environment variable 'LIBNEST_CONFIG_FILEPATH' must be defined`);
   }
   await runDev(configFile).mapErr((error) => {
-    program.error(error.toString(), { exitCode: 1 });
+    program.error(error.toString(), { code: 'LIBNEST_DEV_ERROR', exitCode: 1 });
   });
 });
 

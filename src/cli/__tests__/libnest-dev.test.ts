@@ -62,6 +62,9 @@ describe('libnest-dev', () => {
     const programError = vi.spyOn(Command.prototype, 'error').mockImplementationOnce(() => null!);
     const errorHandler = mapErr.mock.lastCall![0];
     errorHandler(new Error('An error occurred'));
-    expect(programError).toHaveBeenCalledExactlyOnceWith('Error: An error occurred', { exitCode: 1 });
+    expect(programError).toHaveBeenCalledExactlyOnceWith('Error: An error occurred', {
+      code: 'LIBNEST_DEV_ERROR',
+      exitCode: 1
+    });
   });
 });
