@@ -9,7 +9,7 @@ const plugin = ({
   paths?: {
     [key: string]: string[];
   };
-} = {}): Plugin[] => {
+} = {}): [Plugin, Plugin] => {
   return [
     swc.vite({
       jsc: {
@@ -36,7 +36,7 @@ const plugin = ({
     }),
     {
       enforce: 'pre',
-      name: 'vite-plugin-libnest',
+      name: 'libnest',
       async resolveId(source, _importer, options): Promise<any> {
         if (source.startsWith('@swc/helpers/')) {
           return this.resolve(source, import.meta.filename, options);
