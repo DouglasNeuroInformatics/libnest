@@ -9,6 +9,7 @@ import request from 'supertest';
 import type SupertestAgent from 'supertest/lib/agent.js';
 import { afterAll, beforeAll, beforeEach, describe, vi } from 'vitest';
 import type { SuiteAPI } from 'vitest';
+import { resolveConfig } from 'vitest/node';
 
 import { configureApp } from '../../app/app.utils.js';
 import { loadAppContainer, loadUserConfig } from '../../meta/load.js';
@@ -59,7 +60,8 @@ export function e2e(fn: (describe: SuiteAPI<EndToEndContext>) => void): void {
   let server: Server<typeof IncomingMessage, typeof ServerResponse>;
 
   beforeAll(async () => {
-    const result = await resolveUserConfig(process.env.LIBNEST_APP_BASE_DIR ?? import.meta.dirname)
+    const { vitestConfig } = await resolveConfig();
+    const result = await resolveUserConfig(vitestConfig.root)
       .asyncAndThen((configFile) =>
         loadUserConfig(
           configFile,
