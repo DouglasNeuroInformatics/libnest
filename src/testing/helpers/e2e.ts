@@ -53,7 +53,7 @@ export type EndToEndContext = {
   api: TestAgent;
 };
 
-export function e2e(fn: (it: SuiteAPI<EndToEndContext>) => void): void {
+export function e2e(fn: (describe: SuiteAPI<EndToEndContext>) => void): void {
   let app: NestExpressApplication;
   let mongodb: MongoMemoryReplSet;
   let server: Server<typeof IncomingMessage, typeof ServerResponse>;
