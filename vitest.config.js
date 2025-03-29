@@ -24,7 +24,6 @@ export default defineConfig({
     },
     globals: true,
     include: ['{example,src}/**/*.{test,spec}.?(c|m)[jt]s?(x)'],
-    root: './',
     setupFiles: [path.resolve(import.meta.dirname, 'src/testing/setup.ts')],
     watch: false
   }
