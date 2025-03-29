@@ -6,6 +6,7 @@ import libnest from './src/testing/plugin.js';
 
 export default defineConfig({
   plugins: [libnest()],
+  root: import.meta.dirname,
   test: {
     coverage: {
       exclude: [
