@@ -77,7 +77,7 @@ export class PrismaFactory {
     return this.instantiateExtendedClient({ datasourceUrl: url.href });
   }
 
-  instantiateExtendedClient(options: Prisma.PrismaClientOptions) {
+  instantiateExtendedClient(options: Prisma.PrismaClientOptions): ExtendedPrismaClient {
     return new PrismaClient(options).$extends((client) => {
       const result = {} as ResultExtArgs;
       Object.keys(Prisma.ModelName).forEach((modelName) => {

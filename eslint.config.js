@@ -12,6 +12,7 @@ export default config(
     exclude: ['build/**/*', 'dist/**/*'],
     typescript: {
       enabled: true,
+      explicitReturnTypes: true,
       project: path.resolve(import.meta.dirname, 'tsconfig.json')
     }
   },

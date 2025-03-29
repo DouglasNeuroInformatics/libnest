@@ -9,6 +9,6 @@ export const InjectModel = <T extends PrismaModelName>(modelName: T): ParameterD
   return Inject(getModelToken(modelName));
 };
 
-export const InjectPrismaClient = () => {
+export const InjectPrismaClient = (): ParameterDecorator & PropertyDecorator => {
   return Inject(PRISMA_CLIENT_TOKEN);
 };

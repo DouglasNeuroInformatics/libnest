@@ -21,7 +21,7 @@ export class AppContainer<TEnv extends BaseEnv> extends AbstractAppContainer<TEn
     super(params);
   }
 
-  async bootstrap() {
+  async bootstrap(): Promise<void> {
     const app = await this.createApplicationInstance();
     const logger = app.get(JSONLogger);
 

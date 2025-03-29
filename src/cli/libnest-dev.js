@@ -16,6 +16,8 @@ program.exitOverride((err) => {
   }
 });
 
+program.option('--no-watch', 'disable watch mode');
+
 program.action(async function () {
   const configFile = process.env.LIBNEST_CONFIG_FILEPATH;
   if (!configFile) {

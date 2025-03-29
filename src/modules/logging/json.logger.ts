@@ -1,12 +1,13 @@
 /* eslint-disable perfectionist/sort-classes */
 /* eslint-disable no-dupe-class-members */
 
-import { isPlainObject } from '@douglasneuroinformatics/libjs';
+import { isPlainObject, parseStack } from '@douglasneuroinformatics/libjs';
 import { Inject, Injectable, Optional } from '@nestjs/common';
 import type { LoggerService, LogLevel } from '@nestjs/common';
 import chalk from 'chalk';
 import type { ColorName } from 'chalk';
 import { isErrorLike, serializeError } from 'serialize-error';
+import type { ErrorLike } from 'serialize-error';
 
 import { LOGGING_MODULE_OPTIONS_TOKEN } from './logging.config.js';
 
@@ -139,7 +140,7 @@ export class JSONLogger implements JSONLoggerType, LoggerService {
     messages.forEach((message) => {
       const output: { [key: string]: unknown } = {};
       if (isErrorLike(message)) {
-        output.error = serializeError(message);
+        output.error = this.parseErrorLike(message, true);
       } else if (isPlainObject(message)) {
         Object.assign(output, message);
       } else {
@@ -154,5 +155,26 @@ export class JSONLogger implements JSONLoggerType, LoggerService {
       const content = format(JSON.stringify(output, null, 2) + '\n');
       process[options.file].write(content);
     });
+  }
+
+  private parseErrorLike(error: ErrorLike, includeStack: boolean): { [key: string]: unknown } {
+    const { cause, code, details, message, name } = serializeError(error);
+    const result: { [key: string]: unknown } = {
+      message,
+      name
+    };
+    if (cause && isErrorLike(cause)) {
+      result.cause = this.parseErrorLike(cause, false);
+    }
+    if (includeStack) {
+      result.stack = parseStack(error);
+    }
+    if (code) {
+      result.code = code;
+    }
+    if (details) {
+      result.details = details;
+    }
+    return result;
   }
 }

@@ -6,7 +6,7 @@ import type { Plugin } from 'esbuild';
 export const swcPlugin = (): Plugin => {
   return {
     name: 'esbuild-plugin-swc',
-    setup: (build) => {
+    setup: (build): void => {
       build.onLoad({ filter: /\.(ts)$/ }, async (args) => {
         const code = await fs.readFile(args.path, 'utf-8');
         const result = await transform(code, {

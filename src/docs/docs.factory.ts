@@ -29,7 +29,7 @@ export type DocsConfig = {
 };
 
 export class DocsFactory {
-  static async configureDocs(app: NestExpressApplication, config: DocsConfig) {
+  static async configureDocs(app: NestExpressApplication, config: DocsConfig): Promise<void> {
     const document = this.createDocs(app, config);
     const httpAdapter = app.getHttpAdapter().getInstance();
     httpAdapter.get(config.path + 'spec.json', (_, res) => {
