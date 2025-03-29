@@ -30,7 +30,6 @@ interface TestResponse {
 interface TestRequest extends PromiseLike<TestResponse> {
   [key: string]: any;
   accept(type: string): this;
-  auth(token: string, options: { type: 'bearer' }): this;
   method: string;
   send(data?: object | string): this;
   set(field: string, val: string): this;
@@ -46,7 +45,11 @@ interface TestAgentMethods {
 }
 
 // this is so we don't have to include the garbage supertest types in production
-type TestAgent = SupertestAgent extends TestAgentMethods ? TestAgentMethods : never;
+type TestAgent = SupertestAgent extends TestAgentMethods
+  ? TestAgentMethods & {
+      setAccessToken: (token: string) => void;
+    }
+  : never;
 
 export type EndToEndContext = {
   api: TestAgent;
@@ -119,7 +122,12 @@ export function e2e(fn: (describe: SuiteAPI<EndToEndContext>) => void): void {
   });
 
   beforeEach<EndToEndContext>((ctx) => {
-    ctx.api = request(server);
+    const agent = request.agent(server);
+    ctx.api = Object.assign(agent, {
+      setAccessToken: (token: string) => {
+        agent.set('Authorization', `Bearer ${token}`);
+      }
+    });
   });
 
   afterAll(async () => {
