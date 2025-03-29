@@ -6,7 +6,7 @@ import type { Plugin } from 'esbuild';
 export function docsPlugin(): Plugin {
   return {
     name: 'docs',
-    setup(build) {
+    setup(build): void {
       const options = build.initialOptions;
       const outdir = options.outfile ? path.dirname(options.outfile) : options.outdir!;
       build.onEnd(async () => {

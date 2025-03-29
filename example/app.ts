@@ -3,6 +3,8 @@ import { z } from 'zod';
 import { $BaseEnv, AppFactory, AuthModule, CryptoService } from '../src/index.js';
 import { CatsModule } from './cats/cats.module.js';
 
+import type { UserQueryResult } from '../src/index.js';
+
 export default AppFactory.create({
   docs: {
     path: '/',
@@ -14,7 +16,7 @@ export default AppFactory.create({
       inject: [CryptoService],
       useFactory: (cryptoService: CryptoService) => {
         return {
-          defineAbility: (ability, payload) => {
+          defineAbility: (ability, payload): void => {
             if (payload.isAdmin) {
               ability.can('manage', 'all');
             }
@@ -28,7 +30,7 @@ export default AppFactory.create({
               isAdmin: z.boolean()
             })
           },
-          userQuery: async ({ username }) => {
+          userQuery: async ({ username }): Promise<null | UserQueryResult<{ isAdmin: true }>> => {
             if (username !== 'admin') {
               return null;
             }

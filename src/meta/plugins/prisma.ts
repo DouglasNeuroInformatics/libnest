@@ -12,7 +12,7 @@ const { getEnginesPath } = require('@prisma/engines') as typeof import('@prisma/
 export function prismaPlugin(): Plugin {
   return {
     name: 'prisma',
-    setup: async (build) => {
+    setup: async (build): Promise<void> => {
       const options = build.initialOptions;
       const outdir = options.outfile ? path.dirname(options.outfile) : options.outdir!;
 
