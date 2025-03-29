@@ -1,6 +1,7 @@
 import type { Provider } from '@nestjs/common';
 import { APP_FILTER, APP_GUARD, APP_PIPE } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import type { Prisma } from '@prisma/client';
 import type { Simplify } from 'type-fest';
 import type { z } from 'zod';
 
@@ -19,24 +20,27 @@ import type { BaseEnvSchema } from '../utils/env.utils.js';
 import type { ConditionalImport, ImportedModule } from './app.base.js';
 import type { AppContainerParams } from './app.container.js';
 
-export type CreateAppOptions<TEnvSchema extends BaseEnvSchema = BaseEnvSchema> = Simplify<
+export type CreateAppOptions<
+  TEnvSchema extends BaseEnvSchema = BaseEnvSchema,
+  TPrismaClientOptions extends Prisma.PrismaClientOptions = Prisma.PrismaClientOptions
+> = Simplify<
   Omit<AppContainerParams, 'envConfig' | 'module'> & {
     envSchema: TEnvSchema;
     imports?: (ConditionalImport<z.TypeOf<TEnvSchema>> | ImportedModule)[];
-    prisma: PrismaModuleOptions;
+    prisma: PrismaModuleOptions<TPrismaClientOptions>;
     providers?: Provider[];
   }
 >;
 
 export class AppFactory {
-  static create<TEnvSchema extends BaseEnvSchema>({
+  static create<TEnvSchema extends BaseEnvSchema, TPrismaClientOptions extends Prisma.PrismaClientOptions>({
     docs,
     envSchema,
     imports: imports_ = [],
     prisma,
     providers = [],
     version
-  }: CreateAppOptions<TEnvSchema>): AppContainer<z.TypeOf<TEnvSchema>> {
+  }: CreateAppOptions<TEnvSchema, TPrismaClientOptions>): AppContainer<z.TypeOf<TEnvSchema>, TPrismaClientOptions> {
     const envConfig = parseEnv(envSchema);
     const coreImports: ImportedModule[] = [
       ConfigModule.forRoot({ envConfig }),

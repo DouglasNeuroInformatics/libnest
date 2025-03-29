@@ -1,3 +1,4 @@
+import type { Prisma } from '@prisma/client';
 import type { BuildOptions } from 'esbuild';
 import type { Jsonifiable, Promisable } from 'type-fest';
 
@@ -47,10 +48,13 @@ export function defineUserConfig<T extends UserConfigOptions>(config: T): T {
 }
 
 export type InferUserConfig<T extends UserConfigOptions> = T extends {
-  entry: () => Promise<{ default: AppContainer<infer U extends BaseEnv> }>;
+  entry: () => Promise<{
+    default: AppContainer<infer TEnv extends BaseEnv, infer TPrismaClientOptions extends Prisma.PrismaClientOptions>;
+  }>;
 }
   ? {
-      RuntimeEnv: U;
+      PrismaClientOptions: TPrismaClientOptions;
+      RuntimeEnv: TEnv;
     }
   : never;
 
