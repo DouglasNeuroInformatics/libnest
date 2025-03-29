@@ -10,6 +10,7 @@ import { getModelKey } from '../prisma.utils.js';
 
 import type { BaseEnv } from '../../../schemas/env.schema.js';
 import type { MockedInstance } from '../../../testing/index.js';
+import type { BasePrismaClientOptions } from '../prisma.config.js';
 import type { ExtendedPrismaClient } from '../prisma.factory.js';
 
 const { PrismaClient } = (await import(
@@ -30,7 +31,7 @@ test('ExtendedPrismaClient', () => {
           query: {};
           result: {};
         },
-        Prisma.PrismaClientOptions
+        BasePrismaClientOptions
       >,
       Prisma.TypeMapCb,
       {

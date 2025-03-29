@@ -1,12 +1,12 @@
 import { NestFactory } from '@nestjs/core';
 import type { NestExpressApplication } from '@nestjs/platform-express';
-import type { Prisma } from '@prisma/client';
 
 import { JSONLogger } from '../modules/logging/json.logger.js';
 import { AbstractAppContainer } from './app.base.js';
 import { configureApp } from './app.utils.js';
 
 import type { AppVersion, DocsConfig } from '../docs/docs.factory.js';
+import type { BasePrismaClientOptions } from '../modules/prisma/prisma.config.js';
 import type { BaseEnv } from '../schemas/env.schema.js';
 import type { DynamicAppModule } from './app.base.js';
 
@@ -19,7 +19,7 @@ export type AppContainerParams<TEnv extends BaseEnv = BaseEnv> = {
 
 export class AppContainer<
   TEnv extends BaseEnv,
-  TPrismaClientOptions extends Prisma.PrismaClientOptions
+  TPrismaClientOptions extends BasePrismaClientOptions
 > extends AbstractAppContainer<TEnv> {
   __prismaClientOptionsType?: TPrismaClientOptions;
 
