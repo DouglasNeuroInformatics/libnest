@@ -35,10 +35,14 @@ const plugin = ({
       sourceMaps: true
     }),
     {
-      // config(config): void {
-      //   console.log(config);
-      // },
-      name: 'vite-plugin-libnest'
+      enforce: 'pre',
+      name: 'vite-plugin-libnest',
+      async resolveId(source, _importer, options): Promise<any> {
+        if (source.startsWith('@swc/helpers/')) {
+          return this.resolve(source, import.meta.filename, options);
+        }
+        return null;
+      }
     }
   ];
 };
