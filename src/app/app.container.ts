@@ -6,7 +6,7 @@ import { AbstractAppContainer } from './app.base.js';
 import { configureApp } from './app.utils.js';
 
 import type { AppVersion, DocsConfig } from '../docs/docs.factory.js';
-import type { BasePrismaClientOptions } from '../modules/prisma/prisma.config.js';
+import type { DefaultPrismaGlobalOmitConfig } from '../modules/prisma/prisma.config.js';
 import type { BaseEnv } from '../schemas/env.schema.js';
 import type { DynamicAppModule } from './app.base.js';
 
@@ -19,10 +19,8 @@ export type AppContainerParams<TEnv extends BaseEnv = BaseEnv> = {
 
 export class AppContainer<
   TEnv extends BaseEnv,
-  TPrismaClientOptions extends BasePrismaClientOptions
+  _TPrismaGlobalOmitConfig extends DefaultPrismaGlobalOmitConfig
 > extends AbstractAppContainer<TEnv> {
-  __prismaClientOptionsType?: TPrismaClientOptions;
-
   constructor(params: AppContainerParams<TEnv>) {
     super(params);
   }

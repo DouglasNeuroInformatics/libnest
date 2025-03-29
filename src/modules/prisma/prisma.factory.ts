@@ -13,7 +13,12 @@ import { ConfigService } from '../config/config.service.js';
 import { getModelKey } from './prisma.utils.js';
 
 import type { PrismaModuleOptions } from './prisma.config.js';
-import type { PrismaModelKey, PrismaModelName, RuntimePrismaClientOptions } from './prisma.types.js';
+import type {
+  PrismaModelKey,
+  PrismaModelName,
+  RuntimePrismaClientOptions,
+  RuntimePrismaGlobalOmitConfig
+} from './prisma.types.js';
 
 const MODEL_EXTENSION_ARGS = {
   $allModels: {
@@ -38,7 +43,7 @@ type ResultExtArgs = {
 };
 
 type InferPrismaExtensionArgs<TArgs extends { [key: string]: unknown }> = MergeExtArgs<
-  Prisma.TypeMap<DefaultArgs, RuntimePrismaClientOptions['omit']>,
+  Prisma.TypeMap<DefaultArgs, RuntimePrismaGlobalOmitConfig>,
   {},
   InternalArgs<TArgs['result'], TArgs['model'], TArgs['query'], TArgs['client']>
 >;
