@@ -9,11 +9,9 @@ import request from 'supertest';
 import type SupertestAgent from 'supertest/lib/agent.js';
 import { afterAll, beforeAll, beforeEach, describe, vi } from 'vitest';
 import type { SuiteAPI } from 'vitest';
-import { resolveConfig } from 'vitest/node';
 
 import { configureApp } from '../../app/app.utils.js';
 import { loadAppContainer, loadUserConfig } from '../../meta/load.js';
-import { resolveUserConfig } from '../../meta/resolve.js';
 import { PRISMA_CLIENT_TOKEN } from '../../modules/prisma/prisma.config.js';
 import { PrismaFactory } from '../../modules/prisma/prisma.factory.js';
 
@@ -60,24 +58,27 @@ export function e2e(fn: (describe: SuiteAPI<EndToEndContext>) => void): void {
   let server: Server<typeof IncomingMessage, typeof ServerResponse>;
 
   beforeAll(async () => {
-    const { vitestConfig } = await resolveConfig();
-    const result = await resolveUserConfig(vitestConfig.root)
-      .asyncAndThen((configFile) =>
-        loadUserConfig(
-          configFile,
-          fromAsyncThrowable(
-            () => {
-              return vi.importActual(configFile).then((exports) => exports.default);
-            },
-            (err) => {
-              return new RuntimeException(`Failed to import config: ${configFile}`, {
-                cause: err
-              });
-            }
-          )
-        )
+    const configFile = process.env.LIBNEST_CONFIG_FILEPATH;
+
+    if (!configFile) {
+      throw new Error(
+        "Expected environment variable 'LIBNEST_CONFIG_FILEPATH' to be defined: please make sure the libnest plugin is loaded in your vitest config"
+      );
+    }
+
+    const result = await loadUserConfig(
+      configFile,
+      fromAsyncThrowable(
+        () => {
+          return vi.importActual(configFile).then((exports) => exports.default);
+        },
+        (err) => {
+          return new RuntimeException(`Failed to import config: ${configFile}`, {
+            cause: err
+          });
+        }
       )
-      .andThen((config) => loadAppContainer(config, 'dynamic'));
+    ).andThen((config) => loadAppContainer(config, 'dynamic'));
     if (result.isErr()) {
       throw result.error;
     }
