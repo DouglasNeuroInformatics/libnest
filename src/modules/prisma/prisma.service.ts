@@ -3,7 +3,10 @@ import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common
 import type { OnApplicationShutdown, OnModuleInit } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 
+import { $MongoStats } from '../../schemas/mongo-stats.schema.js';
 import { PRISMA_CLIENT_TOKEN } from './prisma.config.js';
+
+import type { MongoStats } from '../../schemas/mongo-stats.schema.js';
 
 @Injectable()
 export class PrismaService implements OnApplicationShutdown, OnModuleInit {
@@ -19,25 +22,19 @@ export class PrismaService implements OnApplicationShutdown, OnModuleInit {
   }
 
   async getDbName(): Promise<string> {
-    const result = await this.client.$runCommandRaw({ dbStats: 1 });
-    if (!isPlainObject(result) || typeof result.db !== 'string') {
-      throw new InternalServerErrorException('Failed to get db name: raw mongodb command returned unexpected value', {
-        cause: result
-      });
-    }
-    return result.db;
+    const { db } = await this.getDbStats();
+    return db;
   }
 
-  async getDbStats(): Promise<{
-    collections: number;
-    db: string;
-    objects: number;
-  }> {
-    return (await this.client.$runCommandRaw({ dbStats: 1 })) as {
-      collections: number;
-      db: string;
-      objects: number;
-    };
+  async getDbStats(): Promise<MongoStats> {
+    const commandOutput = await this.client.$runCommandRaw({ dbStats: 1 });
+    const result = await $MongoStats.safeParseAsync(commandOutput);
+    if (!result.success) {
+      throw new InternalServerErrorException('Raw mongodb command returned unexpected value', {
+        cause: result.error
+      });
+    }
+    return result.data;
   }
 
   async onApplicationShutdown(): Promise<void> {

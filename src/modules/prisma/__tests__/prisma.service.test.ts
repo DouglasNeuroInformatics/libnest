@@ -43,7 +43,8 @@ describe('PrismaService', () => {
 
   describe('getDbName', () => {
     it('should return the database name', async () => {
-      prismaClientMock.$runCommandRaw = vi.fn().mockResolvedValue({ db: 'test_db' });
+      const stats = { collections: 5, db: 'test_db', objects: 100 };
+      prismaClientMock.$runCommandRaw = vi.fn().mockResolvedValue(stats);
       await expect(prismaService.getDbName()).resolves.toBe('test_db');
       expect(prismaClientMock.$runCommandRaw).toHaveBeenCalledWith({ dbStats: 1 });
     });
