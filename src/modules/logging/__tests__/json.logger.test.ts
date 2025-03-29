@@ -1,3 +1,5 @@
+import { RuntimeException } from '@douglasneuroinformatics/libjs';
+import { InternalServerErrorException } from '@nestjs/common';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { MockInstance } from 'vitest';
 
@@ -10,6 +12,11 @@ vi.mock('chalk', async (importOriginal) => ({
   red: vi.fn((text) => text),
   yellow: vi.fn((text) => text)
 }));
+
+const expectedLogContext = {
+  context: 'TestContext',
+  date: expect.any(String)
+};
 
 describe('JSONLogger', () => {
   let logger: JSONLogger;
@@ -32,7 +39,8 @@ describe('JSONLogger', () => {
 
     it('should log a debug message to stdout if enabled', () => {
       logger.debug('Debug');
-      expect(JSON.parse(stdoutSpy.mock.lastCall![0])).toMatchObject({
+      expect(JSON.parse(stdoutSpy.mock.lastCall![0])).toStrictEqual({
+        ...expectedLogContext,
         level: 'DEBUG',
         message: 'Debug'
       });
@@ -40,7 +48,8 @@ describe('JSONLogger', () => {
 
     it('should log an error message to stderr', () => {
       logger.error('Error');
-      expect(JSON.parse(stderrSpy.mock.lastCall![0])).toMatchObject({
+      expect(JSON.parse(stderrSpy.mock.lastCall![0])).toStrictEqual({
+        ...expectedLogContext,
         level: 'ERROR',
         message: 'Error'
       });
@@ -49,9 +58,63 @@ describe('JSONLogger', () => {
     it('should log an error object correctly', () => {
       const error = new Error('Something went wrong');
       logger.error(error);
-      expect(JSON.parse(stderrSpy.mock.lastCall![0])).toMatchObject({
+      expect(JSON.parse(stderrSpy.mock.lastCall![0])).toStrictEqual({
+        ...expectedLogContext,
         error: {
-          message: 'Something went wrong'
+          message: 'Something went wrong',
+          name: 'Error',
+          stack: expect.any(Array)
+        },
+        level: 'ERROR'
+      });
+    });
+
+    it('should log an HttpException correctly', () => {
+      const error = new InternalServerErrorException('Something went wrong');
+      logger.error(error);
+      expect(JSON.parse(stderrSpy.mock.lastCall![0])).toStrictEqual({
+        ...expectedLogContext,
+        error: {
+          message: 'Something went wrong',
+          name: 'InternalServerErrorException',
+          stack: expect.any(Array)
+        },
+        level: 'ERROR'
+      });
+    });
+
+    it('should log error causes correctly', () => {
+      const e3 = new RuntimeException('Error 2', {
+        details: {
+          foo: null
+        }
+      });
+      const e2: any = new Error('Error 2', {
+        cause: e3
+      });
+      e2.code = 'ERROR_CODE';
+      const e1 = new Error('Error 1', {
+        cause: e2
+      });
+      logger.error(e1);
+      expect(JSON.parse(stderrSpy.mock.lastCall![0])).toStrictEqual({
+        ...expectedLogContext,
+        error: {
+          cause: {
+            cause: {
+              details: {
+                foo: null
+              },
+              message: 'Error 2',
+              name: 'RuntimeException'
+            },
+            code: 'ERROR_CODE',
+            message: 'Error 2',
+            name: 'Error'
+          },
+          message: 'Error 1',
+          name: 'Error',
+          stack: expect.any(Array)
         },
         level: 'ERROR'
       });
@@ -59,7 +122,8 @@ describe('JSONLogger', () => {
 
     it('should log a fatal error to stderr', () => {
       logger.fatal('Fatal');
-      expect(JSON.parse(stderrSpy.mock.lastCall![0])).toMatchObject({
+      expect(JSON.parse(stderrSpy.mock.lastCall![0])).toStrictEqual({
+        ...expectedLogContext,
         level: 'FATAL',
         message: 'Fatal'
       });
@@ -67,7 +131,8 @@ describe('JSONLogger', () => {
 
     it('should write a log message to stdout', () => {
       logger.log('Log');
-      expect(JSON.parse(stdoutSpy.mock.lastCall![0])).toMatchObject({
+      expect(JSON.parse(stdoutSpy.mock.lastCall![0])).toStrictEqual({
+        ...expectedLogContext,
         level: 'LOG',
         message: 'Log'
       });
@@ -75,7 +140,8 @@ describe('JSONLogger', () => {
 
     it('should log an object', () => {
       logger.log({ greeting: 'Hello' });
-      expect(JSON.parse(stdoutSpy.mock.lastCall![0])).toMatchObject({
+      expect(JSON.parse(stdoutSpy.mock.lastCall![0])).toStrictEqual({
+        ...expectedLogContext,
         greeting: 'Hello',
         level: 'LOG'
       });
@@ -83,15 +149,19 @@ describe('JSONLogger', () => {
 
     it('should log a verbose message to stdout', () => {
       logger.verbose('Verbose');
-      expect(JSON.parse(stdoutSpy.mock.lastCall![0])).toMatchObject({
-        level: 'VERBOSE'
+      expect(JSON.parse(stdoutSpy.mock.lastCall![0])).toStrictEqual({
+        ...expectedLogContext,
+        level: 'VERBOSE',
+        message: 'Verbose'
       });
     });
 
     it('should log a warning to stderr', () => {
       logger.warn('Warning message');
-      expect(JSON.parse(stderrSpy.mock.lastCall![0])).toMatchObject({
-        level: 'WARN'
+      expect(JSON.parse(stderrSpy.mock.lastCall![0])).toStrictEqual({
+        ...expectedLogContext,
+        level: 'WARN',
+        message: 'Warning message'
       });
     });
   });
