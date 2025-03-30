@@ -65,7 +65,7 @@ export type ExtendedPrismaClient = InferExtendedClient<{ model: ModelExtArgs; re
 export class PrismaFactory {
   constructor(private readonly configService: ConfigService) {}
 
-  createClient(options: Pick<PrismaModuleOptions, 'dbPrefix'>): ExtendedPrismaClient {
+  createClient(options: PrismaModuleOptions): ExtendedPrismaClient {
     const mongoUri = this.configService.get('MONGO_URI');
     const env = this.configService.get('NODE_ENV');
     const url = new URL(`${mongoUri.href}/${options.dbPrefix}-${env}`);
@@ -80,7 +80,7 @@ export class PrismaFactory {
         url.searchParams.append(key, String(value));
       }
     }
-    return this.instantiateExtendedClient({ datasourceUrl: url.href });
+    return this.instantiateExtendedClient({ datasourceUrl: url.href, omit: options.omit });
   }
 
   instantiateExtendedClient(options: Prisma.PrismaClientOptions): ExtendedPrismaClient {

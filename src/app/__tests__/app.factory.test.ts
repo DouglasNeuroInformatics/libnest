@@ -8,10 +8,12 @@ import { GlobalExceptionFilter } from '../../filters/global-exception.filter.js'
 import { delay } from '../../middleware/delay.middleware.js';
 import { ConfigService } from '../../modules/config/config.service.js';
 import { CryptoService } from '../../modules/crypto/crypto.service.js';
+import { PrismaFactory } from '../../modules/prisma/prisma.factory.js';
 import { ValidationPipe } from '../../pipes/validation.pipe.js';
 import { $BaseEnv } from '../../schemas/env.schema.js';
 import { AppFactory } from '../app.factory.js';
 
+import type { PrismaModuleOptions } from '../../modules/prisma/prisma.config.js';
 import type { BaseEnv } from '../../schemas/env.schema.js';
 import type { CreateAppOptions } from '../app.factory.js';
 
@@ -115,6 +117,20 @@ describe('AppFactory', () => {
 
         const app = createApp({ docs: docsConfig });
         expect(app.docs).toEqual(docsConfig);
+      });
+
+      it('should create an app with a custom prisma configuration', async () => {
+        const createClient = vi.spyOn(PrismaFactory.prototype, 'createClient');
+        const prisma: PrismaModuleOptions = {
+          dbPrefix: 'example',
+          omit: {
+            user: {
+              password: true
+            }
+          }
+        };
+        await createApp({ prisma }).createApplicationInstance();
+        expect(createClient).toHaveBeenCalledExactlyOnceWith(prisma);
       });
     });
 
