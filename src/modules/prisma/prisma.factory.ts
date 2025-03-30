@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { Prisma, PrismaClient } from '@prisma/client';
 import type {
   Call,
@@ -9,7 +9,7 @@ import type {
   MergeExtArgs
 } from '@prisma/client/runtime/library';
 
-import { ConfigService } from '../config/config.service.js';
+import { MONGO_CONNECTION_TOKEN } from './prisma.config.js';
 import { getModelKey } from './prisma.utils.js';
 
 import type { PrismaModuleOptions } from './prisma.config.js';
@@ -63,11 +63,11 @@ export type ExtendedPrismaClient = InferExtendedClient<{ model: ModelExtArgs; re
 
 @Injectable()
 export class PrismaFactory {
-  constructor(private readonly configService: ConfigService) {}
+  constructor(@Inject(MONGO_CONNECTION_TOKEN) private readonly datasourceUrl: string) {}
 
   createClient(options: PrismaModuleOptions): ExtendedPrismaClient {
     return this.instantiateExtendedClient({
-      datasourceUrl: this.getDatasourceUrl(options.dbPrefix),
+      datasourceUrl: this.datasourceUrl,
       omit: options.omit
     });
   }
@@ -84,23 +84,5 @@ export class PrismaFactory {
       });
       return client.$extends({ model: MODEL_EXTENSION_ARGS, result });
     });
-  }
-
-  private getDatasourceUrl(dbPrefix: null | string): string {
-    const mongoUri = this.configService.get('MONGO_URI');
-    const env = this.configService.get('NODE_ENV');
-    const url = new URL(`${mongoUri.href}/${dbPrefix}-${env}`);
-    const params = {
-      directConnection: this.configService.get('MONGO_DIRECT_CONNECTION'),
-      replicaSet: this.configService.get('MONGO_REPLICA_SET'),
-      retryWrites: this.configService.get('MONGO_RETRY_WRITES'),
-      w: this.configService.get('MONGO_WRITE_CONCERN')
-    };
-    for (const [key, value] of Object.entries(params)) {
-      if (value) {
-        url.searchParams.append(key, String(value));
-      }
-    }
-    return url.href;
   }
 }
