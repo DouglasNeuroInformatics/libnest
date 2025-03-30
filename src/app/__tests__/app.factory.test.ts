@@ -8,6 +8,7 @@ import { GlobalExceptionFilter } from '../../filters/global-exception.filter.js'
 import { delay } from '../../middleware/delay.middleware.js';
 import { ConfigService } from '../../modules/config/config.service.js';
 import { CryptoService } from '../../modules/crypto/crypto.service.js';
+import { MONGO_CONNECTION_TOKEN } from '../../modules/prisma/prisma.config.js';
 import { PrismaFactory } from '../../modules/prisma/prisma.factory.js';
 import { ValidationPipe } from '../../pipes/validation.pipe.js';
 import { $BaseEnv } from '../../schemas/env.schema.js';
@@ -129,8 +130,10 @@ describe('AppFactory', () => {
             }
           }
         };
-        await createAppContainer({ prisma }).createApplicationInstance();
+        const app = await createAppContainer({ prisma }).createApplicationInstance();
+        const url = app.get(MONGO_CONNECTION_TOKEN);
         expect(createClient).toHaveBeenCalledExactlyOnceWith({ omit: prisma.omit });
+        expect(url).toBe(`${defaultEnv.MONGO_URI}/example-test`);
       });
     });
 
