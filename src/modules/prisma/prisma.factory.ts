@@ -12,7 +12,7 @@ import type {
 import { MONGO_CONNECTION_TOKEN } from './prisma.config.js';
 import { getModelKey } from './prisma.utils.js';
 
-import type { PrismaModuleOptions } from './prisma.config.js';
+import type { DefaultPrismaGlobalOmitConfig } from './prisma.config.js';
 import type {
   PrismaModelKey,
   PrismaModelName,
@@ -65,15 +65,11 @@ export type ExtendedPrismaClient = InferExtendedClient<{ model: ModelExtArgs; re
 export class PrismaFactory {
   constructor(@Inject(MONGO_CONNECTION_TOKEN) private readonly datasourceUrl: string) {}
 
-  createClient(options: PrismaModuleOptions): ExtendedPrismaClient {
-    return this.instantiateExtendedClient({
+  createClient({ omit }: { omit: DefaultPrismaGlobalOmitConfig }): ExtendedPrismaClient {
+    return new PrismaClient({
       datasourceUrl: this.datasourceUrl,
-      omit: options.omit
-    });
-  }
-
-  instantiateExtendedClient(options: Prisma.PrismaClientOptions): ExtendedPrismaClient {
-    return new PrismaClient(options).$extends((client) => {
+      omit: omit ?? {}
+    }).$extends((client) => {
       const result = {} as ResultExtArgs;
       Object.keys(Prisma.ModelName).forEach((modelName) => {
         result[getModelKey(modelName)] = {
