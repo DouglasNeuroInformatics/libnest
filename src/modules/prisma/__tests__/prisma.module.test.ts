@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 
 import { mockEnvConfig } from '../../../testing/mocks/env-config.mock.js';
 import { ConfigModule } from '../../config/config.module.js';
-import { PRISMA_CLIENT_TOKEN } from '../prisma.config.js';
+import { MONGO_CONNECTION_TOKEN, PRISMA_CLIENT_TOKEN } from '../prisma.config.js';
 import { PrismaModule } from '../prisma.module.js';
 
 import type { MockPrismaClientInstance } from '../../../testing/mocks/prisma.client.mock.js';
@@ -12,21 +12,37 @@ import type { MockPrismaClientInstance } from '../../../testing/mocks/prisma.cli
 describe('PrismaModule', () => {
   describe('forRoot', () => {
     let prismaClient: MockPrismaClientInstance;
+    let mongoConnection: string;
 
     beforeEach(async () => {
       const module: TestingModule = await Test.createTestingModule({
         imports: [
-          ConfigModule.forRoot({ envConfig: mockEnvConfig }),
+          ConfigModule.forRoot({
+            envConfig: {
+              ...mockEnvConfig,
+              MONGO_DIRECT_CONNECTION: true,
+              MONGO_REPLICA_SET: 'rs0',
+              MONGO_RETRY_WRITES: true,
+              MONGO_WRITE_CONCERN: 'majority'
+            }
+          }),
           PrismaModule.forRoot({
-            dbPrefix: null
+            dbPrefix: 'example'
           })
         ]
       }).compile();
       prismaClient = module.get(PRISMA_CLIENT_TOKEN);
+      mongoConnection = module.get(MONGO_CONNECTION_TOKEN);
     });
 
     it('should provide the correct PrismaClient', () => {
       expect(prismaClient.__isMockPrismaClient).toBe(true);
+    });
+
+    it('should generate the correct url', () => {
+      expect(mongoConnection).toBe(
+        `${mockEnvConfig.MONGO_URI.href}/example-test?directConnection=true&replicaSet=rs0&retryWrites=true&w=majority`
+      );
     });
   });
 });

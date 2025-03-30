@@ -12,8 +12,7 @@ import type { SuiteAPI } from 'vitest';
 
 import { configureApp } from '../../app/app.utils.js';
 import { loadAppContainer, loadUserConfig } from '../../meta/load.js';
-import { PRISMA_CLIENT_TOKEN } from '../../modules/prisma/prisma.config.js';
-import { PrismaFactory } from '../../modules/prisma/prisma.factory.js';
+import { MONGO_CONNECTION_TOKEN } from '../../modules/prisma/prisma.config.js';
 
 interface TestResponse {
   [key: string]: any;
@@ -30,7 +29,6 @@ interface TestResponse {
 interface TestRequest extends PromiseLike<TestResponse> {
   [key: string]: any;
   accept(type: string): this;
-  auth(token: string, options: { type: 'bearer' }): this;
   method: string;
   send(data?: object | string): this;
   set(field: string, val: string): this;
@@ -46,7 +44,11 @@ interface TestAgentMethods {
 }
 
 // this is so we don't have to include the garbage supertest types in production
-type TestAgent = SupertestAgent extends TestAgentMethods ? TestAgentMethods : never;
+type TestAgent = SupertestAgent extends TestAgentMethods
+  ? TestAgentMethods & {
+      setAccessToken: (token: string) => void;
+    }
+  : never;
 
 export type EndToEndContext = {
   api: TestAgent;
@@ -94,15 +96,8 @@ export function e2e(fn: (describe: SuiteAPI<EndToEndContext>) => void): void {
     const moduleRef = await Test.createTestingModule({
       imports: [module]
     })
-      .overrideProvider(PRISMA_CLIENT_TOKEN)
-      .useFactory({
-        factory: (prismaFactory: PrismaFactory) => {
-          return prismaFactory.instantiateExtendedClient({
-            datasourceUrl: new URL('/test', mongodb.getUri()).href
-          });
-        },
-        inject: [PrismaFactory]
-      })
+      .overrideProvider(MONGO_CONNECTION_TOKEN)
+      .useValue(new URL('/test', mongodb.getUri()).href)
       .compile();
 
     app = moduleRef.createNestApplication({
@@ -119,7 +114,12 @@ export function e2e(fn: (describe: SuiteAPI<EndToEndContext>) => void): void {
   });
 
   beforeEach<EndToEndContext>((ctx) => {
-    ctx.api = request(server);
+    const agent = request.agent(server);
+    ctx.api = Object.assign(agent, {
+      setAccessToken: (token: string) => {
+        agent.set('Authorization', `Bearer ${token}`);
+      }
+    });
   });
 
   afterAll(async () => {

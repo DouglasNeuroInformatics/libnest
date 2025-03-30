@@ -1,18 +1,24 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { Prisma, PrismaClient } from '@prisma/client';
 import type {
   Call,
+  DefaultArgs,
   DynamicClientExtensionThis,
   ExtensionArgs,
   InternalArgs,
   MergeExtArgs
 } from '@prisma/client/runtime/library';
 
-import { ConfigService } from '../config/config.service.js';
+import { MONGO_CONNECTION_TOKEN } from './prisma.config.js';
 import { getModelKey } from './prisma.utils.js';
 
-import type { PrismaModuleOptions } from './prisma.config.js';
-import type { PrismaModelKey, PrismaModelName } from './prisma.types.js';
+import type { DefaultPrismaGlobalOmitConfig } from './prisma.config.js';
+import type {
+  PrismaModelKey,
+  PrismaModelName,
+  RuntimePrismaClientOptions,
+  RuntimePrismaGlobalOmitConfig
+} from './prisma.types.js';
 
 const MODEL_EXTENSION_ARGS = {
   $allModels: {
@@ -37,19 +43,19 @@ type ResultExtArgs = {
 };
 
 type InferPrismaExtensionArgs<TArgs extends { [key: string]: unknown }> = MergeExtArgs<
-  Prisma.TypeMap,
+  Prisma.TypeMap<DefaultArgs, RuntimePrismaGlobalOmitConfig>,
   {},
   InternalArgs<TArgs['result'], TArgs['model'], TArgs['query'], TArgs['client']>
 >;
 
 type InferExtendedClient<TArgs extends { [key: string]: unknown }> = DynamicClientExtensionThis<
   Call<
-    Prisma.TypeMapCb,
+    Prisma.TypeMapCb<RuntimePrismaClientOptions>,
     {
       extArgs: InferPrismaExtensionArgs<TArgs>;
     }
   >,
-  Prisma.TypeMapCb,
+  Prisma.TypeMapCb<RuntimePrismaClientOptions>,
   InferPrismaExtensionArgs<TArgs>
 >;
 
@@ -57,27 +63,13 @@ export type ExtendedPrismaClient = InferExtendedClient<{ model: ModelExtArgs; re
 
 @Injectable()
 export class PrismaFactory {
-  constructor(private readonly configService: ConfigService) {}
+  constructor(@Inject(MONGO_CONNECTION_TOKEN) private readonly datasourceUrl: string) {}
 
-  createClient(options: Pick<PrismaModuleOptions, 'dbPrefix'>): ExtendedPrismaClient {
-    const mongoUri = this.configService.get('MONGO_URI');
-    const env = this.configService.get('NODE_ENV');
-    const url = new URL(`${mongoUri.href}/${options.dbPrefix}-${env}`);
-    const params = {
-      directConnection: this.configService.get('MONGO_DIRECT_CONNECTION'),
-      replicaSet: this.configService.get('MONGO_REPLICA_SET'),
-      retryWrites: this.configService.get('MONGO_RETRY_WRITES'),
-      w: this.configService.get('MONGO_WRITE_CONCERN')
-    };
-    for (const [key, value] of Object.entries(params)) {
-      if (value) {
-        url.searchParams.append(key, String(value));
-      }
+  createClient({ omit }: { omit?: DefaultPrismaGlobalOmitConfig }): ExtendedPrismaClient {
+    const options: Prisma.PrismaClientOptions = { datasourceUrl: this.datasourceUrl };
+    if (omit) {
+      options.omit = omit;
     }
-    return this.instantiateExtendedClient({ datasourceUrl: url.href });
-  }
-
-  instantiateExtendedClient(options: Prisma.PrismaClientOptions): ExtendedPrismaClient {
     return new PrismaClient(options).$extends((client) => {
       const result = {} as ResultExtArgs;
       Object.keys(Prisma.ModelName).forEach((modelName) => {

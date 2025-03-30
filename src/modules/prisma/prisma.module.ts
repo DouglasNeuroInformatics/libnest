@@ -2,7 +2,8 @@ import { Module } from '@nestjs/common';
 import type { DynamicModule, FactoryProvider } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 
-import { PRISMA_CLIENT_TOKEN } from './prisma.config.js';
+import { ConfigService } from '../config/config.service.js';
+import { MONGO_CONNECTION_TOKEN, PRISMA_CLIENT_TOKEN } from './prisma.config.js';
 import { PrismaFactory } from './prisma.factory.js';
 import { PrismaService } from './prisma.service.js';
 import { getModelKey, getModelToken } from './prisma.utils.js';
@@ -13,7 +14,7 @@ import type { PrismaClientLike } from './prisma.types.js';
 
 @Module({})
 export class PrismaModule {
-  static forRoot(options: PrismaModuleOptions): DynamicModule {
+  static forRoot({ dbPrefix, omit }: PrismaModuleOptions): DynamicModule {
     const modelProviders = this.getModelProviders();
     const modelTokens = modelProviders.map((provider) => provider.provide);
     return {
@@ -22,10 +23,31 @@ export class PrismaModule {
       module: PrismaModule,
       providers: [
         {
+          inject: [ConfigService],
+          provide: MONGO_CONNECTION_TOKEN,
+          useFactory: (configService: ConfigService): string => {
+            const mongoUri = configService.get('MONGO_URI');
+            const env = configService.get('NODE_ENV');
+            const url = new URL(`${mongoUri.href}/${dbPrefix}-${env}`);
+            const params = {
+              directConnection: configService.get('MONGO_DIRECT_CONNECTION'),
+              replicaSet: configService.get('MONGO_REPLICA_SET'),
+              retryWrites: configService.get('MONGO_RETRY_WRITES'),
+              w: configService.get('MONGO_WRITE_CONCERN')
+            };
+            for (const [key, value] of Object.entries(params)) {
+              if (value) {
+                url.searchParams.append(key, String(value));
+              }
+            }
+            return url.href;
+          }
+        },
+        {
           inject: [PrismaFactory],
           provide: PRISMA_CLIENT_TOKEN,
           useFactory: (prismaFactory: PrismaFactory): ExtendedPrismaClient => {
-            return prismaFactory.createClient(options);
+            return prismaFactory.createClient({ omit });
           }
         },
         PrismaFactory,

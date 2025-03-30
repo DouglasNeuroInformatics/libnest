@@ -14,29 +14,35 @@ import { parseEnv } from '../utils/env.utils.js';
 import { AppContainer } from './app.container.js';
 import { AppModule } from './app.module.js';
 
-import type { PrismaModuleOptions } from '../modules/prisma/prisma.config.js';
+import type { DefaultPrismaGlobalOmitConfig, PrismaModuleOptions } from '../modules/prisma/prisma.config.js';
 import type { BaseEnvSchema } from '../utils/env.utils.js';
 import type { ConditionalImport, ImportedModule } from './app.base.js';
 import type { AppContainerParams } from './app.container.js';
 
-export type CreateAppOptions<TEnvSchema extends BaseEnvSchema = BaseEnvSchema> = Simplify<
+export type CreateAppOptions<
+  TEnvSchema extends BaseEnvSchema = BaseEnvSchema,
+  TPrismaGlobalOmitConfig extends DefaultPrismaGlobalOmitConfig = DefaultPrismaGlobalOmitConfig
+> = Simplify<
   Omit<AppContainerParams, 'envConfig' | 'module'> & {
     envSchema: TEnvSchema;
     imports?: (ConditionalImport<z.TypeOf<TEnvSchema>> | ImportedModule)[];
-    prisma: PrismaModuleOptions;
+    prisma: PrismaModuleOptions<TPrismaGlobalOmitConfig>;
     providers?: Provider[];
   }
 >;
 
 export class AppFactory {
-  static create<TEnvSchema extends BaseEnvSchema>({
+  static create<TEnvSchema extends BaseEnvSchema, TPrismaGlobalOmitConfig extends DefaultPrismaGlobalOmitConfig>({
     docs,
     envSchema,
     imports: imports_ = [],
     prisma,
     providers = [],
     version
-  }: CreateAppOptions<TEnvSchema>): AppContainer<z.TypeOf<TEnvSchema>> {
+  }: CreateAppOptions<TEnvSchema, TPrismaGlobalOmitConfig>): AppContainer<
+    z.TypeOf<TEnvSchema>,
+    TPrismaGlobalOmitConfig
+  > {
     const envConfig = parseEnv(envSchema);
     const coreImports: ImportedModule[] = [
       ConfigModule.forRoot({ envConfig }),

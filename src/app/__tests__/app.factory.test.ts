@@ -8,10 +8,13 @@ import { GlobalExceptionFilter } from '../../filters/global-exception.filter.js'
 import { delay } from '../../middleware/delay.middleware.js';
 import { ConfigService } from '../../modules/config/config.service.js';
 import { CryptoService } from '../../modules/crypto/crypto.service.js';
+import { MONGO_CONNECTION_TOKEN } from '../../modules/prisma/prisma.config.js';
+import { PrismaFactory } from '../../modules/prisma/prisma.factory.js';
 import { ValidationPipe } from '../../pipes/validation.pipe.js';
 import { $BaseEnv } from '../../schemas/env.schema.js';
 import { AppFactory } from '../app.factory.js';
 
+import type { PrismaModuleOptions } from '../../modules/prisma/prisma.config.js';
 import type { BaseEnv } from '../../schemas/env.schema.js';
 import type { CreateAppOptions } from '../app.factory.js';
 
@@ -54,7 +57,7 @@ const setupEnv = (env: typeof defaultEnv) => {
   });
 };
 
-const createApp = (options: Partial<CreateAppOptions> = {}) => {
+const createAppContainer = (options: Partial<CreateAppOptions> = {}) => {
   return AppFactory.create({
     ...defaultAppOptions,
     ...options
@@ -62,9 +65,9 @@ const createApp = (options: Partial<CreateAppOptions> = {}) => {
 };
 
 const createModuleRef = async (options: Partial<CreateAppOptions> = {}) => {
-  const app = createApp(options);
+  const appContainer = createAppContainer(options);
   return Test.createTestingModule({
-    imports: [app.module]
+    imports: [appContainer.module]
   }).compile();
 };
 
@@ -77,18 +80,18 @@ describe('AppFactory', () => {
 
     describe('basic configuration', () => {
       it('should create an app with minimal options', () => {
-        const app = createApp();
+        const appContainer = createAppContainer();
 
-        expect(app).toBeDefined();
-        expect(app.module).toBeDefined();
-        expect(app.module.imports).toContainEqual(expect.objectContaining({ module: expect.any(Function) }));
-        expect(app.module.providers).toContainEqual(
+        expect(appContainer).toBeDefined();
+        expect(appContainer.module).toBeDefined();
+        expect(appContainer.module.imports).toContainEqual(expect.objectContaining({ module: expect.any(Function) }));
+        expect(appContainer.module.providers).toContainEqual(
           expect.objectContaining({
             provide: APP_FILTER,
             useClass: GlobalExceptionFilter
           })
         );
-        expect(app.module.providers).toContainEqual(
+        expect(appContainer.module.providers).toContainEqual(
           expect.objectContaining({
             provide: APP_PIPE,
             useClass: ValidationPipe
@@ -102,8 +105,8 @@ describe('AppFactory', () => {
           useValue: 'custom value'
         };
 
-        const app = createApp({ providers: [customProvider] });
-        expect(app.module.providers).toContainEqual(customProvider);
+        const appContainer = createAppContainer({ providers: [customProvider] });
+        expect(appContainer.module.providers).toContainEqual(customProvider);
       });
 
       it('should create an app with docs configuration', () => {
@@ -113,8 +116,24 @@ describe('AppFactory', () => {
           title: 'Test API'
         };
 
-        const app = createApp({ docs: docsConfig });
-        expect(app.docs).toEqual(docsConfig);
+        const appContainer = createAppContainer({ docs: docsConfig });
+        expect(appContainer.docs).toEqual(docsConfig);
+      });
+
+      it('should create an app with a custom prisma configuration', async () => {
+        const createClient = vi.spyOn(PrismaFactory.prototype, 'createClient');
+        const prisma: PrismaModuleOptions = {
+          dbPrefix: 'example',
+          omit: {
+            user: {
+              password: true
+            }
+          }
+        };
+        const app = await createAppContainer({ prisma }).createApplicationInstance();
+        const url = app.get(MONGO_CONNECTION_TOKEN);
+        expect(createClient).toHaveBeenCalledExactlyOnceWith({ omit: prisma.omit });
+        expect(url).toBe(`${defaultEnv.MONGO_URI}/example-test`);
       });
     });
 
@@ -126,21 +145,21 @@ describe('AppFactory', () => {
           when: 'DEBUG' as const
         };
 
-        const app = createApp({ imports: [conditionalModule] });
-        expect(app.module.imports).not.toContainEqual(expect.objectContaining({ module: TestModule }));
+        const appContainer = createAppContainer({ imports: [conditionalModule] });
+        expect(appContainer.module.imports).not.toContainEqual(expect.objectContaining({ module: TestModule }));
       });
 
       it('should create an app with throttler enabled', () => {
         vi.stubEnv('THROTTLER_ENABLED', 'true');
 
-        const app = createApp();
+        const appContainer = createAppContainer();
 
-        expect(app.module.imports).toContainEqual(
+        expect(appContainer.module.imports).toContainEqual(
           expect.objectContaining({
             module: ThrottlerModule
           })
         );
-        expect(app.module.providers).toContainEqual(
+        expect(appContainer.module.providers).toContainEqual(
           expect.objectContaining({
             provide: APP_GUARD,
             useClass: ThrottlerGuard
@@ -154,7 +173,7 @@ describe('AppFactory', () => {
     describe('error handling', () => {
       it('should throw an error if it cannot parse the schema', () => {
         vi.stubEnv('VERBOSE', '1');
-        expect(() => createApp()).toThrow(
+        expect(() => createAppContainer()).toThrow(
           expect.objectContaining({
             cause: expect.any(ValidationException),
             message: 'Failed to parse environment config'
