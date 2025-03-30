@@ -66,10 +66,11 @@ export class PrismaFactory {
   constructor(@Inject(MONGO_CONNECTION_TOKEN) private readonly datasourceUrl: string) {}
 
   createClient({ omit }: { omit?: DefaultPrismaGlobalOmitConfig }): ExtendedPrismaClient {
-    return new PrismaClient({
-      datasourceUrl: this.datasourceUrl,
-      omit: omit ?? {}
-    }).$extends((client) => {
+    const options: Prisma.PrismaClientOptions = { datasourceUrl: this.datasourceUrl };
+    if (omit) {
+      options.omit = omit;
+    }
+    return new PrismaClient(options).$extends((client) => {
       const result = {} as ResultExtArgs;
       Object.keys(Prisma.ModelName).forEach((modelName) => {
         result[getModelKey(modelName)] = {
