@@ -66,21 +66,10 @@ export class PrismaFactory {
   constructor(private readonly configService: ConfigService) {}
 
   createClient(options: PrismaModuleOptions): ExtendedPrismaClient {
-    const mongoUri = this.configService.get('MONGO_URI');
-    const env = this.configService.get('NODE_ENV');
-    const url = new URL(`${mongoUri.href}/${options.dbPrefix}-${env}`);
-    const params = {
-      directConnection: this.configService.get('MONGO_DIRECT_CONNECTION'),
-      replicaSet: this.configService.get('MONGO_REPLICA_SET'),
-      retryWrites: this.configService.get('MONGO_RETRY_WRITES'),
-      w: this.configService.get('MONGO_WRITE_CONCERN')
-    };
-    for (const [key, value] of Object.entries(params)) {
-      if (value) {
-        url.searchParams.append(key, String(value));
-      }
-    }
-    return this.instantiateExtendedClient({ datasourceUrl: url.href, omit: options.omit });
+    return this.instantiateExtendedClient({
+      datasourceUrl: this.getDatasourceUrl(options.dbPrefix),
+      omit: options.omit
+    });
   }
 
   instantiateExtendedClient(options: Prisma.PrismaClientOptions): ExtendedPrismaClient {
@@ -95,5 +84,23 @@ export class PrismaFactory {
       });
       return client.$extends({ model: MODEL_EXTENSION_ARGS, result });
     });
+  }
+
+  private getDatasourceUrl(dbPrefix: null | string): string {
+    const mongoUri = this.configService.get('MONGO_URI');
+    const env = this.configService.get('NODE_ENV');
+    const url = new URL(`${mongoUri.href}/${dbPrefix}-${env}`);
+    const params = {
+      directConnection: this.configService.get('MONGO_DIRECT_CONNECTION'),
+      replicaSet: this.configService.get('MONGO_REPLICA_SET'),
+      retryWrites: this.configService.get('MONGO_RETRY_WRITES'),
+      w: this.configService.get('MONGO_WRITE_CONCERN')
+    };
+    for (const [key, value] of Object.entries(params)) {
+      if (value) {
+        url.searchParams.append(key, String(value));
+      }
+    }
+    return url.href;
   }
 }
