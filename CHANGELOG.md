@@ -1,5 +1,27 @@
 # Changelog
 
+## [4.1.0](https://github.com/DouglasNeuroInformatics/libnest/compare/v4.0.0...v4.1.0) (2025-03-30)
+
+### Features
+
+* add --no-watch flag to dev command ([c9616d2](https://github.com/DouglasNeuroInformatics/libnest/commit/c9616d222c6140c9d5cffebd7c1a9acf90a68d59))
+* add setAccessToken method to test api ([b27df92](https://github.com/DouglasNeuroInformatics/libnest/commit/b27df929befcc11d4cc70724dab0f8bb398bf7cb))
+* add vite plugin ([0354963](https://github.com/DouglasNeuroInformatics/libnest/commit/0354963602d0be283fb45af159029254a26192b2))
+* implement RuntimePrismaClientOptions ([b2a9ae9](https://github.com/DouglasNeuroInformatics/libnest/commit/b2a9ae93318d79d9661e98649007b9e5a25b5d96))
+
+### Bug Fixes
+
+* improve error logging ([60ae30e](https://github.com/DouglasNeuroInformatics/libnest/commit/60ae30ebce752d89c8d750f3ee78c0516625bf29))
+* libnest config resolution in monorepo e2e test ([6c3ab51](https://github.com/DouglasNeuroInformatics/libnest/commit/6c3ab510a9d5bc611eec807aa27de29a7ed37716))
+* name of callback in e2e ([75fd981](https://github.com/DouglasNeuroInformatics/libnest/commit/75fd98145bec246c663038c32bda6a043044f74a))
+* omit cannot be undefined explicitly ([67d065f](https://github.com/DouglasNeuroInformatics/libnest/commit/67d065ff8a9a055a9b9183845aca9357f1ee78fc))
+* passthrough opts to prisma ([a84d914](https://github.com/DouglasNeuroInformatics/libnest/commit/a84d9145d5e7310ea2a608daf04c3e7d6583670f))
+* supertest types ([05bfac6](https://github.com/DouglasNeuroInformatics/libnest/commit/05bfac67c260a35c2743389f22c4b035f99e7d2c))
+* swc helpers ([31228be](https://github.com/DouglasNeuroInformatics/libnest/commit/31228be4182c7c3b39d7e739b806178be34104f2))
+* type errors ([bf2ed44](https://github.com/DouglasNeuroInformatics/libnest/commit/bf2ed4411b106907bef7baa1d3ad971e57b7d330))
+* use repl set for mongo memory server ([ad2e86d](https://github.com/DouglasNeuroInformatics/libnest/commit/ad2e86dd37e3884ccbf065fa6e17ccabcd5398da))
+* validate db stats ([b82a132](https://github.com/DouglasNeuroInformatics/libnest/commit/b82a132aff98924c8597f465444cf4e75a51699a))
+
 ## [4.0.0](https://github.com/DouglasNeuroInformatics/libnest/compare/v3.2.0...v4.0.0) (2025-03-28)
 
 ### ⚠ BREAKING CHANGES
