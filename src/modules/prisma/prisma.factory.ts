@@ -65,7 +65,7 @@ export type ExtendedPrismaClient = InferExtendedClient<{ model: ModelExtArgs; re
 export class PrismaFactory {
   constructor(@Inject(MONGO_CONNECTION_TOKEN) private readonly datasourceUrl: string) {}
 
-  createClient({ omit }: { omit: DefaultPrismaGlobalOmitConfig }): ExtendedPrismaClient {
+  createClient({ omit }: { omit?: DefaultPrismaGlobalOmitConfig }): ExtendedPrismaClient {
     return new PrismaClient({
       datasourceUrl: this.datasourceUrl,
       omit: omit ?? {}

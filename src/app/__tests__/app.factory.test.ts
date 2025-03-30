@@ -130,7 +130,7 @@ describe('AppFactory', () => {
           }
         };
         await createApp({ prisma }).createApplicationInstance();
-        expect(createClient).toHaveBeenCalledExactlyOnceWith(prisma);
+        expect(createClient).toHaveBeenCalledExactlyOnceWith({ omit: prisma.omit });
       });
     });
 

@@ -14,7 +14,7 @@ import type { PrismaClientLike } from './prisma.types.js';
 
 @Module({})
 export class PrismaModule {
-  static forRoot(options: PrismaModuleOptions): DynamicModule {
+  static forRoot({ dbPrefix, omit }: PrismaModuleOptions): DynamicModule {
     const modelProviders = this.getModelProviders();
     const modelTokens = modelProviders.map((provider) => provider.provide);
     return {
@@ -28,7 +28,7 @@ export class PrismaModule {
           useFactory: (configService: ConfigService): string => {
             const mongoUri = configService.get('MONGO_URI');
             const env = configService.get('NODE_ENV');
-            const url = new URL(`${mongoUri.href}/${options.dbPrefix}-${env}`);
+            const url = new URL(`${mongoUri.href}/${dbPrefix}-${env}`);
             const params = {
               directConnection: configService.get('MONGO_DIRECT_CONNECTION'),
               replicaSet: configService.get('MONGO_REPLICA_SET'),
@@ -47,7 +47,7 @@ export class PrismaModule {
           inject: [PrismaFactory],
           provide: PRISMA_CLIENT_TOKEN,
           useFactory: (prismaFactory: PrismaFactory): ExtendedPrismaClient => {
-            return prismaFactory.createClient(options);
+            return prismaFactory.createClient({ omit });
           }
         },
         PrismaFactory,
