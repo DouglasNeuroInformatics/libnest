@@ -12,8 +12,7 @@ import type { SuiteAPI } from 'vitest';
 
 import { configureApp } from '../../app/app.utils.js';
 import { loadAppContainer, loadUserConfig } from '../../meta/load.js';
-import { PRISMA_CLIENT_TOKEN } from '../../modules/prisma/prisma.config.js';
-import { PrismaFactory } from '../../modules/prisma/prisma.factory.js';
+import { MONGO_CONNECTION_TOKEN } from '../../modules/prisma/prisma.config.js';
 
 interface TestResponse {
   [key: string]: any;
@@ -97,15 +96,8 @@ export function e2e(fn: (describe: SuiteAPI<EndToEndContext>) => void): void {
     const moduleRef = await Test.createTestingModule({
       imports: [module]
     })
-      .overrideProvider(PRISMA_CLIENT_TOKEN)
-      .useFactory({
-        factory: (prismaFactory: PrismaFactory) => {
-          return prismaFactory.instantiateExtendedClient({
-            datasourceUrl: new URL('/test', mongodb.getUri()).href
-          });
-        },
-        inject: [PrismaFactory]
-      })
+      .overrideProvider(MONGO_CONNECTION_TOKEN)
+      .useValue(new URL('/test', mongodb.getUri()).href)
       .compile();
 
     app = moduleRef.createNestApplication({
