@@ -63,19 +63,38 @@ export const bundle = fromAsyncThrowable(
   }
 );
 
-export function buildProd({ configFile }: { configFile: string }): ResultAsync<void, typeof RuntimeException.Instance> {
+export function buildProd({
+  configFile,
+  verbose
+}: {
+  configFile: string;
+  verbose?: boolean;
+}): ResultAsync<void, typeof RuntimeException.Instance> {
+  const logVerbose = (message: string): void => {
+    if (verbose) {
+      // eslint-disable-next-line no-console
+      console.log(message);
+    }
+  };
   return loadUserConfig(configFile).andThen((config) => {
+    logVerbose('Successfully loaded user config');
+    logVerbose('Attempting to parse entry function...');
     return parseEntryFromFunction(config.entry).asyncAndThen((entrySpecifier) => {
+      logVerbose(`Parsed entry specifier '${entrySpecifier}' from user config`);
+      logVerbose(`Attempting to bundle application...`);
       const result = bundle({
         config,
         entrySpecifier,
         resolveDir: path.dirname(configFile)
       });
+      logVerbose('Successfully bundled application');
       const { onComplete } = config.build;
       if (onComplete) {
         const callback = fromAsyncThrowable(
           async () => {
+            logVerbose('Invoking user-defined onComplete callback');
             await onComplete();
+            logVerbose('Done!');
           },
           (err) => {
             return new RuntimeException('An error occurred in the user-specified `onComplete` callback', {
@@ -85,6 +104,7 @@ export function buildProd({ configFile }: { configFile: string }): ResultAsync<v
         );
         return result.andThen(callback);
       }
+      logVerbose('Done!');
       return result;
     });
   });

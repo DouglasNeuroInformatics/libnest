@@ -9,12 +9,15 @@ const { buildProd } = await import('../meta/build.js');
 
 const program = new Command();
 
+program.option('--verbose');
+
 program.action(async function () {
   const configFile = process.env.LIBNEST_CONFIG_FILEPATH;
   if (!configFile) {
     return program.error(`error: environment variable 'LIBNEST_CONFIG_FILEPATH' must be defined`);
   }
-  await buildProd({ configFile }).mapErr((error) => {
+  const options = this.opts();
+  await buildProd({ configFile, verbose: options.verbose }).mapErr((error) => {
     program.error(error.toString(), { exitCode: 1 });
   });
 });

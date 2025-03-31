@@ -96,6 +96,7 @@ describe('buildProd', () => {
   });
 
   it('should correctly bundle the example application as a module', { timeout: 10000 }, async () => {
+    const consoleLog = vi.spyOn(console, 'log');
     const outfile = path.join(outdir, 'module.js');
     const onComplete = vi.fn();
     loadUserConfig.mockReturnValue(
@@ -114,12 +115,14 @@ describe('buildProd', () => {
       } satisfies UserConfigOptions)
     );
     parseEntryFromFunction.mockReturnValueOnce(ok('./example/app.js'));
-    const result = await buildProd({ configFile });
+    const result = await buildProd({ configFile, verbose: true });
     expect(result.isOk()).toBe(true);
     const appContainer = await import(outfile).then((module) => module.default);
     // Cannot check instanceof because prototype is different in bundle
     expect(appContainer.constructor.name).toBe('AppContainer');
     expect(onComplete).toHaveBeenCalledOnce();
+    expect(consoleLog).toHaveBeenCalled();
+    expect(consoleLog).toHaveBeenLastCalledWith('Done!');
   });
 
   it('should handle errors in the onComplete callback', async () => {

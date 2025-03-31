@@ -48,7 +48,7 @@ describe('libnest-build', () => {
     vi.spyOn(process.env as any, 'LIBNEST_CONFIG_FILEPATH', 'get').mockReturnValueOnce('/path/to/config.js');
     const mapErr = vi.fn();
     buildProd.mockReturnValueOnce({ mapErr });
-    (callback as any)();
+    await callback.call({ opts: vi.fn().mockReturnValue({}) } as any);
     expect(buildProd).toHaveBeenCalledOnce();
     const programError = vi.spyOn(Command.prototype, 'error').mockImplementationOnce(() => null!);
     const errorHandler = mapErr.mock.lastCall![0];
