@@ -3,6 +3,8 @@ import * as lexer from 'es-module-lexer';
 import { ok } from 'neverthrow';
 import type { Result } from 'neverthrow';
 
+await lexer.init;
+
 export function parseEntryFromFunction(
   entry: (...args: any[]) => any
 ): Result<string, typeof RuntimeException.Instance> {
