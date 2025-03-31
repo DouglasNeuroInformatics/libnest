@@ -1,7 +1,7 @@
 import * as path from 'node:path';
 
 import { RuntimeException } from '@douglasneuroinformatics/libjs';
-import { fromAsyncThrowable, ResultAsync } from 'neverthrow';
+import { fromAsyncThrowable, ok, ResultAsync } from 'neverthrow';
 
 import { loadUserConfig } from './load.js';
 import { parseEntryFromFunction } from './parse.js';
@@ -87,30 +87,26 @@ export function buildProd({
     return parseEntryFromFunction(config.entry).asyncAndThen((entrySpecifier) => {
       logVerbose(`Parsed entry specifier '${entrySpecifier}' from user config`);
       logVerbose(`Attempting to bundle application...`);
-      const result = bundle({
-        config,
-        entrySpecifier,
-        resolveDir: path.dirname(configFile)
-      });
-      logVerbose('Successfully bundled application');
-      const { onComplete } = config.build;
-      if (onComplete) {
+      return bundle({ config, entrySpecifier, resolveDir: path.dirname(configFile) }).andThen(() => {
+        logVerbose('Successfully built application');
+        const { onComplete } = config.build;
+        if (!onComplete) {
+          logVerbose('Done!');
+          return ok();
+        }
         const callback = fromAsyncThrowable(
-          async () => {
-            logVerbose('Invoking user-defined onComplete callback');
-            await onComplete();
-            logVerbose('Done!');
-          },
+          async () => await onComplete(),
           (err) => {
             return new RuntimeException('An error occurred in the user-specified `onComplete` callback', {
               cause: err
             });
           }
         );
-        return result.andThen(callback);
-      }
-      logVerbose('Done!');
-      return result;
+        logVerbose('Invoking user-defined onComplete callback');
+        return callback().map(() => {
+          logVerbose('Done!');
+        });
+      });
     });
   });
 }
