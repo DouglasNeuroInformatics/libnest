@@ -5,7 +5,7 @@ import * as path from 'node:path';
 import { ok, okAsync } from 'neverthrow';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 
-import { buildProd, bundle } from '../build.js';
+import { buildProd } from '../build.js';
 
 import type { UserConfigOptions } from '../../user-config.js';
 
@@ -20,41 +20,6 @@ const esbuildMock = {
 
 vi.mock('../load.js', () => ({ loadUserConfig }));
 vi.mock('../parse.js', () => ({ parseEntryFromFunction }));
-
-describe('bundle', () => {
-  beforeAll(() => {
-    vi.doMock('esbuild', () => esbuildMock);
-  });
-
-  afterAll(() => {
-    vi.doUnmock('esbuild');
-  });
-
-  it('should return an error if esbuild throws', async () => {
-    const cause = new Error('Something went wrong');
-    esbuildMock.build.mockImplementationOnce(() => {
-      throw cause;
-    });
-    await expect(
-      bundle({ config: { build: { outfile: 'out.js' } }, entrySpecifier: './app.ts', resolveDir: '/' })
-    ).resolves.toMatchObject({
-      error: {
-        cause,
-        message: 'Failed to build application'
-      }
-    });
-  });
-
-  it('should an ok result on success', async () => {
-    esbuildMock.build.mockResolvedValueOnce({});
-    const result = await bundle({
-      config: { build: { outfile: 'out.js' } },
-      entrySpecifier: './app.ts',
-      resolveDir: '/'
-    });
-    expect(result.isOk()).toBe(true);
-  });
-});
 
 describe('buildProd', () => {
   let outdir: string;
@@ -78,12 +43,38 @@ describe('buildProd', () => {
     });
   });
 
+  it('should return an error if esbuild throws', async () => {
+    vi.doMock('esbuild', () => esbuildMock);
+    const cause = new Error('Something went wrong');
+    esbuildMock.build.mockImplementationOnce(() => {
+      throw cause;
+    });
+    const outfile = path.join(outdir, 'server.js');
+    loadUserConfig.mockReturnValue(
+      okAsync({
+        build: {
+          mode: 'server',
+          outfile
+        },
+        entry: vi.fn()
+      } satisfies UserConfigOptions)
+    );
+    parseEntryFromFunction.mockReturnValueOnce(ok('./example/app.js'));
+    await expect(buildProd({ configFile })).resolves.toMatchObject({
+      error: {
+        cause,
+        message: 'Failed to build application'
+      }
+    });
+    vi.doUnmock('esbuild');
+  });
+
   it('should correctly bundle the example application ', { timeout: 10000 }, async () => {
     const outfile = path.join(outdir, 'server.js');
     loadUserConfig.mockReturnValue(
       okAsync({
         build: {
-          mode: 'module',
+          mode: 'server',
           outfile
         },
         entry: vi.fn()
@@ -96,7 +87,7 @@ describe('buildProd', () => {
   });
 
   it('should correctly bundle the example application as a module', { timeout: 10000 }, async () => {
-    const consoleLog = vi.spyOn(console, 'log');
+    const consoleLog = vi.spyOn(console, 'log').mockImplementation(() => undefined);
     const outfile = path.join(outdir, 'module.js');
     const onComplete = vi.fn();
     loadUserConfig.mockReturnValue(
