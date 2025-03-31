@@ -28,7 +28,12 @@ export function getValidationSchema<T>(target: Class<T>): z.ZodTypeAny {
   const schema: unknown = Reflect.getMetadata(VALIDATION_SCHEMA_METADATA_KEY, target);
   if (!schema) {
     throw new Error(
-      `Validation schema for '${target.name}' must be defined! Make sure you have defined the Body() argument in the controller as a class, extending DataTransferObject or using the @ValidationSchema decorator, and that you have not imported that class using type-only syntax.`
+      [
+        target.name === 'Object'
+          ? 'Cannot access validation schema metadata on plain object.'
+          : `Validation schema for '${target.name}' must be defined.`,
+        'Make sure you have defined the Body() argument in the controller as a class, extending DataTransferObject or using the @ValidationSchema decorator, and that you have not imported that class using type-only syntax.'
+      ].join(' ')
     );
   } else if (!(schema instanceof z.ZodType)) {
     throw new Error(`Schema for '${target.name}' must be instance of ZodType`);

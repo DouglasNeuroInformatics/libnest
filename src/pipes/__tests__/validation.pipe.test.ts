@@ -20,12 +20,18 @@ describe('ValidationPipe', () => {
     );
   });
 
-  it('should throw an error if the schema is undefined', async () => {
+  it('should throw an error if the schema is undefined on a class', async () => {
     class Test {
       isTest: boolean;
     }
     await expect(validationPipe.transform({}, { metatype: Test, type: 'body' })).rejects.toThrow(
-      "Validation schema for 'Test' must be defined! Make sure you have defined the Body() argument in the controller as a class, extending DataTransferObject or using the @ValidationSchema decorator, and that you have not imported that class using type-only syntax."
+      "Validation schema for 'Test' must be defined. Make sure you have defined the Body() argument in the controller as a class, extending DataTransferObject or using the @ValidationSchema decorator, and that you have not imported that class using type-only syntax."
+    );
+  });
+
+  it('should throw an error if the schema is undefined on a plain object', async () => {
+    await expect(validationPipe.transform({}, { metatype: Object, type: 'body' })).rejects.toThrow(
+      'Cannot access validation schema metadata on plain object. Make sure you have defined the Body() argument in the controller as a class, extending DataTransferObject or using the @ValidationSchema decorator, and that you have not imported that class using type-only syntax.'
     );
   });
 
