@@ -25,7 +25,7 @@ describe('ValidationPipe', () => {
       isTest: boolean;
     }
     await expect(validationPipe.transform({}, { metatype: Test, type: 'body' })).rejects.toThrow(
-      "Schema for 'Test' must be defined"
+      "Validation schema for 'Test' must be defined! Make sure you have defined the Body() argument in the controller as a class, extending DataTransferObject or using the @ValidationSchema decorator, and that you have not imported that class using type-only syntax."
     );
   });
 
