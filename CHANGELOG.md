@@ -1,5 +1,19 @@
 # Changelog
 
+## [4.2.0](https://github.com/DouglasNeuroInformatics/libnest/compare/v4.1.0...v4.2.0) (2025-03-31)
+
+### Features
+
+* add --verbose option to libnest-build ([851f884](https://github.com/DouglasNeuroInformatics/libnest/commit/851f884a9d5def5d2b0c624edf86b58cb0e6042c))
+
+### Bug Fixes
+
+* await lexer init ([0d275be](https://github.com/DouglasNeuroInformatics/libnest/commit/0d275be6ba64476601df1dcdab19ea6d7d92edbb))
+* further improve error message if schema is not defined ([95bd298](https://github.com/DouglasNeuroInformatics/libnest/commit/95bd298fb8990c80a6d5426cd07e7316040d38f4))
+* improve build logs ([74aaa0c](https://github.com/DouglasNeuroInformatics/libnest/commit/74aaa0cfc57a4a7d424be91b59a564830ce3481f))
+* improve error message for missing ValidationSchema ([6a0d6b8](https://github.com/DouglasNeuroInformatics/libnest/commit/6a0d6b8900d69295d1b068d009f8cfa9a9f028cd))
+* logging order ([f80b710](https://github.com/DouglasNeuroInformatics/libnest/commit/f80b71063143d25c92d13e5d2c70f9d4a2b9c424))
+
 ## [4.1.0](https://github.com/DouglasNeuroInformatics/libnest/compare/v4.0.0...v4.1.0) (2025-03-30)
 
 ### Features
