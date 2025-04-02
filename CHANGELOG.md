@@ -1,5 +1,11 @@
 # Changelog
 
+## [4.2.1](https://github.com/DouglasNeuroInformatics/libnest/compare/v4.2.0...v4.2.1) (2025-04-02)
+
+### Bug Fixes
+
+* update libnest-dev script be be POSIX-compliant ([03b7009](https://github.com/DouglasNeuroInformatics/libnest/commit/03b70098776b7b7a7bc46b2e4b1e6e302b9ae5f3))
+
 ## [4.2.0](https://github.com/DouglasNeuroInformatics/libnest/compare/v4.1.0...v4.2.0) (2025-03-31)
 
 ### Features
