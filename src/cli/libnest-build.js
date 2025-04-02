@@ -3,7 +3,8 @@ import * as process from 'node:process';
 
 import { Command } from 'commander';
 
-if (process.argv0.endsWith('node')) {
+// @ts-ignore
+if (typeof Deno === 'undefined') {
   module.register('@swc-node/register/esm', import.meta.url);
 }
 
