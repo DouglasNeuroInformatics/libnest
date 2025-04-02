@@ -20,7 +20,8 @@ const { getArgv, process } = vi.hoisted(() => {
     },
     cwd: vi.fn(),
     env: {
-      LIBNEST_CONFIG_FILEPATH: vi.fn()
+      LIBNEST_CONFIG_FILEPATH: vi.fn(),
+      LIBNEST_JAVASCRIPT_RUNTIME: vi.fn()
     },
     exit: vi.fn((exitCode: number) => {
       // eslint-disable-next-line @typescript-eslint/only-throw-error

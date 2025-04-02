@@ -3,8 +3,13 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { createExec, process } from '../../testing/helpers/cli.js';
 
-const { runDev } = vi.hoisted(() => ({
+const { register, runDev } = vi.hoisted(() => ({
+  register: vi.fn(),
   runDev: vi.fn()
+}));
+
+vi.mock('node:module', () => ({
+  register
 }));
 
 vi.mock('../../meta/dev.js', () => ({
@@ -49,6 +54,13 @@ describe('libnest-dev', () => {
         exitCode: 1
       })
     );
+  });
+  it('should call module.register, if the runtime is node', async () => {
+    expect(register).not.toHaveBeenCalled();
+    vi.spyOn(process.env as any, 'LIBNEST_JAVASCRIPT_RUNTIME', 'get').mockReturnValue('node');
+    await exec(['--help']);
+    expect(register).toHaveBeenCalled();
+    vi.spyOn(process.env as any, 'LIBNEST_JAVASCRIPT_RUNTIME', 'get').mockReturnValue(undefined);
   });
   it('should call the runDev function', async () => {
     const action = vi.spyOn(Command.prototype, 'action');
