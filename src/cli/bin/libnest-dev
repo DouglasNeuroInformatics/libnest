@@ -13,6 +13,9 @@ done
 
 RUNTIME_ARGS=""
 case "$LIBNEST_JAVASCRIPT_RUNTIME" in
+  bun)
+    RUNTIME_ARGS="--watch"
+    ;;
   node)
     RUNTIME_ARGS="--enable-source-maps"
     if [ "$NO_WATCH" = false ]; then
