@@ -1,5 +1,20 @@
 # Changelog
 
+## [4.3.0](https://github.com/DouglasNeuroInformatics/libnest/compare/v4.2.1...v4.3.0) (2025-04-02)
+
+### Features
+
+* add --runtime option to libnest ([39a066b](https://github.com/DouglasNeuroInformatics/libnest/commit/39a066b6b53b15cac3180da154354798e74fe737))
+* add deno support to libnest-build ([ac8d1eb](https://github.com/DouglasNeuroInformatics/libnest/commit/ac8d1eb12ebb330ae50d83a4aa3e792686a4c0b1))
+* add deno support to libnest-dev ([e5ebdd8](https://github.com/DouglasNeuroInformatics/libnest/commit/e5ebdd8108ba715d1e92a432b74e56295975b149))
+* support bun ([a96ce85](https://github.com/DouglasNeuroInformatics/libnest/commit/a96ce858f8944df2bffb4d6d36f9b01eae247cdf))
+* support bun in libnest-dev ([aa38943](https://github.com/DouglasNeuroInformatics/libnest/commit/aa38943f4d56cf4ac2bda73eca34242680566391))
+
+### Bug Fixes
+
+* no register in build ([b800342](https://github.com/DouglasNeuroInformatics/libnest/commit/b8003421aaeb19faa1e27a4bcb148f81847ab685))
+* only register swc/node if process.argv0 is node ([fae938a](https://github.com/DouglasNeuroInformatics/libnest/commit/fae938ae946b5971a23f995df0081f07a75e75fd))
+
 ## [4.2.1](https://github.com/DouglasNeuroInformatics/libnest/compare/v4.2.0...v4.2.1) (2025-04-02)
 
 ### Bug Fixes
