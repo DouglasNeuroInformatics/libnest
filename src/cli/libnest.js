@@ -4,7 +4,8 @@ import * as process from 'node:process';
 
 import { Command, InvalidArgumentError } from 'commander';
 
-if (process.argv0.endsWith('node')) {
+// no longer necessary once the package is built
+if (import.meta.dirname.endsWith('src/cli')) {
   module.register('@swc-node/register/esm', import.meta.url);
 }
 
