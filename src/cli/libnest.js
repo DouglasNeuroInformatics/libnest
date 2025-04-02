@@ -2,9 +2,12 @@ import * as module from 'node:module';
 import * as path from 'node:path';
 import * as process from 'node:process';
 
-import { Command, InvalidArgumentError } from 'commander';
+import { Command, InvalidArgumentError, Option } from 'commander';
 
-module.register('@swc-node/register/esm', import.meta.url);
+// no longer necessary once the package is built
+if (import.meta.dirname.endsWith('src/cli')) {
+  module.register('@swc-node/register/esm', import.meta.url);
+}
 
 const { resolveAbsoluteImportPath } = await import('../meta/resolve.js');
 
@@ -25,6 +28,10 @@ program.requiredOption('-c, --config-file <path>', 'path to the config file', (f
   return result.value;
 });
 
+program.addOption(
+  new Option('-r, --runtime [command]', 'the runtime to use').choices(['bun', 'deno', 'node']).default('node')
+);
+
 program.command('build', 'build application for production', {
   executableFile: path.resolve(import.meta.dirname, 'bin/libnest-build')
 });
@@ -33,8 +40,8 @@ program.command('dev', 'run application in development mode', {
 });
 
 program.hook('preSubcommand', (command) => {
-  const configFile = command.getOptionValue('configFile');
-  process.env.LIBNEST_CONFIG_FILEPATH = configFile;
+  process.env.LIBNEST_CONFIG_FILEPATH = command.getOptionValue('configFile');
+  process.env.LIBNEST_JAVASCRIPT_RUNTIME = command.getOptionValue('runtime');
 });
 
 await program.parseAsync(process.argv);

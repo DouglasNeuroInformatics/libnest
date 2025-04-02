@@ -3,4 +3,21 @@
 DIR="$(dirname "$(realpath "$0")")"
 PARENT_DIR="$(dirname "$DIR")"
 
-node --enable-source-maps "${PARENT_DIR}"/libnest-build.js "$@"
+RUNTIME_ARGS=""
+case "$LIBNEST_JAVASCRIPT_RUNTIME" in
+  bun)
+    ;;
+  node)
+    RUNTIME_ARGS="--enable-source-maps"
+    ;;
+  deno)
+    RUNTIME_ARGS="-A --unstable-sloppy-imports"
+    ;;
+  *)
+    echo "Error: Invalid runtime '$LIBNEST_JAVASCRIPT_RUNTIME': must be 'node' or 'deno'" >&2
+    exit 1
+    ;;
+esac
+
+eval $LIBNEST_JAVASCRIPT_RUNTIME $RUNTIME_ARGS "${PARENT_DIR}"/libnest-build.js "$@"
+

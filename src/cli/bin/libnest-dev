@@ -3,8 +3,6 @@
 DIR="$(dirname "$(realpath "$0")")"
 PARENT_DIR="$(dirname "$DIR")"
 
-NODE_FLAGS="--enable-source-maps"
-
 NO_WATCH=false
 for arg in "$@"; do
   if [ "$arg" = "--no-watch" ]; then
@@ -13,8 +11,24 @@ for arg in "$@"; do
   fi
 done
 
-if [ "$NO_WATCH" = false ]; then
-  NODE_FLAGS="$NODE_FLAGS --watch --watch-preserve-output"
-fi
+RUNTIME_ARGS=""
+case "$LIBNEST_JAVASCRIPT_RUNTIME" in
+  bun)
+    RUNTIME_ARGS="--watch"
+    ;;
+  node)
+    RUNTIME_ARGS="--enable-source-maps"
+    if [ "$NO_WATCH" = false ]; then
+      RUNTIME_ARGS="$RUNTIME_ARGS --watch --watch-preserve-output"
+    fi
+    ;;
+  deno)
+    RUNTIME_ARGS="-A --unstable-sloppy-imports"
+    ;;
+  *)
+    echo "Error: Invalid runtime '$LIBNEST_JAVASCRIPT_RUNTIME': must be 'node' or 'deno'" >&2
+    exit 1
+    ;;
+esac
 
-node $NODE_FLAGS "${PARENT_DIR}/libnest-dev.js" "$@"
+eval $LIBNEST_JAVASCRIPT_RUNTIME $RUNTIME_ARGS "${PARENT_DIR}/libnest-dev.js" "$@"
