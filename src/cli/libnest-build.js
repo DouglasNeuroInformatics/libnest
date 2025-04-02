@@ -3,8 +3,7 @@ import * as process from 'node:process';
 
 import { Command } from 'commander';
 
-// @ts-ignore
-if (typeof Deno === 'undefined') {
+if (process.env.LIBNEST_JAVASCRIPT_RUNTIME === 'node') {
   module.register('@swc-node/register/esm', import.meta.url);
 }
 

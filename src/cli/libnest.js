@@ -29,7 +29,7 @@ program.requiredOption('-c, --config-file <path>', 'path to the config file', (f
 });
 
 program.addOption(
-  new Option('-r, --runtime [command]', 'the runtime to use').choices(['deno', 'node']).default('node')
+  new Option('-r, --runtime [command]', 'the runtime to use').choices(['bun', 'deno', 'node']).default('node')
 );
 
 program.command('build', 'build application for production', {

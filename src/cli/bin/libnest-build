@@ -5,6 +5,8 @@ PARENT_DIR="$(dirname "$DIR")"
 
 RUNTIME_ARGS=""
 case "$LIBNEST_JAVASCRIPT_RUNTIME" in
+  bun)
+    ;;
   node)
     RUNTIME_ARGS="--enable-source-maps"
     ;;
