@@ -9,11 +9,23 @@ if (import.meta.dirname.endsWith('src/cli')) {
   module.register('@swc-node/register/esm', import.meta.url);
 }
 
-const { resolveAbsoluteImportPath } = await import('../meta/resolve.js');
+const { resolveAbsoluteImportPath, resolveAbsolutePath } = await import('../meta/resolve.js');
 
 const require = module.createRequire(import.meta.url);
 
 const { name, version } = require('../../package.json');
+
+/**
+ * @template T
+ * @param {import('neverthrow').Result<T, any>} result
+ * @returns {T}
+ */
+const parseResult = (result) => {
+  if (result.isErr()) {
+    throw new InvalidArgumentError(result.error.message);
+  }
+  return result.value;
+};
 
 const program = new Command();
 program.name(name);
@@ -21,11 +33,11 @@ program.version(version);
 program.allowExcessArguments(false);
 program.allowUnknownOption(true);
 program.requiredOption('-c, --config-file <path>', 'path to the config file', (filename) => {
-  const result = resolveAbsoluteImportPath(filename, process.cwd());
-  if (result.isErr()) {
-    throw new InvalidArgumentError(result.error.message);
-  }
-  return result.value;
+  return parseResult(resolveAbsoluteImportPath(filename, process.cwd()));
+});
+
+program.option('-e, --env-file <path>', 'path to an env file to source', (filename) => {
+  return parseResult(resolveAbsolutePath(filename, process.cwd()));
 });
 
 program.addOption(
@@ -40,6 +52,10 @@ program.command('dev', 'run application in development mode', {
 });
 
 program.hook('preSubcommand', (command) => {
+  const envFile = command.getOptionValue('envFile');
+  if (envFile) {
+    process.loadEnvFile(envFile);
+  }
   process.env.LIBNEST_CONFIG_FILEPATH = command.getOptionValue('configFile');
   process.env.LIBNEST_JAVASCRIPT_RUNTIME = command.getOptionValue('runtime');
 });
