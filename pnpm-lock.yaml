@@ -149,9 +149,6 @@ importers:
       concurrently:
         specifier: ^9.1.2
         version: 9.1.2
-      env-cmd:
-        specifier: ^10.1.0
-        version: 10.1.0
       eslint:
         specifier: 9.22.0
         version: 9.22.0(jiti@2.4.2)
@@ -2363,12 +2360,6 @@ packages:
     resolution:
       { integrity: sha512-Z8dnwSDbV1XYM9SBF2J0GcNVvmfmfh3a49qddGIROhBoVro6MZVTji15z/sJbQ2ko2ei8n988EU1wzoLU/tF+g== }
     engines: { node: ^18.17 || >=20.6.1 }
-
-  env-cmd@10.1.0:
-    resolution:
-      { integrity: sha512-mMdWTT9XKN7yNth/6N6g2GuKuJTsKMDHlQFUDacb/heQRRWOTIZ42t1rMHnQu4jYxU1ajdTeJM+9eEETlqToMA== }
-    engines: { node: '>=8.0.0' }
-    hasBin: true
 
   env-paths@2.2.1:
     resolution:
@@ -7353,11 +7344,6 @@ snapshots:
     dependencies:
       execa: 8.0.1
       java-properties: 1.0.2
-
-  env-cmd@10.1.0:
-    dependencies:
-      commander: 4.1.1
-      cross-spawn: 7.0.6
 
   env-paths@2.2.1: {}
 

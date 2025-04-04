@@ -28,6 +28,7 @@ const { getArgv, process } = vi.hoisted(() => {
       throw { exitCode } satisfies ProcessExitTestResult;
     }),
     kill: vi.fn(),
+    loadEnvFile: vi.fn(),
     ppid: undefined,
     stderr: {
       write: vi.fn()

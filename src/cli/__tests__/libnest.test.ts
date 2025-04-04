@@ -4,12 +4,14 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { createExec, process } from '../../testing/helpers/cli.js';
 
-const { resolveAbsoluteImportPath } = vi.hoisted(() => ({
-  resolveAbsoluteImportPath: vi.fn()
+const { resolveAbsoluteImportPath, resolveAbsolutePath } = vi.hoisted(() => ({
+  resolveAbsoluteImportPath: vi.fn(),
+  resolveAbsolutePath: vi.fn()
 }));
 
 vi.mock('../../meta/resolve.js', () => ({
-  resolveAbsoluteImportPath
+  resolveAbsoluteImportPath,
+  resolveAbsolutePath
 }));
 
 const exec = createExec({
@@ -35,6 +37,19 @@ describe('libnest', () => {
     expect(parseAsync).toHaveBeenCalledExactlyOnceWith(['node', '../libnest.js', '-c', 'libnest.config.ts']);
     expect(resolveAbsoluteImportPath).toHaveBeenLastCalledWith('libnest.config.ts', '/app');
     expect(result).toMatchObject({ code: 'commander.invalidArgument', exitCode: 1 });
+  });
+  it('should source the env file', async () => {
+    const hook = vi.spyOn(Command.prototype, 'hook');
+    resolveAbsoluteImportPath.mockReturnValueOnce(ok('/root/path/to/file.js'));
+    resolveAbsolutePath.mockReturnValueOnce(ok('/root/path/to/file.js'));
+    await exec(['-c', 'libnest.config.ts', '--env-file', '.env']);
+    expect(hook).toHaveBeenCalledExactlyOnceWith('preSubcommand', expect.any(Function));
+    const callback = hook.mock.lastCall![1];
+    const getOptionValue = vi.fn();
+    getOptionValue.mockReturnValueOnce('.env');
+    await callback({ getOptionValue } as any, null!);
+    expect(getOptionValue).toHaveBeenCalled();
+    expect(process.loadEnvFile).toHaveBeenCalledOnce();
   });
   it('should pass the resolved config file to the subcommand', async () => {
     const hook = vi.spyOn(Command.prototype, 'hook');

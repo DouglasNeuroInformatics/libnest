@@ -5,20 +5,30 @@ import { RuntimeException } from '@douglasneuroinformatics/libjs';
 import { ok } from 'neverthrow';
 import type { Result } from 'neverthrow';
 
-export function resolveAbsoluteImportPath(
+export function resolveAbsolutePath(
   filename: string,
   baseDir: string
 ): Result<string, typeof RuntimeException.Instance> {
   const filepath = path.resolve(baseDir, filename);
-  const extension = path.extname(filepath);
   if (!fs.existsSync(filepath)) {
     return RuntimeException.asErr(`File does not exist: ${filepath}`);
   } else if (!fs.lstatSync(filepath).isFile()) {
     return RuntimeException.asErr(`Not a file: ${filepath}`);
-  } else if (!(extension === '.js' || extension === '.ts')) {
-    return RuntimeException.asErr(`Unexpected file extension '${extension}': must be '.js' or '.ts'`);
   }
   return ok(filepath);
+}
+
+export function resolveAbsoluteImportPath(
+  filename: string,
+  baseDir: string
+): Result<string, typeof RuntimeException.Instance> {
+  return resolveAbsolutePath(filename, baseDir).andThen((filepath) => {
+    const extension = path.extname(filepath);
+    if (!(extension === '.js' || extension === '.ts')) {
+      return RuntimeException.asErr(`Unexpected file extension '${extension}': must be '.js' or '.ts'`);
+    }
+    return ok(filepath);
+  });
 }
 
 export function resolveUserConfig(baseDir: string): Result<string, typeof RuntimeException.Instance> {
