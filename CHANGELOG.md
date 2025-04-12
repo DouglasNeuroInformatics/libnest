@@ -1,5 +1,11 @@
 # Changelog
 
+## [4.3.2](https://github.com/DouglasNeuroInformatics/libnest/compare/v4.3.1...v4.3.2) (2025-04-12)
+
+### Bug Fixes
+
+* mark dynamic import of mongodb-memory-server as external in production build ([6d5cc01](https://github.com/DouglasNeuroInformatics/libnest/commit/6d5cc019aa011f30c00a82f3b2f86d2e2f29a123))
+
 ## [4.3.1](https://github.com/DouglasNeuroInformatics/libnest/compare/v4.3.0...v4.3.1) (2025-04-12)
 
 ### Bug Fixes
