@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import type { DynamicModule, FactoryProvider } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 
-import { ConfigService } from '../config/config.service.js';
+import { MongoConnection } from './mongo.connection.js';
 import { MONGO_CONNECTION_TOKEN, PRISMA_CLIENT_TOKEN, PRISMA_MODULE_OPTIONS_TOKEN } from './prisma.config.js';
 import { PrismaFactory } from './prisma.factory.js';
 import { PrismaService } from './prisma.service.js';
@@ -27,25 +27,8 @@ export class PrismaModule {
           useValue: options
         },
         {
-          inject: [ConfigService, PRISMA_MODULE_OPTIONS_TOKEN],
           provide: MONGO_CONNECTION_TOKEN,
-          useFactory: (configService: ConfigService, { dbPrefix }: PrismaModuleOptions): string => {
-            const mongoUri = configService.get('MONGO_URI');
-            const env = configService.get('NODE_ENV');
-            const url = new URL(`${mongoUri.href}/${dbPrefix}-${env}`);
-            const params = {
-              directConnection: configService.get('MONGO_DIRECT_CONNECTION'),
-              replicaSet: configService.get('MONGO_REPLICA_SET'),
-              retryWrites: configService.get('MONGO_RETRY_WRITES'),
-              w: configService.get('MONGO_WRITE_CONCERN')
-            };
-            for (const [key, value] of Object.entries(params)) {
-              if (value) {
-                url.searchParams.append(key, String(value));
-              }
-            }
-            return url.href;
-          }
+          useClass: MongoConnection
         },
         {
           inject: [PrismaFactory, PRISMA_MODULE_OPTIONS_TOKEN],

@@ -8,11 +8,12 @@ import { MONGO_CONNECTION_TOKEN, PRISMA_CLIENT_TOKEN } from '../prisma.config.js
 import { PrismaModule } from '../prisma.module.js';
 
 import type { MockPrismaClientInstance } from '../../../testing/mocks/prisma.client.mock.js';
+import type { MongoConnectionLike } from '../mongo.connection.js';
 
 describe('PrismaModule', () => {
   describe('forRoot', () => {
     let prismaClient: MockPrismaClientInstance;
-    let mongoConnection: string;
+    let mongoConnection: MongoConnectionLike;
 
     beforeEach(async () => {
       const module: TestingModule = await Test.createTestingModule({
@@ -40,7 +41,7 @@ describe('PrismaModule', () => {
     });
 
     it('should generate the correct url', () => {
-      expect(mongoConnection).toBe(
+      expect(mongoConnection.url.href).toBe(
         `${mockEnvConfig.MONGO_URI.href}/example-test?directConnection=true&replicaSet=rs0&retryWrites=true&w=majority`
       );
     });

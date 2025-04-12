@@ -5,6 +5,7 @@ import { beforeEach, describe, expect, expectTypeOf, it, test, vi } from 'vitest
 import { PrismaFactory } from '../prisma.factory.js';
 import { getModelKey } from '../prisma.utils.js';
 
+import type { MongoConnectionLike } from '../mongo.connection.js';
 import type { ExtendedPrismaClient } from '../prisma.factory.js';
 import type { RuntimePrismaClientOptions } from '../prisma.types.js';
 
@@ -44,7 +45,9 @@ test('ExtendedPrismaClient', () => {
 });
 
 describe('PrismaFactory', () => {
-  const mongoConnection = 'mongodb://localhost:27017/example-test';
+  const mongoConnection: MongoConnectionLike = {
+    url: new URL('mongodb://localhost:27017/example-test')
+  };
   let prismaFactory: PrismaFactory;
 
   beforeEach(() => {
@@ -58,7 +61,7 @@ describe('PrismaFactory', () => {
   it('should instantiate the PrismaClient with the correct url', () => {
     prismaFactory.createClient({});
     expect(PrismaClient).toHaveBeenCalledExactlyOnceWith({
-      datasourceUrl: mongoConnection
+      datasourceUrl: mongoConnection.url.href
     });
   });
 
