@@ -3,7 +3,7 @@ import type { DynamicModule, FactoryProvider } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 
 import { ConfigService } from '../config/config.service.js';
-import { MONGO_CONNECTION_TOKEN, PRISMA_CLIENT_TOKEN } from './prisma.config.js';
+import { MONGO_CONNECTION_TOKEN, PRISMA_CLIENT_TOKEN, PRISMA_MODULE_OPTIONS_TOKEN } from './prisma.config.js';
 import { PrismaFactory } from './prisma.factory.js';
 import { PrismaService } from './prisma.service.js';
 import { getModelKey, getModelToken } from './prisma.utils.js';
@@ -14,7 +14,7 @@ import type { PrismaClientLike } from './prisma.types.js';
 
 @Module({})
 export class PrismaModule {
-  static forRoot({ dbPrefix, omit }: PrismaModuleOptions): DynamicModule {
+  static forRoot(options: PrismaModuleOptions): DynamicModule {
     const modelProviders = this.getModelProviders();
     const modelTokens = modelProviders.map((provider) => provider.provide);
     return {
@@ -23,9 +23,13 @@ export class PrismaModule {
       module: PrismaModule,
       providers: [
         {
-          inject: [ConfigService],
+          provide: PRISMA_MODULE_OPTIONS_TOKEN,
+          useValue: options
+        },
+        {
+          inject: [ConfigService, PRISMA_MODULE_OPTIONS_TOKEN],
           provide: MONGO_CONNECTION_TOKEN,
-          useFactory: (configService: ConfigService): string => {
+          useFactory: (configService: ConfigService, { dbPrefix }: PrismaModuleOptions): string => {
             const mongoUri = configService.get('MONGO_URI');
             const env = configService.get('NODE_ENV');
             const url = new URL(`${mongoUri.href}/${dbPrefix}-${env}`);
@@ -44,9 +48,9 @@ export class PrismaModule {
           }
         },
         {
-          inject: [PrismaFactory],
+          inject: [PrismaFactory, PRISMA_MODULE_OPTIONS_TOKEN],
           provide: PRISMA_CLIENT_TOKEN,
-          useFactory: (prismaFactory: PrismaFactory): ExtendedPrismaClient => {
+          useFactory: (prismaFactory: PrismaFactory, { omit }: PrismaModuleOptions): ExtendedPrismaClient => {
             return prismaFactory.createClient({ omit });
           }
         },
