@@ -54,12 +54,12 @@ export class ConnectionFactory implements Partial<OnApplicationShutdown> {
   private async createMemoryConnection(): Promise<MongoConnection> {
     // prevent mongodb-memory-server from being included in the production bundle
     const { MongoMemoryReplSet } = await import('mongodb-memory-server');
-    const replSet = await MongoMemoryReplSet.create({ replSet: { count: 1 } });
+    const replSet = await MongoMemoryReplSet.create({ replSet: { count: 1, name: 'rs0' } });
     this.onApplicationShutdown = async (): Promise<void> => {
       await replSet.stop();
     };
     return {
-      url: new URL('/test', replSet.getUri())
+      url: new URL(replSet.getUri('test'))
     };
   }
 }
