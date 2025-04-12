@@ -12,6 +12,7 @@ import type {
 import { MONGO_CONNECTION_TOKEN } from './prisma.config.js';
 import { getModelKey } from './prisma.utils.js';
 
+import type { MongoConnection } from './connection.factory.js';
 import type { DefaultPrismaGlobalOmitConfig } from './prisma.config.js';
 import type {
   PrismaModelKey,
@@ -63,10 +64,10 @@ export type ExtendedPrismaClient = InferExtendedClient<{ model: ModelExtArgs; re
 
 @Injectable()
 export class PrismaFactory {
-  constructor(@Inject(MONGO_CONNECTION_TOKEN) private readonly datasourceUrl: string) {}
+  constructor(@Inject(MONGO_CONNECTION_TOKEN) private readonly mongoConnection: MongoConnection) {}
 
   createClient({ omit }: { omit?: DefaultPrismaGlobalOmitConfig }): ExtendedPrismaClient {
-    const options: Prisma.PrismaClientOptions = { datasourceUrl: this.datasourceUrl };
+    const options: Prisma.PrismaClientOptions = { datasourceUrl: this.mongoConnection.url.href };
     if (omit) {
       options.omit = omit;
     }

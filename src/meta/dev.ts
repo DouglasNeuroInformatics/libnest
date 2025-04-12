@@ -12,7 +12,7 @@ import type { NodeEnv } from '../schemas/env.schema.js';
  * @returns A `ResultAsync` containing void on success, or an error message on failure.
  */
 export function runDev(configFile: string): ResultAsync<void, typeof RuntimeException.Instance> {
-  process.env.NODE_ENV = 'development' satisfies NodeEnv;
+  process.env.NODE_ENV ??= 'development' satisfies NodeEnv;
   return resolveAbsoluteImportPath(configFile, process.cwd())
     .asyncAndThen(loadUserConfig)
     .andThen((config) => {

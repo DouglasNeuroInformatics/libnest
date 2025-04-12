@@ -14,6 +14,7 @@ import { ValidationPipe } from '../../pipes/validation.pipe.js';
 import { $BaseEnv } from '../../schemas/env.schema.js';
 import { AppFactory } from '../app.factory.js';
 
+import type { MongoConnection } from '../../modules/prisma/connection.factory.js';
 import type { PrismaModuleOptions } from '../../modules/prisma/prisma.config.js';
 import type { BaseEnv } from '../../schemas/env.schema.js';
 import type { CreateAppOptions } from '../app.factory.js';
@@ -131,9 +132,9 @@ describe('AppFactory', () => {
           }
         };
         const app = await createAppContainer({ prisma }).createApplicationInstance();
-        const url = app.get(MONGO_CONNECTION_TOKEN);
+        const mongoConnection: MongoConnection = app.get(MONGO_CONNECTION_TOKEN);
         expect(createClient).toHaveBeenCalledExactlyOnceWith({ omit: prisma.omit });
-        expect(url).toBe(`${defaultEnv.MONGO_URI}/example-test`);
+        expect(mongoConnection.url.href).toBe(`${defaultEnv.MONGO_URI}/example-test`);
       });
     });
 

@@ -16,6 +16,8 @@ export const $BaseEnv = z.object({
   API_RESPONSE_DELAY: $NumberLike.pipe(z.number().positive().int()).optional(),
   DANGEROUSLY_DISABLE_PBKDF2_ITERATION: $BooleanLike.optional(),
   DEBUG: $BooleanLike.optional(),
+  /** enable log-level logs (default = true in development or production, false in tests) */
+  LOG: $BooleanLike.optional(),
   MONGO_DIRECT_CONNECTION: $BooleanLike.optional(),
   MONGO_REPLICA_SET: z.enum(['rs0']).optional(),
   MONGO_RETRY_WRITES: $BooleanLike.optional(),
