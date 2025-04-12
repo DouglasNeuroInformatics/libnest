@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.3.3](https://github.com/DouglasNeuroInformatics/libnest/compare/v4.3.2...v4.3.3) (2025-04-12)
+
+### Bug Fixes
+
+* remove explicit stop of mongo memory server ([0a61c63](https://github.com/DouglasNeuroInformatics/libnest/commit/0a61c63cd0f6113b56928152b3be35912ca71d44))
+* use builtin method for db name ([d2ce3d3](https://github.com/DouglasNeuroInformatics/libnest/commit/d2ce3d3a0af600a883681426f86a75d4a4681bbc))
+
 ## [4.3.2](https://github.com/DouglasNeuroInformatics/libnest/compare/v4.3.1...v4.3.2) (2025-04-12)
 
 ### Bug Fixes
