@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 
 import { mockEnvConfig } from '../../../testing/mocks/env-config.mock.js';
 import { ConfigModule } from '../../config/config.module.js';
+import { LoggingModule } from '../../logging/logging.module.js';
 import { MONGO_CONNECTION_TOKEN, PRISMA_CLIENT_TOKEN } from '../prisma.config.js';
 import { PrismaModule } from '../prisma.module.js';
 
@@ -27,6 +28,7 @@ describe('PrismaModule', () => {
               MONGO_WRITE_CONCERN: 'majority'
             }
           }),
+          LoggingModule,
           PrismaModule.forRoot({
             dbPrefix: 'example'
           })
