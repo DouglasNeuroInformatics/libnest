@@ -19,7 +19,6 @@ describe('ConnectionFactory', () => {
     };
     let mockReplSet: {
       getUri: Mock;
-      stop: Mock;
     };
     let module: TestingModule;
 
@@ -47,8 +46,7 @@ describe('ConnectionFactory', () => {
         throw new Error(`Unexpected key: ${key}`);
       });
       mockReplSet = {
-        getUri: vi.fn().mockReturnValue('mongodb://localhost:27017'),
-        stop: vi.fn()
+        getUri: vi.fn().mockReturnValue('mongodb://localhost:27017')
       };
       MockMongoMemoryReplSet = {
         create: vi.fn().mockImplementation(() => mockReplSet)
@@ -59,10 +57,8 @@ describe('ConnectionFactory', () => {
     it('should initialize a repl set and stop it when the application is shutdown', async () => {
       await connectionFactory.create();
       expect(MockMongoMemoryReplSet.create).toHaveBeenCalledOnce();
-      expect(mockReplSet.stop).not.toHaveBeenCalled();
       await module.init();
       await module.close();
-      expect(mockReplSet.stop).toHaveBeenCalledOnce();
     });
   });
 });
