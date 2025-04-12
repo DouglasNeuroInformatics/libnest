@@ -2,12 +2,13 @@ import { Module } from '@nestjs/common';
 import type { DynamicModule, FactoryProvider } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 
-import { MongoConnection } from './mongo.connection.js';
+import { ConnectionFactory } from './connection.factory.js';
 import { MONGO_CONNECTION_TOKEN, PRISMA_CLIENT_TOKEN, PRISMA_MODULE_OPTIONS_TOKEN } from './prisma.config.js';
 import { PrismaFactory } from './prisma.factory.js';
 import { PrismaService } from './prisma.service.js';
 import { getModelKey, getModelToken } from './prisma.utils.js';
 
+import type { MongoConnection } from './connection.factory.js';
 import type { PrismaModuleOptions } from './prisma.config.js';
 import type { ExtendedPrismaClient } from './prisma.factory.js';
 import type { PrismaClientLike } from './prisma.types.js';
@@ -27,8 +28,11 @@ export class PrismaModule {
           useValue: options
         },
         {
+          inject: [ConnectionFactory],
           provide: MONGO_CONNECTION_TOKEN,
-          useClass: MongoConnection
+          useFactory: (connectionFactory: ConnectionFactory): Promise<MongoConnection> => {
+            return connectionFactory.create();
+          }
         },
         {
           inject: [PrismaFactory, PRISMA_MODULE_OPTIONS_TOKEN],
@@ -37,6 +41,7 @@ export class PrismaModule {
             return prismaFactory.createClient({ omit });
           }
         },
+        ConnectionFactory,
         PrismaFactory,
         PrismaService,
         ...modelProviders

@@ -14,7 +14,7 @@ import { configureApp } from '../../app/app.utils.js';
 import { loadAppContainer, loadUserConfig } from '../../meta/load.js';
 import { MONGO_CONNECTION_TOKEN } from '../../modules/prisma/prisma.config.js';
 
-import type { MongoConnectionLike } from '../../modules/prisma/mongo.connection.js';
+import type { MongoConnection } from '../../modules/prisma/connection.factory.js';
 
 interface TestResponse {
   [key: string]: any;
@@ -101,7 +101,7 @@ export function e2e(fn: (describe: SuiteAPI<EndToEndContext>) => void): void {
       .overrideProvider(MONGO_CONNECTION_TOKEN)
       .useValue({
         url: new URL('/test', mongodb.getUri())
-      } satisfies MongoConnectionLike)
+      } satisfies MongoConnection)
       .compile();
 
     app = moduleRef.createNestApplication({

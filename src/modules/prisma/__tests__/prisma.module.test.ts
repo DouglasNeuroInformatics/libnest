@@ -8,12 +8,12 @@ import { MONGO_CONNECTION_TOKEN, PRISMA_CLIENT_TOKEN } from '../prisma.config.js
 import { PrismaModule } from '../prisma.module.js';
 
 import type { MockPrismaClientInstance } from '../../../testing/mocks/prisma.client.mock.js';
-import type { MongoConnectionLike } from '../mongo.connection.js';
+import type { MongoConnection } from '../connection.factory.js';
 
 describe('PrismaModule', () => {
   describe('forRoot', () => {
     let prismaClient: MockPrismaClientInstance;
-    let mongoConnection: MongoConnectionLike;
+    let mongoConnection: MongoConnection;
 
     beforeEach(async () => {
       const module: TestingModule = await Test.createTestingModule({
