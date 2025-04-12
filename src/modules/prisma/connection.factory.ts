@@ -12,7 +12,9 @@ export type MongoConnection = {
 };
 
 @Injectable()
-export class ConnectionFactory {
+export class ConnectionFactory implements Partial<OnApplicationShutdown> {
+  onApplicationShutdown?: () => Promise<void>;
+
   constructor(
     private readonly configService: ConfigService,
     private readonly loggingService: LoggingService,
@@ -49,14 +51,14 @@ export class ConnectionFactory {
     return { url };
   }
 
-  private async createMemoryConnection(): Promise<MongoConnection & OnApplicationShutdown> {
+  private async createMemoryConnection(): Promise<MongoConnection> {
     // prevent mongodb-memory-server from being included in the production bundle
     const { MongoMemoryReplSet } = await import('mongodb-memory-server');
     const replSet = await MongoMemoryReplSet.create({ replSet: { count: 1 } });
+    this.onApplicationShutdown = async (): Promise<void> => {
+      await replSet.stop();
+    };
     return {
-      onApplicationShutdown: async (): Promise<void> => {
-        await replSet.stop();
-      },
       url: new URL('/test', replSet.getUri())
     };
   }

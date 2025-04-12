@@ -1,4 +1,4 @@
-import { Test } from '@nestjs/testing';
+import { Test, TestingModule } from '@nestjs/testing';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Mock } from 'vitest';
 
@@ -21,9 +21,10 @@ describe('ConnectionFactory', () => {
       getUri: Mock;
       stop: Mock;
     };
+    let module: TestingModule;
 
     beforeEach(async () => {
-      const module = await Test.createTestingModule({
+      module = await Test.createTestingModule({
         providers: [
           MockFactory.createForService(ConfigService),
           MockFactory.createForService(LoggingService),
@@ -36,6 +37,7 @@ describe('ConnectionFactory', () => {
           ConnectionFactory
         ]
       }).compile();
+      module.enableShutdownHooks();
       configService = module.get(ConfigService);
       connectionFactory = module.get(ConnectionFactory);
       configService.get.mockImplementation((key) => {
@@ -54,9 +56,13 @@ describe('ConnectionFactory', () => {
       vi.doMock('mongodb-memory-server', () => ({ MongoMemoryReplSet: MockMongoMemoryReplSet }));
     });
 
-    it('should be defined', async () => {
+    it('should initialize a repl set and stop it when the application is shutdown', async () => {
       await connectionFactory.create();
       expect(MockMongoMemoryReplSet.create).toHaveBeenCalledOnce();
+      expect(mockReplSet.stop).not.toHaveBeenCalled();
+      await module.init();
+      await module.close();
+      expect(mockReplSet.stop).toHaveBeenCalledOnce();
     });
   });
 });
