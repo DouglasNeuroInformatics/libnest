@@ -19,7 +19,7 @@ import type { LoggingOptions } from './logging.config.js';
       useFactory: (configService: ConfigService): LoggingOptions => {
         return {
           debug: configService.get('DEBUG'),
-          log: configService.get('NODE_ENV') !== 'test',
+          log: configService.get('LOG') ?? configService.get('NODE_ENV') !== 'test',
           verbose: configService.get('VERBOSE')
         };
       }
