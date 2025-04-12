@@ -52,7 +52,13 @@ export function buildProd({
         },
         bundle: true,
         define,
-        external: ['@nestjs/microservices', '@nestjs/websockets/socket-module', 'class-transformer', 'class-validator'],
+        external: [
+          '@nestjs/microservices',
+          '@nestjs/websockets/socket-module',
+          'class-transformer',
+          'class-validator',
+          'mongodb-memory-server'
+        ],
         format: 'esm',
         keepNames: true,
         loader: {
