@@ -9,6 +9,7 @@ export type PrismaModuleOptions<
 > = {
   dbPrefix: null | string;
   omit?: TGlobalOmitConfig;
+  useInMemoryDbForTesting?: boolean;
 };
 
 export const { PRISMA_CLIENT_TOKEN } = defineToken('PRISMA_CLIENT_TOKEN');
