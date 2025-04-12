@@ -1,5 +1,14 @@
 # Changelog
 
+## [4.3.1](https://github.com/DouglasNeuroInformatics/libnest/compare/v4.3.0...v4.3.1) (2025-04-12)
+
+### Bug Fixes
+
+* add log ([3d06b1b](https://github.com/DouglasNeuroInformatics/libnest/commit/3d06b1ba744b3e27dddc52b3d80c77241ccc2378))
+* allow overriding log level in test ([24028b0](https://github.com/DouglasNeuroInformatics/libnest/commit/24028b02604363056145b97f8349c363e7ebcd53))
+* onApplicationShutdown ([bdda142](https://github.com/DouglasNeuroInformatics/libnest/commit/bdda142cae34449e4706331f780feb5d1f27474c))
+* only set NODE_ENV if it is undefined in dev ([34c1346](https://github.com/DouglasNeuroInformatics/libnest/commit/34c13461ed33f240b54ee9f9dedc849c4ea98935))
+
 ## [4.3.0](https://github.com/DouglasNeuroInformatics/libnest/compare/v4.2.1...v4.3.0) (2025-04-02)
 
 ### Features
