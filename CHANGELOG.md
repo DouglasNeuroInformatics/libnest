@@ -1,5 +1,11 @@
 # Changelog
 
+## [4.4.0](https://github.com/DouglasNeuroInformatics/libnest/compare/v4.3.3...v4.4.0) (2025-04-13)
+
+### Features
+
+* add ValidObjectIdPipe ([3e756eb](https://github.com/DouglasNeuroInformatics/libnest/commit/3e756eb6121b95747b328de5f789222f1e96df0f))
+
 ## [4.3.3](https://github.com/DouglasNeuroInformatics/libnest/compare/v4.3.2...v4.3.3) (2025-04-12)
 
 ### Bug Fixes
