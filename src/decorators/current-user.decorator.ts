@@ -1,7 +1,10 @@
 import { createParamDecorator, InternalServerErrorException } from '@nestjs/common';
 import type { Request } from 'express';
+import type { LiteralUnion, OmitIndexSignature } from 'type-fest';
 
-type CurrentUserDecorator = (key?: Extract<keyof NonNullable<Request['user']>, string>) => ParameterDecorator;
+type CurrentUserKey = LiteralUnion<Extract<keyof OmitIndexSignature<NonNullable<Request['user']>>, string>, string>;
+
+type CurrentUserDecorator = (key?: CurrentUserKey) => ParameterDecorator;
 
 /**
  * Extract the user from the request object

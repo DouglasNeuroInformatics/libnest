@@ -1,3 +1,5 @@
+/// <reference preserve="true" path="./typings/globals.ts" />
+
 export type { ConditionalImport, ImportedModule } from './app/app.base.js';
 export { AppFactory } from './app/app.factory.js';
 export { CurrentUser } from './decorators/current-user.decorator.js';
