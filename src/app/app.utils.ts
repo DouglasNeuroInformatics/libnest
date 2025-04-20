@@ -10,7 +10,7 @@ export async function configureApp(
   app: NestExpressApplication,
   options: {
     docs?: Omit<DocsConfig, 'version'>;
-    version: AppVersion;
+    version?: AppVersion;
   }
 ): Promise<NestExpressApplication> {
   if (options.docs) {
@@ -19,10 +19,12 @@ export async function configureApp(
 
   app.enableCors();
   app.enableShutdownHooks();
-  app.enableVersioning({
-    defaultVersion: options.version,
-    type: VersioningType.URI
-  });
+  if (options.version) {
+    app.enableVersioning({
+      defaultVersion: options.version,
+      type: VersioningType.URI
+    });
+  }
   app.use(json({ limit: '50MB' }));
 
   return app;
