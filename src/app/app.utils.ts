@@ -11,7 +11,7 @@ export async function configureApp(
   options: {
     docs?: Omit<DocsConfig, 'version'>;
     version?: AppVersion;
-  }
+  } = {}
 ): Promise<NestExpressApplication> {
   if (options.docs) {
     await DocsFactory.configureDocs(app, { ...options.docs, version: options.version });
