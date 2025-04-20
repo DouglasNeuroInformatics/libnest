@@ -15,8 +15,9 @@ import { AppContainer } from './app.container.js';
 import { AppModule } from './app.module.js';
 
 import type { DefaultPrismaGlobalOmitConfig, PrismaModuleOptions } from '../modules/prisma/prisma.config.js';
+import type { RuntimeEnv } from '../schemas/env.schema.js';
 import type { BaseEnvSchema } from '../utils/env.utils.js';
-import type { ConditionalImport, ImportedModule } from './app.base.js';
+import type { ConditionalImport, DynamicAppModule, ImportedModule } from './app.base.js';
 import type { AppContainerParams } from './app.container.js';
 
 export type CreateAppOptions<
@@ -35,15 +36,28 @@ export class AppFactory {
   static create<TEnvSchema extends BaseEnvSchema, TPrismaGlobalOmitConfig extends DefaultPrismaGlobalOmitConfig>({
     docs,
     envSchema,
-    imports: imports_ = [],
-    prisma,
-    providers = [],
-    version
+    version,
+    ...options
   }: CreateAppOptions<TEnvSchema, TPrismaGlobalOmitConfig>): AppContainer<
     z.TypeOf<TEnvSchema>,
     TPrismaGlobalOmitConfig
   > {
     const envConfig = parseEnv(envSchema);
+    const module = this.createModule({ envConfig, ...options });
+    return new AppContainer({ docs, envConfig, module, version });
+  }
+
+  static createModule({
+    envConfig,
+    imports: userImports = [],
+    prisma,
+    providers: userProviders = []
+  }: {
+    envConfig: RuntimeEnv;
+    imports?: (ConditionalImport<RuntimeEnv> | ImportedModule)[];
+    prisma: PrismaModuleOptions;
+    providers?: Provider[];
+  }): DynamicAppModule {
     const coreImports: ImportedModule[] = [
       ConfigModule.forRoot({ envConfig }),
       CryptoModule,
@@ -60,7 +74,6 @@ export class AppFactory {
         useClass: ValidationPipe
       }
     ];
-
     if (envConfig.THROTTLER_ENABLED) {
       coreImports.push(
         ThrottlerModule.forRoot([
@@ -86,24 +99,21 @@ export class AppFactory {
         useClass: ThrottlerGuard
       });
     }
-
-    const imports: ImportedModule[] = [];
-    for (const import_ of imports_ as { [key: string]: any }[]) {
-      if (import_.module && typeof import_.when === 'string') {
-        if (envConfig[import_.when as keyof typeof envConfig]) {
-          imports.push(import_.module as ImportedModule);
+    const resolvedUserImports: ImportedModule[] = [];
+    for (const userImport of userImports as { [key: string]: any }[]) {
+      if (userImport.module && typeof userImport.when === 'string') {
+        if (envConfig[userImport.when as keyof typeof envConfig]) {
+          resolvedUserImports.push(userImport.module as ImportedModule);
         }
       } else {
-        imports.push(import_ as ImportedModule);
+        resolvedUserImports.push(userImport as ImportedModule);
       }
     }
 
-    const module = {
-      imports: [...coreImports, ...imports],
+    return {
+      imports: [...coreImports, ...resolvedUserImports],
       module: AppModule,
-      providers: [...coreProviders, ...providers]
+      providers: [...coreProviders, ...userProviders]
     };
-
-    return new AppContainer({ docs, envConfig, module, version });
   }
 }
