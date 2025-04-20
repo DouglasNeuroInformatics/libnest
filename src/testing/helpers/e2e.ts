@@ -3,7 +3,6 @@ import type { IncomingMessage, Server, ServerResponse } from 'http';
 import { RuntimeException } from '@douglasneuroinformatics/libjs';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import { Test } from '@nestjs/testing';
-import { MongoMemoryReplSet } from 'mongodb-memory-server';
 import { fromAsyncThrowable } from 'neverthrow';
 import request from 'supertest';
 import { afterAll, beforeAll, beforeEach, describe, vi } from 'vitest';
@@ -11,9 +10,7 @@ import type { SuiteAPI } from 'vitest';
 
 import { configureApp } from '../../app/app.utils.js';
 import { loadAppContainer, loadUserConfig } from '../../meta/load.js';
-import { MONGO_CONNECTION_TOKEN } from '../../modules/prisma/prisma.config.js';
 
-import type { MongoConnection } from '../../modules/prisma/connection.factory.js';
 import type { TestAgent } from './types.js';
 
 export type EndToEndContext = {
@@ -24,7 +21,7 @@ export type EndToEndContext = {
 
 export function e2e(fn: (describe: SuiteAPI<EndToEndContext>) => void): void {
   let app: NestExpressApplication;
-  let mongodb: MongoMemoryReplSet;
+
   let server: Server<typeof IncomingMessage, typeof ServerResponse>;
 
   beforeAll(async () => {
@@ -55,20 +52,9 @@ export function e2e(fn: (describe: SuiteAPI<EndToEndContext>) => void): void {
 
     const { docs, module, version } = result.value;
 
-    mongodb = await MongoMemoryReplSet.create({
-      replSet: {
-        count: 1
-      }
-    });
-
     const moduleRef = await Test.createTestingModule({
       imports: [module]
-    })
-      .overrideProvider(MONGO_CONNECTION_TOKEN)
-      .useValue({
-        url: new URL('/test', mongodb.getUri())
-      } satisfies MongoConnection)
-      .compile();
+    }).compile();
 
     app = moduleRef.createNestApplication({
       logger: false
@@ -93,7 +79,6 @@ export function e2e(fn: (describe: SuiteAPI<EndToEndContext>) => void): void {
   });
 
   afterAll(async () => {
-    await mongodb.stop();
     if (app) {
       await app.close();
       app.flushLogs();
