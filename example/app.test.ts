@@ -1,8 +1,9 @@
 import { randomBytes } from 'crypto';
 
-import { beforeEach, vi } from 'vitest';
+import { beforeEach, describe, expect, vi } from 'vitest';
 
 import { e2e } from '../src/testing/index.js';
+import app from './app.js';
 
 import type { EndToEndContext } from '../src/testing/index.js';
 import type { CreateCatDto } from './cats/dto/create-cat.dto.js';
@@ -10,13 +11,13 @@ import type { Cat } from './cats/schemas/cat.schema.js';
 
 vi.unmock('@prisma/client');
 
-e2e((describe) => {
+e2e(app, ({ api }) => {
   describe('/spec.json', (it) => {
-    it('should configure the documentation spec', async ({ api, expect }) => {
+    it('should configure the documentation spec', async () => {
       const response = await api.get('/spec.json');
       expect(response.status).toBe(200);
     });
-    it('should configure the documentation html', async ({ api, expect }) => {
+    it('should configure the documentation html', async () => {
       const response = await api.get('/');
       expect(response.status).toBe(200);
       expect(response.type).toBe('text/html');
@@ -24,31 +25,31 @@ e2e((describe) => {
   });
 
   describe('/auth/login', (it) => {
-    it('should return status code 400 if the request body does not include credentials', async ({ api, expect }) => {
+    it('should return status code 400 if the request body does not include credentials', async () => {
       const response = await api.post('/v1/auth/login');
       expect(response.status).toBe(400);
     });
-    it('should return status code 400 if the request body does not include a username', async ({ api, expect }) => {
+    it('should return status code 400 if the request body does not include a username', async () => {
       const response = await api.post('/v1/auth/login').send({ username: 'admin' });
       expect(response.status).toBe(400);
     });
-    it('should return status code 400 if the request body does not include a password', async ({ api, expect }) => {
+    it('should return status code 400 if the request body does not include a password', async () => {
       const response = await api.post('/v1/auth/login').send({ password: 'password' });
       expect(response.status).toBe(400);
     });
-    it('should return status code 400 if username and password are empty strings', async ({ api, expect }) => {
+    it('should return status code 400 if username and password are empty strings', async () => {
       const response = await api.post('/v1/auth/login').send({ password: '', username: '' });
       expect(response.status).toBe(400);
     });
-    it('should return status code 400 if password is a number', async ({ api, expect }) => {
+    it('should return status code 400 if password is a number', async () => {
       const response = await api.post('/v1/auth/login').send({ password: 123, username: 'admin' });
       expect(response.status).toBe(400);
     });
-    it('should return status code 401 if the user does not exist', async ({ api, expect }) => {
+    it('should return status code 401 if the user does not exist', async () => {
       const response = await api.post('/v1/auth/login').send({ password: 'password', username: 'user' });
       expect(response.status).toBe(401);
     });
-    it('should return status code 200 and an access token if the credentials are correct', async ({ api, expect }) => {
+    it('should return status code 200 and an access token if the credentials are correct', async () => {
       const response = await api.post('/v1/auth/login').send({ password: 'password', username: 'admin' });
       expect(response.status).toBe(200);
       expect(response.body).toStrictEqual({
@@ -61,22 +62,22 @@ e2e((describe) => {
     let accessToken: string;
     let createdCat: Cat;
 
-    beforeEach<EndToEndContext>(async ({ api }) => {
+    beforeEach<EndToEndContext>(async () => {
       const response = await api.post('/v1/auth/login').send({ password: 'password', username: 'admin' });
       accessToken = response.body.accessToken;
     });
 
-    it('should return status code 401 if there is no access token provided', async ({ api, expect }) => {
+    it('should return status code 401 if there is no access token provided', async () => {
       const response = await api.get('/v1/cats');
       expect(response.status).toBe(401);
     });
 
-    it('should return status code 401 if there is an invalid access token provided', async ({ api, expect }) => {
+    it('should return status code 401 if there is an invalid access token provided', async () => {
       const response = await api.get('/v1/cats').set('Authorization', `Bearer ${randomBytes(12).toString('base64')}`);
       expect(response.status).toBe(401);
     });
 
-    it('should allow a POST request', async ({ api, expect }) => {
+    it('should allow a POST request', async () => {
       const response = await api
         .post('/v1/cats')
         .set('Authorization', `Bearer ${accessToken}`)
@@ -93,7 +94,7 @@ e2e((describe) => {
       createdCat = response.body;
     });
 
-    it('should allow a GET request', async ({ api, expect }) => {
+    it('should allow a GET request', async () => {
       const response = await api.get('/v1/cats').set('Authorization', `Bearer ${accessToken}`);
       expect(response.status).toBe(200);
       expect(response.body).toStrictEqual([createdCat]);
