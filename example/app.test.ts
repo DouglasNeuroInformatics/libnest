@@ -5,7 +5,6 @@ import { beforeEach, describe, expect, vi } from 'vitest';
 import { e2e } from '../src/testing/index.js';
 import app from './app.js';
 
-import type { EndToEndContext } from '../src/testing/index.js';
 import type { CreateCatDto } from './cats/dto/create-cat.dto.js';
 import type { Cat } from './cats/schemas/cat.schema.js';
 
@@ -62,7 +61,7 @@ e2e(app, ({ api }) => {
     let accessToken: string;
     let createdCat: Cat;
 
-    beforeEach<EndToEndContext>(async () => {
+    beforeEach(async () => {
       const response = await api.post('/v1/auth/login').send({ password: 'password', username: 'admin' });
       accessToken = response.body.accessToken;
     });
