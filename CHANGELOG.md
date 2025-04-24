@@ -1,5 +1,11 @@
 # Changelog
 
+## [5.1.0](https://github.com/DouglasNeuroInformatics/libnest/compare/v5.0.0...v5.1.0) (2025-04-24)
+
+### Features
+
+* add augmentable interface CustomTypeOptions ([22c00b3](https://github.com/DouglasNeuroInformatics/libnest/commit/22c00b3d40620b8f44faa56e22dd957f10bb8dd9))
+
 ## [5.0.0](https://github.com/DouglasNeuroInformatics/libnest/compare/v4.4.0...v5.0.0) (2025-04-24)
 
 ### ⚠ BREAKING CHANGES
