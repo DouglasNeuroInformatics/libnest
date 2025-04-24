@@ -1,5 +1,63 @@
 # Changelog
 
+## [5.1.0](https://github.com/DouglasNeuroInformatics/libnest/compare/v5.0.0...v5.1.0) (2025-04-24)
+
+### Features
+
+* add augmentable interface CustomTypeOptions ([22c00b3](https://github.com/DouglasNeuroInformatics/libnest/commit/22c00b3d40620b8f44faa56e22dd957f10bb8dd9))
+
+## [5.0.0](https://github.com/DouglasNeuroInformatics/libnest/compare/v4.4.0...v5.0.0) (2025-04-24)
+
+### ⚠ BREAKING CHANGES
+
+* api now accessed from initial callback and must pass app explicitly
+
+### Features
+
+* add acceptLanguageMiddleware ([00e5e16](https://github.com/DouglasNeuroInformatics/libnest/commit/00e5e16f430557db442574cc173fe1ecf56a36fc))
+* add configureMiddleware option ([77242b6](https://github.com/DouglasNeuroInformatics/libnest/commit/77242b606d1ffb6543fee79d9dbd9b7fc2ad1e52))
+* add createIntegrationTestSuite ([136b349](https://github.com/DouglasNeuroInformatics/libnest/commit/136b3491a23c34359859d4f1813e9a108b01ef5f))
+* add IntegrationTestModule ([9261768](https://github.com/DouglasNeuroInformatics/libnest/commit/9261768c4191a9839c71425f2dae134576d9963b))
+* implement integrationTestSuite ([c732e6d](https://github.com/DouglasNeuroInformatics/libnest/commit/c732e6d41682008a240466a69e1ef5097916b5aa))
+
+### Bug Fixes
+
+* attach payload to user request object ([2254ab1](https://github.com/DouglasNeuroInformatics/libnest/commit/2254ab114be5ebcd3b86e69ba49c445d0c1f1c18))
+* current user types ([6086ca9](https://github.com/DouglasNeuroInformatics/libnest/commit/6086ca916302e7ebcc81c7c6f1ff92325ee5b4f8))
+* no need to override of mongo anymore due to prisma option ([f319a67](https://github.com/DouglasNeuroInformatics/libnest/commit/f319a671c3f957a8678ae5d59287333d5da8519c))
+
+### Tests
+
+* improve e2e function ([2f9429e](https://github.com/DouglasNeuroInformatics/libnest/commit/2f9429e766a3fb8ebe929ce9813c9962125b1aa5))
+
+## [4.4.0](https://github.com/DouglasNeuroInformatics/libnest/compare/v4.3.3...v4.4.0) (2025-04-13)
+
+### Features
+
+* add ValidObjectIdPipe ([3e756eb](https://github.com/DouglasNeuroInformatics/libnest/commit/3e756eb6121b95747b328de5f789222f1e96df0f))
+
+## [4.3.3](https://github.com/DouglasNeuroInformatics/libnest/compare/v4.3.2...v4.3.3) (2025-04-12)
+
+### Bug Fixes
+
+* remove explicit stop of mongo memory server ([0a61c63](https://github.com/DouglasNeuroInformatics/libnest/commit/0a61c63cd0f6113b56928152b3be35912ca71d44))
+* use builtin method for db name ([d2ce3d3](https://github.com/DouglasNeuroInformatics/libnest/commit/d2ce3d3a0af600a883681426f86a75d4a4681bbc))
+
+## [4.3.2](https://github.com/DouglasNeuroInformatics/libnest/compare/v4.3.1...v4.3.2) (2025-04-12)
+
+### Bug Fixes
+
+* mark dynamic import of mongodb-memory-server as external in production build ([6d5cc01](https://github.com/DouglasNeuroInformatics/libnest/commit/6d5cc019aa011f30c00a82f3b2f86d2e2f29a123))
+
+## [4.3.1](https://github.com/DouglasNeuroInformatics/libnest/compare/v4.3.0...v4.3.1) (2025-04-12)
+
+### Bug Fixes
+
+* add log ([3d06b1b](https://github.com/DouglasNeuroInformatics/libnest/commit/3d06b1ba744b3e27dddc52b3d80c77241ccc2378))
+* allow overriding log level in test ([24028b0](https://github.com/DouglasNeuroInformatics/libnest/commit/24028b02604363056145b97f8349c363e7ebcd53))
+* onApplicationShutdown ([bdda142](https://github.com/DouglasNeuroInformatics/libnest/commit/bdda142cae34449e4706331f780feb5d1f27474c))
+* only set NODE_ENV if it is undefined in dev ([34c1346](https://github.com/DouglasNeuroInformatics/libnest/commit/34c13461ed33f240b54ee9f9dedc849c4ea98935))
+
 ## [4.3.0](https://github.com/DouglasNeuroInformatics/libnest/compare/v4.2.1...v4.3.0) (2025-04-02)
 
 ### Features
