@@ -58,6 +58,9 @@ importers:
       '@swc/helpers':
         specifier: ^0.5.15
         version: 0.5.15
+      '@types/supertest':
+        specifier: ^6.0.2
+        version: 6.0.3
       chalk:
         specifier: ^5.4.1
         version: 5.4.1
@@ -140,9 +143,6 @@ importers:
       '@types/passport-jwt':
         specifier: ^4.0.1
         version: 4.0.1
-      '@types/supertest':
-        specifier: ^6.0.2
-        version: 6.0.3
       '@vitest/coverage-v8':
         specifier: ^3.0.9
         version: 3.0.9(vitest@3.0.9(@types/node@22.13.14)(jiti@2.4.2)(yaml@2.7.1))
