@@ -1,5 +1,29 @@
 # Changelog
 
+## [5.0.0](https://github.com/DouglasNeuroInformatics/libnest/compare/v4.4.0...v5.0.0) (2025-04-24)
+
+### ⚠ BREAKING CHANGES
+
+* api now accessed from initial callback and must pass app explicitly
+
+### Features
+
+* add acceptLanguageMiddleware ([00e5e16](https://github.com/DouglasNeuroInformatics/libnest/commit/00e5e16f430557db442574cc173fe1ecf56a36fc))
+* add configureMiddleware option ([77242b6](https://github.com/DouglasNeuroInformatics/libnest/commit/77242b606d1ffb6543fee79d9dbd9b7fc2ad1e52))
+* add createIntegrationTestSuite ([136b349](https://github.com/DouglasNeuroInformatics/libnest/commit/136b3491a23c34359859d4f1813e9a108b01ef5f))
+* add IntegrationTestModule ([9261768](https://github.com/DouglasNeuroInformatics/libnest/commit/9261768c4191a9839c71425f2dae134576d9963b))
+* implement integrationTestSuite ([c732e6d](https://github.com/DouglasNeuroInformatics/libnest/commit/c732e6d41682008a240466a69e1ef5097916b5aa))
+
+### Bug Fixes
+
+* attach payload to user request object ([2254ab1](https://github.com/DouglasNeuroInformatics/libnest/commit/2254ab114be5ebcd3b86e69ba49c445d0c1f1c18))
+* current user types ([6086ca9](https://github.com/DouglasNeuroInformatics/libnest/commit/6086ca916302e7ebcc81c7c6f1ff92325ee5b4f8))
+* no need to override of mongo anymore due to prisma option ([f319a67](https://github.com/DouglasNeuroInformatics/libnest/commit/f319a671c3f957a8678ae5d59287333d5da8519c))
+
+### Tests
+
+* improve e2e function ([2f9429e](https://github.com/DouglasNeuroInformatics/libnest/commit/2f9429e766a3fb8ebe929ce9813c9962125b1aa5))
+
 ## [4.4.0](https://github.com/DouglasNeuroInformatics/libnest/compare/v4.3.3...v4.4.0) (2025-04-13)
 
 ### Features
