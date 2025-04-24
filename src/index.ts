@@ -1,3 +1,5 @@
+/// <reference preserve="true" path="./typings/globals.ts" />
+
 export type { ConditionalImport, ImportedModule } from './app/app.base.js';
 export { AppFactory } from './app/app.factory.js';
 export { CurrentUser } from './decorators/current-user.decorator.js';
@@ -10,6 +12,7 @@ export type {
 } from './decorators/route-access.decorator.js';
 export { ValidationSchema } from './decorators/validation-schema.decorator.js';
 export type { AppVersion, DocsConfig } from './docs/docs.factory.js';
+export { acceptLanguage } from './middleware/accept-language.middleware.js';
 export { DataTransferObject } from './mixins/data-transfer-object.mixin.js';
 export type {
   AppAbility,

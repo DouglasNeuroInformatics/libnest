@@ -1,16 +1,16 @@
 import { isPlainObject } from '@douglasneuroinformatics/libjs';
 import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 import type { OnApplicationShutdown, OnModuleInit } from '@nestjs/common';
-import { PrismaClient } from '@prisma/client';
 
 import { $MongoStats } from '../../schemas/mongo-stats.schema.js';
 import { PRISMA_CLIENT_TOKEN } from './prisma.config.js';
 
 import type { MongoStats } from '../../schemas/mongo-stats.schema.js';
+import type { ExtendedPrismaClient } from './prisma.factory.js';
 
 @Injectable()
 export class PrismaService implements OnApplicationShutdown, OnModuleInit {
-  constructor(@Inject(PRISMA_CLIENT_TOKEN) public readonly client: PrismaClient) {}
+  constructor(@Inject(PRISMA_CLIENT_TOKEN) public readonly client: ExtendedPrismaClient) {}
 
   async dropDatabase(): Promise<void> {
     const result = await this.client.$runCommandRaw({ dropDatabase: 1 });

@@ -68,18 +68,11 @@ export const loadEntry = fromAsyncThrowable(
  * @returns A `ResultAsync` containing the app container on success, or an error message on failure.
  */
 export function loadAppContainer(
-  config: Pick<UserConfigWithBaseDir, 'baseDir' | 'entry'>,
-  method: 'dynamic' | 'static' = 'static'
+  config: Pick<UserConfigWithBaseDir, 'baseDir' | 'entry'>
 ): ResultAsync<AbstractAppContainer, typeof RuntimeException.Instance> {
-  let defaultExport: ResultAsync<unknown, typeof RuntimeException.Instance>;
-  if (method === 'dynamic') {
-    defaultExport = loadEntry(config.entry);
-  } else {
-    defaultExport = parseEntryFromFunction(config.entry)
-      .map((importPath) => path.join(config.baseDir, importPath))
-      .asyncAndThen(importDefault);
-  }
-  return defaultExport
+  return parseEntryFromFunction(config.entry)
+    .map((importPath) => path.join(config.baseDir, importPath))
+    .asyncAndThen(importDefault)
     .map(async (defaultExport) => {
       const appContainer = await defaultExport;
       return appContainer;
