@@ -2,6 +2,8 @@ import type { DynamicModule, Type } from '@nestjs/common';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import type { ConditionalKeys } from 'type-fest';
 
+import { defineToken } from '../utils/token.utils.js';
+
 import type { AppVersion, DocsConfig } from '../docs/docs.factory.js';
 import type { BaseEnv } from '../schemas/env.schema.js';
 import type { AppModule } from './app.module.js';
@@ -38,3 +40,5 @@ export abstract class AbstractAppContainer<TEnv extends BaseEnv = BaseEnv> imple
 
   abstract createApplicationInstance(): Promise<NestExpressApplication>;
 }
+
+export const { CONFIGURE_USER_MIDDLEWARE_TOKEN } = defineToken('CONFIGURE_USER_MIDDLEWARE_TOKEN');

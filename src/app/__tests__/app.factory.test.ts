@@ -3,6 +3,7 @@ import { APP_FILTER, APP_GUARD, APP_PIPE } from '@nestjs/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { beforeAll, describe, expect, it, vi } from 'vitest';
+import type { Mock } from 'vitest';
 
 import { GlobalExceptionFilter } from '../../filters/global-exception.filter.js';
 import { delay } from '../../middleware/delay.middleware.js';
@@ -213,13 +214,15 @@ describe('AppFactory', () => {
       });
 
       describe('custom configuration', () => {
+        let configureMiddleware: Mock;
         let moduleRef: TestingModule;
 
         beforeAll(async () => {
           vi.stubEnv('API_RESPONSE_DELAY', '10');
           vi.stubEnv('DANGEROUSLY_DISABLE_PBKDF2_ITERATION', 'true');
           vi.stubEnv('NODE_ENV', 'development');
-          moduleRef = await createModuleRef();
+          configureMiddleware = vi.fn();
+          moduleRef = await createModuleRef({ configureMiddleware });
         });
 
         it('should provide the CryptoService with pbkdf2 iterations disabled', () => {
@@ -233,9 +236,10 @@ describe('AppFactory', () => {
           );
         });
 
-        it('should call the delay middleware', async () => {
+        it('should call the delay and custom middleware', async () => {
           const app = moduleRef.createNestApplication();
           await app.init();
+          expect(configureMiddleware).toHaveBeenCalledOnce();
           expect(delay).toHaveBeenLastCalledWith({ responseDelay: 10 });
           await app.close();
         });

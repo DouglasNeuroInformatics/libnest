@@ -1,4 +1,4 @@
-import type { Provider } from '@nestjs/common';
+import type { MiddlewareConsumer, Provider } from '@nestjs/common';
 import { APP_FILTER, APP_GUARD, APP_PIPE } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import type { Simplify } from 'type-fest';
@@ -11,6 +11,7 @@ import { LoggingModule } from '../modules/logging/logging.module.js';
 import { PrismaModule } from '../modules/prisma/prisma.module.js';
 import { ValidationPipe } from '../pipes/validation.pipe.js';
 import { parseEnv } from '../utils/env.utils.js';
+import { CONFIGURE_USER_MIDDLEWARE_TOKEN } from './app.base.js';
 import { AppContainer } from './app.container.js';
 import { AppModule } from './app.module.js';
 
@@ -25,6 +26,7 @@ export type CreateAppOptions<
   TPrismaGlobalOmitConfig extends DefaultPrismaGlobalOmitConfig = DefaultPrismaGlobalOmitConfig
 > = Simplify<
   Omit<AppContainerParams, 'envConfig' | 'module'> & {
+    configureMiddleware?: (consumer: MiddlewareConsumer) => void;
     envSchema: TEnvSchema;
     imports?: (ConditionalImport<z.TypeOf<TEnvSchema>> | ImportedModule)[];
     prisma: PrismaModuleOptions<TPrismaGlobalOmitConfig>;
@@ -48,16 +50,16 @@ export class AppFactory {
   }
 
   static createModule({
+    configureMiddleware,
     envConfig,
     imports: userImports = [],
     prisma,
     providers: userProviders = []
-  }: {
-    envConfig: RuntimeEnv;
-    imports?: (ConditionalImport<RuntimeEnv> | ImportedModule)[];
-    prisma: PrismaModuleOptions;
-    providers?: Provider[];
-  }): DynamicAppModule {
+  }: Simplify<
+    Pick<CreateAppOptions, 'configureMiddleware' | 'imports' | 'prisma' | 'providers'> & {
+      envConfig: RuntimeEnv;
+    }
+  >): DynamicAppModule {
     const coreImports: ImportedModule[] = [
       ConfigModule.forRoot({ envConfig }),
       CryptoModule,
@@ -74,6 +76,14 @@ export class AppFactory {
         useClass: ValidationPipe
       }
     ];
+
+    if (configureMiddleware) {
+      coreProviders.push({
+        provide: CONFIGURE_USER_MIDDLEWARE_TOKEN,
+        useValue: configureMiddleware
+      });
+    }
+
     if (envConfig.THROTTLER_ENABLED) {
       coreImports.push(
         ThrottlerModule.forRoot([
@@ -99,6 +109,7 @@ export class AppFactory {
         useClass: ThrottlerGuard
       });
     }
+
     const resolvedUserImports: ImportedModule[] = [];
     for (const userImport of userImports as { [key: string]: any }[]) {
       if (userImport.module && typeof userImport.when === 'string') {
