@@ -61,4 +61,6 @@ export type InferUserConfig<T extends UserConfigOptions> = T extends {
     }
   : never;
 
+export interface CustomTypeOptions {}
+
 export interface UserConfig {}

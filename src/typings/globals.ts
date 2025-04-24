@@ -1,9 +1,10 @@
+import type { Locale } from '../middleware/accept-language.middleware.js';
 import type { AppAbility } from '../modules/auth/auth.config.js';
 
 declare global {
   namespace Express {
     interface Request {
-      locale?: string;
+      locale?: Locale;
       user?: User;
     }
     interface User {
