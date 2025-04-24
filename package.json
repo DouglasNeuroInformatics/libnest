@@ -36,7 +36,10 @@
     "libnest": "./dist/cli/bin/libnest"
   },
   "files": [
-    "dist"
+    "!/src/**/*.spec.*",
+    "!/src/**/*.test.*",
+    "/dist",
+    "/src"
   ],
   "engines": {
     "node": "22.x"
