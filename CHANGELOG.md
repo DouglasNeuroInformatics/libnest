@@ -1,5 +1,11 @@
 # Changelog
 
+## [5.1.2](https://github.com/DouglasNeuroInformatics/libnest/compare/v5.1.1...v5.1.2) (2025-04-25)
+
+### Bug Fixes
+
+* prisma type issue in odc caused by change in v5.0.0 ([0086bd2](https://github.com/DouglasNeuroInformatics/libnest/commit/0086bd2bba2ad1b1de048d8825bf3513baa0ca39))
+
 ## [5.1.1](https://github.com/DouglasNeuroInformatics/libnest/compare/v5.1.0...v5.1.1) (2025-04-25)
 
 ### Bug Fixes
