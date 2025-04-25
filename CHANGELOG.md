@@ -1,5 +1,11 @@
 # Changelog
 
+## [5.1.1](https://github.com/DouglasNeuroInformatics/libnest/compare/v5.1.0...v5.1.1) (2025-04-25)
+
+### Bug Fixes
+
+* include source in package ([9ee478f](https://github.com/DouglasNeuroInformatics/libnest/commit/9ee478f688b98b1c4c8bed63758daaa77e9e8527))
+
 ## [5.1.0](https://github.com/DouglasNeuroInformatics/libnest/compare/v5.0.0...v5.1.0) (2025-04-24)
 
 ### Features
