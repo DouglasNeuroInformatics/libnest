@@ -1,25 +1,15 @@
-import { useState } from 'react';
-import type { JSX } from 'react';
+import * as path from 'node:path';
 
 import { Injectable } from '@nestjs/common';
+import type { Response } from 'express';
 
 import { JSXService } from '../../src/index.js';
-
-const UI = (): JSX.Element => {
-  const [count, setCount] = useState(0);
-  return (
-    <div>
-      <h1>Current Count: {count}</h1>
-      <button onClick={() => setCount(count + 1)}>Increment Count</button>
-    </div>
-  );
-};
 
 @Injectable()
 export class UIService {
   constructor(private readonly jsxService: JSXService) {}
 
-  async render(): Promise<string> {
-    return this.jsxService.render(<UI />);
+  async render(response: Response): Promise<Response> {
+    return this.jsxService.render(response, path.resolve(import.meta.dirname, 'components/Root'));
   }
 }

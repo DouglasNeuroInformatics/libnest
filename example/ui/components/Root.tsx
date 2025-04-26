@@ -1,6 +1,8 @@
 import type { JSX } from 'react';
 
-export const Root = (): JSX.Element => {
+import { Counter } from './Counter.js';
+
+const Root = (): JSX.Element => {
   return (
     <html lang="en">
       <head>
@@ -9,8 +11,10 @@ export const Root = (): JSX.Element => {
         <title>Document</title>
       </head>
       <body>
-        <div id="root" />
+        <Counter />
       </body>
     </html>
   );
 };
+
+export default Root;

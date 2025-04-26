@@ -1,4 +1,5 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Res } from '@nestjs/common';
+import type { Response } from 'express';
 
 import { RouteAccess } from '../../src/index.js';
 import { UIService } from './ui.service.js';
@@ -9,7 +10,7 @@ export class UIController {
 
   @Get()
   @RouteAccess('public')
-  async render(): Promise<string> {
-    return this.uiService.render();
+  async render(@Res() response: Response): Promise<Response> {
+    return this.uiService.render(response);
   }
 }

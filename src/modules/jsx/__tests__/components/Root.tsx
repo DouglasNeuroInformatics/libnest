@@ -1,6 +1,6 @@
 import { Counter } from './Counter.js';
 
-export const Root: React.FC<{}> = () => {
+const Root: React.FC<{}> = () => {
   return (
     <html lang="en">
       <head>
