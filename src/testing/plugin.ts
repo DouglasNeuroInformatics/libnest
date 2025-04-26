@@ -26,13 +26,17 @@ const plugin = ({
         parser: {
           decorators: true,
           dynamicImport: true,
-          syntax: 'typescript'
+          syntax: 'typescript',
+          tsx: true
         },
         paths,
         target: 'esnext',
         transform: {
           decoratorMetadata: true,
-          legacyDecorator: true
+          legacyDecorator: true,
+          react: {
+            runtime: 'automatic'
+          }
         }
       },
       minify: false,
