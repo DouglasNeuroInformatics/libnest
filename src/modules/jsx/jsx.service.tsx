@@ -4,16 +4,18 @@ import { Injectable } from '@nestjs/common';
 import * as esbuild from 'esbuild';
 import type { Response } from 'express';
 
+type ResponseLike = NodeJS.WritableStream & Partial<Pick<Response, 'setHeader'>>;
+
 @Injectable()
 export class JSXService {
-  async render(response: Response, filepath: string): Promise<Response> {
+  async render<TResponse extends ResponseLike>(response: TResponse, filepath: string): Promise<TResponse> {
     const { default: Root } = (await import(filepath)) as { default: React.ComponentType };
     const bootstrapScriptContent = await this.build(filepath);
     return new Promise((resolve) => {
       const { pipe } = renderToPipeableStream(<Root />, {
         bootstrapScriptContent: bootstrapScriptContent,
         onShellReady() {
-          response.setHeader('content-type', 'text/html');
+          response.setHeader?.('content-type', 'text/html');
           resolve(pipe(response));
         }
       });
@@ -25,6 +27,7 @@ export class JSXService {
       bundle: true,
       format: 'esm',
       jsx: 'automatic',
+      minify: true,
       platform: 'browser',
       stdin: {
         contents: [
