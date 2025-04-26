@@ -5,11 +5,15 @@ import { config } from '@douglasneuroinformatics/eslint-config';
 export default config(
   {
     env: {
-      browser: false,
+      browser: true,
       es2021: true,
       node: true
     },
     exclude: ['build/**/*', 'dist/**/*'],
+    react: {
+      enabled: true,
+      version: '19'
+    },
     typescript: {
       enabled: true,
       explicitReturnTypes: true,
