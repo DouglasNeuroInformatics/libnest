@@ -2,17 +2,14 @@
 
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 
-import { InjectPrismaClient, JSXService } from '../../src/index.js';
+import { InjectPrismaClient } from '../../src/index.js';
 
 import type { ExtendedPrismaClient } from '../../src/index.js';
 import type { Cat } from './schemas/cat.schema.js';
 
 @Injectable()
 export class CatsService {
-  constructor(
-    @InjectPrismaClient() private readonly prismaClient: ExtendedPrismaClient,
-    private readonly jsxService: JSXService
-  ) {}
+  constructor(@InjectPrismaClient() private readonly prismaClient: ExtendedPrismaClient) {}
 
   async create(cat: Omit<Cat, '_id'>): Promise<Cat> {
     const id = crypto.randomUUID();
@@ -35,9 +32,5 @@ export class CatsService {
       throw new InternalServerErrorException('Failed to find cats');
     }
     return result.cursor.firstBatch;
-  }
-
-  async view(): Promise<string> {
-    return this.jsxService.render();
   }
 }

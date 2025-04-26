@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 import { $BaseEnv, AppFactory, AuthModule, CryptoService } from '../src/index.js';
 import { CatsModule } from './cats/cats.module.js';
+import { UIModule } from './ui/ui.module.js';
 
 import type { UserQueryResult } from '../src/index.js';
 
@@ -44,7 +45,8 @@ export default AppFactory.create({
         };
       }
     }),
-    CatsModule
+    CatsModule,
+    UIModule
   ],
   prisma: {
     dbPrefix: 'libnest-example',

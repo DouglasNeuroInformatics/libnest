@@ -24,11 +24,4 @@ export class CatsController {
   async findAll(): Promise<Cat[]> {
     return this.catsService.findAll();
   }
-
-  @ApiOperation({ summary: 'View All Cats' })
-  @Get('view')
-  @RouteAccess('public') // REMOVE
-  async view(): Promise<string> {
-    return this.catsService.view();
-  }
 }
