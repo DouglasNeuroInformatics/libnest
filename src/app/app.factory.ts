@@ -18,8 +18,7 @@ import { AppModule } from './app.module.js';
 import type { DefaultPrismaGlobalOmitConfig, PrismaModuleOptions } from '../modules/prisma/prisma.config.js';
 import type { RuntimeEnv } from '../schemas/env.schema.js';
 import type { BaseEnvSchema } from '../utils/env.utils.js';
-import type { ConditionalImport, DynamicAppModule, ImportedModule } from './app.base.js';
-import type { AppContainerParams } from './app.container.js';
+import type { AppContainerParams, ConditionalImport, DynamicAppModule, ImportedModule } from './app.base.js';
 
 export type CreateAppOptions<
   TEnvSchema extends BaseEnvSchema = BaseEnvSchema,
