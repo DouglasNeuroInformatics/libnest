@@ -1,13 +1,10 @@
-import * as path from 'path';
-
 import { Body, Controller, Get, Post } from '@nestjs/common';
 import { ApiOperation } from '@nestjs/swagger';
 
-import { RenderComponent, RouteAccess } from '../../src/index.js';
+import { RouteAccess } from '../../src/index.js';
 import { CatsService } from './cats.service.js';
 import { CreateCatDto } from './dto/create-cat.dto.js';
 
-import type { CatsProps } from './components/Cats.js';
 import type { Cat } from './schemas/cat.schema.js';
 
 @Controller('cats')
@@ -26,14 +23,5 @@ export class CatsController {
   @RouteAccess({ action: 'read', subject: 'Cat' })
   async findAll(): Promise<Cat[]> {
     return this.catsService.findAll();
-  }
-
-  @Get('ui')
-  @RenderComponent({ filepath: path.resolve(import.meta.dirname, 'components/Cats.tsx') })
-  @RouteAccess('public')
-  async render(): Promise<CatsProps> {
-    return {
-      cats: await this.catsService.findAll()
-    };
   }
 }

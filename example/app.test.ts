@@ -11,6 +11,13 @@ import type { Cat } from './cats/schemas/cat.schema.js';
 vi.unmock('@prisma/client');
 
 e2e(app, ({ api }) => {
+  describe('/', (it) => {
+    it('should render the UI', async () => {
+      const response = await api.get('/');
+      expect(response.type).toBe('text/html');
+    });
+  });
+
   describe('/docs', (it) => {
     it('should configure the documentation spec', async () => {
       const response = await api.get('/docs/spec.json');
@@ -97,11 +104,6 @@ e2e(app, ({ api }) => {
       const response = await api.get('/cats').set('Authorization', `Bearer ${accessToken}`);
       expect(response.status).toBe(200);
       expect(response.body).toStrictEqual([createdCat]);
-    });
-
-    it('should render the UI', async () => {
-      const response = await api.get('/cats/ui').set('Authorization', `Bearer ${accessToken}`);
-      expect(response.type).toBe('text/html');
     });
   });
 });

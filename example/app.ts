@@ -1,11 +1,13 @@
 import { z } from 'zod';
 
 import { $BaseEnv, AppFactory, AuthModule, CryptoService } from '../src/index.js';
+import { AppController } from './app.controller.js';
 import { CatsModule } from './cats/cats.module.js';
 
 import type { UserQueryResult } from '../src/index.js';
 
 export default AppFactory.create({
+  controllers: [AppController],
   docs: {
     path: '/docs',
     title: 'Example API'
