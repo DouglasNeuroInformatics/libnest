@@ -7,6 +7,7 @@ import { RenderComponent, RouteAccess } from '../../src/index.js';
 import { CatsService } from './cats.service.js';
 import { CreateCatDto } from './dto/create-cat.dto.js';
 
+import type { CatsProps } from './components/Cats.js';
 import type { Cat } from './schemas/cat.schema.js';
 
 @Controller('cats')
@@ -28,11 +29,11 @@ export class CatsController {
   }
 
   @Get('ui')
-  @RenderComponent({ filepath: path.resolve(import.meta.dirname, 'components/Counter.tsx') })
+  @RenderComponent({ filepath: path.resolve(import.meta.dirname, 'components/Cats.tsx') })
   @RouteAccess('public')
-  render(): any {
+  async render(): Promise<CatsProps> {
     return {
-      initialCount: 1
+      cats: await this.catsService.findAll()
     };
   }
 }
