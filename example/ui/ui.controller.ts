@@ -1,6 +1,8 @@
-import { Controller, Get, Res } from '@nestjs/common';
-import type { Response } from 'express';
+import * as path from 'node:path';
 
+import { Controller, Get } from '@nestjs/common';
+
+import { RenderComponent } from '../../src/decorators/render-component.decorator.js';
 import { RouteAccess } from '../../src/index.js';
 import { UIService } from './ui.service.js';
 
@@ -9,8 +11,11 @@ export class UIController {
   constructor(private readonly uiService: UIService) {}
 
   @Get()
+  @RenderComponent({ filepath: path.resolve(import.meta.dirname, 'components/Counter.tsx') })
   @RouteAccess('public')
-  async render(@Res() response: Response): Promise<Response> {
-    return this.uiService.render(response);
+  render(): any {
+    return {
+      initialCount: 1
+    };
   }
 }

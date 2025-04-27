@@ -1,11 +1,11 @@
-import { renderToPipeableStream } from 'react-dom/server';
+import { renderToString } from 'react-dom/server';
 
 import { Injectable } from '@nestjs/common';
-import type { ExecutionContext, NestInterceptor } from '@nestjs/common';
+import type { CallHandler, ExecutionContext, NestInterceptor } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import * as esbuild from 'esbuild';
 import type { Response } from 'express';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 
 import { RENDER_COMPONENT_METADATA_KEY } from '../decorators/render-component.decorator.js';
 
@@ -15,26 +15,37 @@ import type { RenderComponentOptions, RenderMethod } from '../decorators/render-
 export class RenderInterceptor implements NestInterceptor {
   constructor(private readonly reflector: Reflector) {}
 
-  async intercept(context: ExecutionContext): Promise<Observable<any>> {
+  async intercept(context: ExecutionContext, next: CallHandler): Promise<Observable<any>> {
     const handler = context.getHandler() as RenderMethod;
-    const props = handler();
-
-    const options = this.reflector.get<RenderComponentOptions>(RENDER_COMPONENT_METADATA_KEY, handler);
-    const { default: Root } = (await import(options.filepath)) as { default: React.ComponentType };
-    const bootstrapScriptContent = await this.build(options.filepath, props);
     const response = context.switchToHttp().getResponse<Response>();
-    response.setHeader('content-type', 'text/html');
+    const options = this.reflector.get<RenderComponentOptions>(RENDER_COMPONENT_METADATA_KEY, handler);
 
-    return new Observable<void>((subscriber) => {
-      const { pipe } = renderToPipeableStream(<Root />, {
-        bootstrapScriptContent: bootstrapScriptContent,
-        onAllReady() {
-          pipe(response);
-          subscriber.complete();
-        }
-      });
-      subscriber.next();
-    });
+    const { default: Component } = (await import(options.filepath)) as {
+      default: React.FC<{ [key: string]: unknown }>;
+    };
+
+    return next.handle().pipe(
+      map(async (props: { [key: string]: unknown }) => {
+        const script = await this.build(options.filepath, props);
+        const html = renderToString(
+          <html lang="en">
+            <head>
+              <meta charSet="UTF-8" />
+              <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+              <title>Page</title>
+            </head>
+            <body>
+              <div id="root">
+                <Component {...props} />
+              </div>
+            </body>
+            <script dangerouslySetInnerHTML={{ __html: script }} />
+          </html>
+        );
+        response.setHeader('content-type', 'text/html');
+        return html;
+      })
+    );
   }
 
   private async build(filepath: string, props: { [key: string]: unknown }): Promise<string> {
@@ -51,7 +62,8 @@ export class RenderInterceptor implements NestInterceptor {
         contents: [
           "import { hydrateRoot } from 'react-dom/client';",
           `import Root from '${filepath}';`,
-          'hydrateRoot(document, <Root {...__ROOT_PROPS} />);'
+          `const root = document.getElementById('root');`,
+          'hydrateRoot(root, <Root {...__ROOT_PROPS} />);'
         ].join('\n'),
         loader: 'tsx',
         resolveDir: import.meta.dirname
