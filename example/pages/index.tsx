@@ -29,7 +29,7 @@ const Cats: React.FC<CatsProps> = ({ cats }): JSX.Element => {
             <h3>List of Cats</h3>
             <svg
               fill="black"
-              height="13"
+              height="14"
               style={{ rotate: isListOpen ? '0deg' : '270deg' }}
               viewBox="0 0 512 512"
               width="14"

@@ -1,6 +1,7 @@
 import { randomBytes } from 'crypto';
 
-import { beforeEach, describe, expect, vi } from 'vitest';
+import { Document, Window } from 'happy-dom';
+import { afterAll, beforeAll, beforeEach, describe, expect, vi } from 'vitest';
 
 import { e2e } from '../src/testing/index.js';
 import app from './app.js';
@@ -12,9 +13,39 @@ vi.unmock('@prisma/client');
 
 e2e(app, ({ api }) => {
   describe('/', (it) => {
-    it('should render the UI', async () => {
+    let document: Document;
+    let window: Window;
+
+    beforeAll(() => {
+      window = new Window({
+        innerHeight: 768,
+        innerWidth: 1024,
+        url: 'http://localhost:5500'
+      });
+      document = window.document as any;
+    });
+
+    afterAll(async () => {
+      await window.happyDOM.close();
+    });
+
+    it('should render html', async () => {
       const response = await api.get('/');
       expect(response.type).toBe('text/html');
+    });
+
+    it('should render an interactive UI', async () => {
+      const response = await api.get('/');
+      document.write(response.text);
+      await window.happyDOM.waitUntilComplete();
+      const h1 = document.querySelector('h1')!;
+      expect(h1.innerText).toBe('Welcome to the Example App');
+      const ul = document.querySelector('ul')!;
+      expect(ul.style.display).toBe('none');
+      const button = document.querySelector('button')!;
+      button.click();
+      await window.happyDOM.waitUntilComplete();
+      expect(ul.style.display).toBe('block');
     });
   });
 

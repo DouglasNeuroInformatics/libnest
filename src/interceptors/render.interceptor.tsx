@@ -3,9 +3,9 @@ import { renderToString } from 'react-dom/server';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import type { CallHandler, ExecutionContext, NestInterceptor } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import * as esbuild from 'esbuild';
 import type { Response } from 'express';
-import { map, Observable } from 'rxjs';
+import { map } from 'rxjs';
+import type { Observable } from 'rxjs';
 
 import { RENDER_COMPONENT_METADATA_KEY } from '../decorators/render-component.decorator.js';
 
@@ -13,6 +13,8 @@ import type { RenderComponentOptions, RenderMethod } from '../decorators/render-
 
 @Injectable()
 export class RenderInterceptor implements NestInterceptor {
+  private esbuild: null | typeof import('esbuild') = null;
+
   constructor(private readonly reflector: Reflector) {}
 
   async intercept(context: ExecutionContext, next: CallHandler): Promise<Observable<any>> {
@@ -35,7 +37,7 @@ export class RenderInterceptor implements NestInterceptor {
 
     return next.handle().pipe(
       map(async (props: { [key: string]: unknown }) => {
-        const script = await this.build(filepath, props);
+        const script = await this.generateBootstrapScript(filepath, props);
         let html = '<!DOCTYPE html>\n';
         html += renderToString(
           <html lang="en">
@@ -58,8 +60,9 @@ export class RenderInterceptor implements NestInterceptor {
     );
   }
 
-  private async build(filepath: string, props: { [key: string]: unknown }): Promise<string> {
-    const result = await esbuild.build({
+  private async generateBootstrapScript(filepath: string, props: { [key: string]: unknown }): Promise<string> {
+    this.esbuild ??= await import('esbuild');
+    const result = await this.esbuild.build({
       bundle: true,
       define: {
         __ROOT_PROPS: JSON.stringify(props)
