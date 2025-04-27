@@ -1,7 +1,9 @@
+import * as path from 'path';
+
 import { Body, Controller, Get, Post } from '@nestjs/common';
 import { ApiOperation } from '@nestjs/swagger';
 
-import { RouteAccess } from '../../src/index.js';
+import { RenderComponent, RouteAccess } from '../../src/index.js';
 import { CatsService } from './cats.service.js';
 import { CreateCatDto } from './dto/create-cat.dto.js';
 
@@ -23,5 +25,14 @@ export class CatsController {
   @RouteAccess({ action: 'read', subject: 'Cat' })
   async findAll(): Promise<Cat[]> {
     return this.catsService.findAll();
+  }
+
+  @Get('ui')
+  @RenderComponent({ filepath: path.resolve(import.meta.dirname, 'components/Counter.tsx') })
+  @RouteAccess('public')
+  render(): any {
+    return {
+      initialCount: 1
+    };
   }
 }
