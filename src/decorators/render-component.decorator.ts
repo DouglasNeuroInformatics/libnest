@@ -1,4 +1,5 @@
 import { applyDecorators, SetMetadata, UseInterceptors } from '@nestjs/common';
+import type { Promisable } from 'type-fest';
 
 import { RenderInterceptor } from '../interceptors/render.interceptor.js';
 import { defineToken } from '../utils/token.utils.js';
@@ -9,7 +10,7 @@ export type RenderComponentOptions = {
   filepath: string;
 };
 
-export type RenderMethod = () => { [key: string]: unknown };
+export type RenderMethod = () => Promisable<{ [key: string]: unknown }>;
 
 export type RenderComponentDecoratorType = <T extends RenderMethod>(
   target: object,

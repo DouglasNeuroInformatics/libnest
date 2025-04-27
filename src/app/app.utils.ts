@@ -10,7 +10,7 @@ export async function configureApp(
   app: NestExpressApplication,
   options: {
     docs?: Omit<DocsConfig, 'version'>;
-    version?: AppVersion;
+    version?: AppVersion | null;
   } = {}
 ): Promise<NestExpressApplication> {
   if (options.docs) {

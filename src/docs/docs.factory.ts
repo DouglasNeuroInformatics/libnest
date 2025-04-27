@@ -25,7 +25,7 @@ export type DocsConfig = {
   path: `${string}/`;
   tags?: string[];
   title: string;
-  version?: AppVersion;
+  version?: AppVersion | null;
 };
 
 export class DocsFactory {
