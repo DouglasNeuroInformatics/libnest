@@ -60,7 +60,7 @@ describe('AppContainer', () => {
       const appContainer = new AppContainer({
         docs: {
           description: 'Test Description',
-          path: 'docs/',
+          path: '/docs',
           title: 'Test API'
         },
         envConfig: { API_PORT: 3000 } as any,
@@ -72,7 +72,7 @@ describe('AppContainer', () => {
 
       expect(mockDocsFactory.configureDocs).toHaveBeenCalledWith(mockApp, {
         description: 'Test Description',
-        path: 'docs/',
+        path: '/docs',
         title: 'Test API',
         version: '1'
       });

@@ -22,7 +22,7 @@ export type DocsConfig = {
     name: string;
     url: string;
   };
-  path: `${string}/`;
+  path: `/${string}`;
   tags?: string[];
   title: string;
   version?: AppVersion | null;

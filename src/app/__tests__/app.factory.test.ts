@@ -114,7 +114,7 @@ describe('AppFactory', () => {
       it('should create an app with docs configuration', () => {
         const docsConfig = {
           description: 'Test Description',
-          path: 'docs/' as const,
+          path: '/docs' as const,
           title: 'Test API'
         };
 
