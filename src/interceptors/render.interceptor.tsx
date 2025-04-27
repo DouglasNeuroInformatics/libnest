@@ -27,7 +27,8 @@ export class RenderInterceptor implements NestInterceptor {
     return next.handle().pipe(
       map(async (props: { [key: string]: unknown }) => {
         const script = await this.build(options.filepath, props);
-        const html = renderToString(
+        let html = '<!DOCTYPE html>\n';
+        html += renderToString(
           <html lang="en">
             <head>
               <meta charSet="UTF-8" />
