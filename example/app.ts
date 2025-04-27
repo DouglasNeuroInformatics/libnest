@@ -50,5 +50,5 @@ export default AppFactory.create({
     dbPrefix: 'libnest-example',
     useInMemoryDbForTesting: true
   },
-  version: '1'
+  version: null
 });
