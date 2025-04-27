@@ -48,6 +48,9 @@ export default AppFactory.create({
     }),
     CatsModule
   ],
+  jsx: {
+    baseDir: import.meta.dirname
+  },
   prisma: {
     dbPrefix: 'libnest-example',
     useInMemoryDbForTesting: true

@@ -20,30 +20,37 @@ const rxjs = vi.hoisted(() => ({
 vi.mock('rxjs', () => rxjs);
 
 describe('RenderInterceptor', () => {
-  const httpAdapter: MockedInstance<HttpAdapterHost> = {
-    getRequest: vi.fn(),
-    getResponse: vi.fn().mockReturnValue({
-      setHeader: vi.fn()
-    })
-  };
-  const context: MockedInstance<ExecutionContext> = {
-    getArgByIndex: vi.fn(),
-    getArgs: vi.fn(),
-    getClass: vi.fn(),
-    getHandler: vi.fn(),
-    getType: vi.fn(),
-    switchToHttp: vi.fn().mockReturnValue(httpAdapter),
-    switchToRpc: vi.fn(),
-    switchToWs: vi.fn()
-  };
-  const next: MockedInstance<CallHandler> = {
-    handle: vi.fn()
-  };
-  const reflector: MockedInstance<Reflector> = MockFactory.createMock(Reflector);
-
-  const renderInterceptor = new RenderInterceptor(reflector);
-
+  describe('constructor', () => {
+    it('should throw if the the options have not been configured', () => {
+      expect(() => new RenderInterceptor(undefined, new Reflector())).toThrow(
+        'Cannot use RenderInterceptor without configuring jsx options: this should be configured in the AppFactory'
+      );
+    });
+  });
   describe('intercept', () => {
+    const httpAdapter: MockedInstance<HttpAdapterHost> = {
+      getRequest: vi.fn(),
+      getResponse: vi.fn().mockReturnValue({
+        setHeader: vi.fn()
+      })
+    };
+    const context: MockedInstance<ExecutionContext> = {
+      getArgByIndex: vi.fn(),
+      getArgs: vi.fn(),
+      getClass: vi.fn(),
+      getHandler: vi.fn(),
+      getType: vi.fn(),
+      switchToHttp: vi.fn().mockReturnValue(httpAdapter),
+      switchToRpc: vi.fn(),
+      switchToWs: vi.fn()
+    };
+    const next: MockedInstance<CallHandler> = {
+      handle: vi.fn()
+    };
+    const reflector: MockedInstance<Reflector> = MockFactory.createMock(Reflector);
+
+    const renderInterceptor = new RenderInterceptor({ baseDir: '/' }, reflector);
+
     it('should throw an internal server error if it cannot import the component', async () => {
       reflector.get.mockReturnValueOnce({ filepath: '/components/hello.jsx' } satisfies RenderComponentOptions);
       await expect(renderInterceptor.intercept(context, next)).rejects.toMatchObject({

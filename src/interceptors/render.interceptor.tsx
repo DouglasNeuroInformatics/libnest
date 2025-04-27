@@ -1,6 +1,6 @@
 import { renderToString } from 'react-dom/server';
 
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Inject, Injectable, InternalServerErrorException, Optional } from '@nestjs/common';
 import type { CallHandler, ExecutionContext, NestInterceptor } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import type { Response } from 'express';
@@ -8,14 +8,32 @@ import { map } from 'rxjs';
 import type { Observable } from 'rxjs';
 
 import { RENDER_COMPONENT_METADATA_KEY } from '../decorators/render-component.decorator.js';
+import { defineToken } from '../utils/token.utils.js';
 
 import type { RenderComponentOptions, RenderMethod } from '../decorators/render-component.decorator.js';
+
+export type JSXOptions = {
+  baseDir: string;
+};
+
+export const { JSX_OPTIONS_TOKEN } = defineToken('JSX_OPTIONS_TOKEN');
 
 @Injectable()
 export class RenderInterceptor implements NestInterceptor {
   private esbuild: null | typeof import('esbuild') = null;
+  private readonly options: JSXOptions;
 
-  constructor(private readonly reflector: Reflector) {}
+  constructor(
+    @Inject(JSX_OPTIONS_TOKEN) @Optional() options: JSXOptions | undefined,
+    private readonly reflector: Reflector
+  ) {
+    if (!options) {
+      throw new Error(
+        'Cannot use RenderInterceptor without configuring jsx options: this should be configured in the AppFactory'
+      );
+    }
+    this.options = options;
+  }
 
   async intercept(context: ExecutionContext, next: CallHandler): Promise<Observable<any>> {
     const handler = context.getHandler() as RenderMethod;
