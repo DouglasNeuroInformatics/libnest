@@ -1,4 +1,4 @@
-import type { MiddlewareConsumer, Provider } from '@nestjs/common';
+import type { MiddlewareConsumer, Provider, Type } from '@nestjs/common';
 import { APP_FILTER, APP_GUARD, APP_PIPE } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import type { Simplify } from 'type-fest';
@@ -26,6 +26,7 @@ export type CreateAppOptions<
 > = Simplify<
   Omit<AppContainerParams, 'envConfig' | 'module'> & {
     configureMiddleware?: (consumer: MiddlewareConsumer) => void;
+    controllers?: Type<any>[];
     envSchema: TEnvSchema;
     imports?: (ConditionalImport<z.TypeOf<TEnvSchema>> | ImportedModule)[];
     prisma: PrismaModuleOptions<TPrismaGlobalOmitConfig>;
@@ -50,12 +51,13 @@ export class AppFactory {
 
   static createModule({
     configureMiddleware,
+    controllers,
     envConfig,
     imports: userImports = [],
     prisma,
     providers: userProviders = []
   }: Simplify<
-    Pick<CreateAppOptions, 'configureMiddleware' | 'imports' | 'prisma' | 'providers'> & {
+    Pick<CreateAppOptions, 'configureMiddleware' | 'controllers' | 'imports' | 'prisma' | 'providers'> & {
       envConfig: RuntimeEnv;
     }
   >): DynamicAppModule {
@@ -121,6 +123,7 @@ export class AppFactory {
     }
 
     return {
+      controllers,
       imports: [...coreImports, ...resolvedUserImports],
       module: AppModule,
       providers: [...coreProviders, ...userProviders]
