@@ -32,11 +32,13 @@ export class DocsFactory {
   static async configureDocs(app: NestExpressApplication, config: DocsConfig): Promise<void> {
     const document = this.createDocs(app, config);
     const httpAdapter = app.getHttpAdapter().getInstance();
-    httpAdapter.get(config.path + 'spec.json', (_, res) => {
+    const specUrl = config.path.endsWith('/') ? config.path + 'spec.json' : config.path + '/spec.json';
+    httpAdapter.get(specUrl, (_, res) => {
       res.send(document);
     });
     let html = await fs.readFile(path.resolve(import.meta.dirname, 'assets/index.html'), 'utf-8');
     html = html.replace('{{TITLE}}', config.title);
+    html = html.replace('{{SPEC_URL}}', specUrl);
     httpAdapter.get(config.path, (_, res) => {
       res.set('Content-Type', 'text/html');
       res.send(html);

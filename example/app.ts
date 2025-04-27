@@ -7,7 +7,7 @@ import type { UserQueryResult } from '../src/index.js';
 
 export default AppFactory.create({
   docs: {
-    path: '/',
+    path: '/docs',
     title: 'Example API'
   },
   envSchema: $BaseEnv,

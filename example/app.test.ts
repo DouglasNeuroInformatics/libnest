@@ -11,13 +11,13 @@ import type { Cat } from './cats/schemas/cat.schema.js';
 vi.unmock('@prisma/client');
 
 e2e(app, ({ api }) => {
-  describe('/spec.json', (it) => {
+  describe('/docs', (it) => {
     it('should configure the documentation spec', async () => {
-      const response = await api.get('/spec.json');
+      const response = await api.get('/docs/spec.json');
       expect(response.status).toBe(200);
     });
     it('should configure the documentation html', async () => {
-      const response = await api.get('/');
+      const response = await api.get('/docs');
       expect(response.status).toBe(200);
       expect(response.type).toBe('text/html');
     });
