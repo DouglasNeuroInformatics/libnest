@@ -10,6 +10,7 @@ export default defineConfig({
   test: {
     coverage: {
       exclude: [
+        'example/pages/**',
         'src/**/?(*.)index.ts',
         'src/**/*.test-d.ts',
         'src/**/*.dto.ts',
@@ -23,7 +24,6 @@ export default defineConfig({
         100: true
       }
     },
-
     globals: true,
     include: ['{example,src}/**/*.{test,spec}.?(c|m)[jt]s?(x)'],
     setupFiles: [path.resolve(import.meta.dirname, 'src/testing/setup.ts')],
