@@ -3,6 +3,7 @@
 export type { ConditionalImport, ImportedModule } from './app/app.base.js';
 export { AppFactory } from './app/app.factory.js';
 export { CurrentUser } from './decorators/current-user.decorator.js';
+export { RenderComponent } from './decorators/render-component.decorator.js';
 export { RouteAccess } from './decorators/route-access.decorator.js';
 export type {
   ProtectedRouteAccess,
@@ -28,8 +29,6 @@ export { AuthModule } from './modules/auth/auth.module.js';
 export { ConfigService } from './modules/config/config.service.js';
 export type { CryptoOptions } from './modules/crypto/crypto.config.js';
 export { CryptoService } from './modules/crypto/crypto.service.js';
-export { JSXModule } from './modules/jsx/jsx.module.js';
-export { JSXService } from './modules/jsx/jsx.service.js';
 export type { LoggingOptions } from './modules/logging/logging.config.js';
 export { LoggingService } from './modules/logging/logging.service.js';
 export type { MailModuleOptions } from './modules/mail/mail.config.js';

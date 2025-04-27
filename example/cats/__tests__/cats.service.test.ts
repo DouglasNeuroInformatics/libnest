@@ -2,9 +2,7 @@ import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { JSXService } from '../../../src/index.js';
 import { PRISMA_CLIENT_TOKEN } from '../../../src/modules/prisma/prisma.config.js';
-import { MockFactory } from '../../../src/testing/index.js';
 import { CatsService } from '../cats.service.js';
 
 import type { Cat } from '../schemas/cat.schema.js';
@@ -20,7 +18,6 @@ describe('CatsService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         CatsService,
-        MockFactory.createForService(JSXService),
         {
           provide: PRISMA_CLIENT_TOKEN,
           useValue: prismaClient

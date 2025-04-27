@@ -1,6 +1,6 @@
 import { renderToString } from 'react-dom/server';
 
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import type { CallHandler, ExecutionContext, NestInterceptor } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import * as esbuild from 'esbuild';
@@ -18,15 +18,24 @@ export class RenderInterceptor implements NestInterceptor {
   async intercept(context: ExecutionContext, next: CallHandler): Promise<Observable<any>> {
     const handler = context.getHandler() as RenderMethod;
     const response = context.switchToHttp().getResponse<Response>();
-    const options = this.reflector.get<RenderComponentOptions>(RENDER_COMPONENT_METADATA_KEY, handler);
+    const { filepath } = this.reflector.get<RenderComponentOptions>(RENDER_COMPONENT_METADATA_KEY, handler);
 
-    const { default: Component } = (await import(options.filepath)) as {
-      default: React.FC<{ [key: string]: unknown }>;
-    };
+    let Component: React.FC<{ [key: string]: unknown }>;
+    try {
+      const module = (await import(filepath)) as { [key: string]: unknown };
+      if (typeof module.default !== 'function') {
+        throw new Error(
+          `Expected default export from file '${filepath}' to be type 'function', got '${typeof module.default}'`
+        );
+      }
+      Component = module.default as React.FC<{ [key: string]: unknown }>;
+    } catch (error) {
+      throw new InternalServerErrorException('Failed to Render Page', { cause: error });
+    }
 
     return next.handle().pipe(
       map(async (props: { [key: string]: unknown }) => {
-        const script = await this.build(options.filepath, props);
+        const script = await this.build(filepath, props);
         let html = '<!DOCTYPE html>\n';
         html += renderToString(
           <html lang="en">
