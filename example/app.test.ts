@@ -23,6 +23,10 @@ e2e(app, ({ api }) => {
         url: 'http://localhost:5500'
       });
       document = window.document as any;
+
+      window.console.error = (...args) => {
+        console.error(...args);
+      };
     });
 
     afterAll(async () => {
@@ -45,6 +49,7 @@ e2e(app, ({ api }) => {
       const button = document.querySelector('button')!;
       button.click();
       await window.happyDOM.waitUntilComplete();
+
       expect(ul.style.display).toBe('block');
     });
   });

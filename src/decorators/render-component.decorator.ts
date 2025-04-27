@@ -7,7 +7,7 @@ import { defineToken } from '../utils/token.utils.js';
 export const { RENDER_COMPONENT_METADATA_KEY } = defineToken('RENDER_COMPONENT_METADATA_KEY');
 
 export type RenderComponentOptions = {
-  filepath: string;
+  name: string;
 };
 
 export type RenderMethod = () => Promisable<{ [key: string]: unknown }>;

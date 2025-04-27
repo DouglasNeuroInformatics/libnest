@@ -14,6 +14,9 @@ import type { RenderComponentOptions, RenderMethod } from '../decorators/render-
 
 export type JSXOptions = {
   baseDir: string;
+  importMap: {
+    [key: string]: () => Promise<{ [key: string]: any }>;
+  };
 };
 
 export const { JSX_OPTIONS_TOKEN } = defineToken('JSX_OPTIONS_TOKEN');
@@ -21,6 +24,7 @@ export const { JSX_OPTIONS_TOKEN } = defineToken('JSX_OPTIONS_TOKEN');
 @Injectable()
 export class RenderInterceptor implements NestInterceptor {
   private esbuild: null | typeof import('esbuild') = null;
+  private readonly importKeys: string[];
   private readonly options: JSXOptions;
 
   constructor(
@@ -32,20 +36,25 @@ export class RenderInterceptor implements NestInterceptor {
         'Cannot use RenderInterceptor without configuring jsx options: this should be configured in the AppFactory'
       );
     }
+    this.importKeys = Object.keys(options.importMap);
     this.options = options;
   }
 
   async intercept(context: ExecutionContext, next: CallHandler): Promise<Observable<any>> {
     const handler = context.getHandler() as RenderMethod;
     const response = context.switchToHttp().getResponse<Response>();
-    const { filepath } = this.reflector.get<RenderComponentOptions>(RENDER_COMPONENT_METADATA_KEY, handler);
+    const { name } = this.reflector.get<RenderComponentOptions>(RENDER_COMPONENT_METADATA_KEY, handler);
 
     let Component: React.FC<{ [key: string]: unknown }>;
     try {
-      const module = (await import(filepath)) as { [key: string]: unknown };
+      const load = this.options.importMap[name];
+      if (!load) {
+        throw new Error(`Cannot load component '${name}' from provided import keys: ${this.importKeys.join(', ')}`);
+      }
+      const module = await load();
       if (typeof module.default !== 'function') {
         throw new Error(
-          `Expected default export from file '${filepath}' to be type 'function', got '${typeof module.default}'`
+          `Expected default export for component '${name}' to be type 'function', got '${typeof module.default}'`
         );
       }
       Component = module.default as React.FC<{ [key: string]: unknown }>;
@@ -55,7 +64,7 @@ export class RenderInterceptor implements NestInterceptor {
 
     return next.handle().pipe(
       map(async (props: { [key: string]: unknown }) => {
-        const script = await this.generateBootstrapScript(filepath, props);
+        const script = await this.generateBootstrapScript(name, props);
         let html = '<!DOCTYPE html>\n';
         html += renderToString(
           <html lang="en">
@@ -69,7 +78,7 @@ export class RenderInterceptor implements NestInterceptor {
                 <Component {...props} />
               </div>
             </body>
-            <script dangerouslySetInnerHTML={{ __html: script }} />
+            <script dangerouslySetInnerHTML={{ __html: script }} type="module" />
           </html>
         );
         response.setHeader('content-type', 'text/html');
@@ -78,26 +87,27 @@ export class RenderInterceptor implements NestInterceptor {
     );
   }
 
-  private async generateBootstrapScript(filepath: string, props: { [key: string]: unknown }): Promise<string> {
+  private async generateBootstrapScript(name: string, props: { [key: string]: unknown }): Promise<string> {
     this.esbuild ??= await import('esbuild');
+    const importFn = this.options.importMap[name]!;
     const result = await this.esbuild.build({
       bundle: true,
       define: {
-        __ROOT_PROPS: JSON.stringify(props)
+        __LIBNEST_PROPS: JSON.stringify(props)
       },
       format: 'esm',
       jsx: 'automatic',
-      minify: true,
+      minify: false,
       platform: 'browser',
       stdin: {
         contents: [
           "import { hydrateRoot } from 'react-dom/client';",
-          `import Root from '${filepath}';`,
-          `const root = document.getElementById('root');`,
-          'hydrateRoot(root, <Root {...__ROOT_PROPS} />);'
+          `const __LIBNEST_IMPORT = ${importFn.toString()};`,
+          `const __LIBNEST_APP = (await __LIBNEST_IMPORT()).default;`,
+          'hydrateRoot(document.getElementById("root"), <__LIBNEST_APP {...__LIBNEST_PROPS} />);'
         ].join('\n'),
         loader: 'tsx',
-        resolveDir: import.meta.dirname
+        resolveDir: this.options.baseDir
       },
       target: 'es2022',
       write: false

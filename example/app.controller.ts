@@ -1,5 +1,3 @@
-import * as path from 'path';
-
 import { Controller, Get } from '@nestjs/common';
 
 import { RenderComponent, RouteAccess } from '../src/index.js';
@@ -12,7 +10,7 @@ export class AppController {
   constructor(private readonly catsService: CatsService) {}
 
   @Get()
-  @RenderComponent({ filepath: path.resolve(import.meta.dirname, 'pages/index.tsx') })
+  @RenderComponent({ name: 'index' })
   @RouteAccess('public')
   async render(): Promise<CatsProps> {
     return {

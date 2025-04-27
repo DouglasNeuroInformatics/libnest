@@ -11,6 +11,7 @@ import type { MockedInstance } from '../../testing/index.js';
 const esbuild = {
   build: vi.fn()
 };
+
 vi.doMock('esbuild', () => esbuild);
 
 const rxjs = vi.hoisted(() => ({
@@ -49,29 +50,55 @@ describe('RenderInterceptor', () => {
     };
     const reflector: MockedInstance<Reflector> = MockFactory.createMock(Reflector);
 
-    const renderInterceptor = new RenderInterceptor({ baseDir: '/' }, reflector);
+    const importHello = vi.fn();
+
+    const renderInterceptor = new RenderInterceptor(
+      {
+        baseDir: '/',
+        importMap: {
+          hello: importHello
+        }
+      },
+      reflector
+    );
+
+    it('should throw an internal server error if the component does not exist in the import map', async () => {
+      reflector.get.mockReturnValueOnce({ name: 'foo' } satisfies RenderComponentOptions);
+      await expect(renderInterceptor.intercept(context, next)).rejects.toMatchObject({
+        cause: {
+          message: "Cannot load component 'foo' from provided import keys: hello"
+        },
+        message: 'Failed to Render Page',
+        name: 'InternalServerErrorException'
+      });
+    });
 
     it('should throw an internal server error if it cannot import the component', async () => {
-      reflector.get.mockReturnValueOnce({ filepath: '/components/hello.jsx' } satisfies RenderComponentOptions);
+      reflector.get.mockReturnValueOnce({ name: 'hello' } satisfies RenderComponentOptions);
+      importHello.mockImplementationOnce(() => {
+        throw new Error('Import failed!');
+      });
       await expect(renderInterceptor.intercept(context, next)).rejects.toMatchObject({
         cause: {
-          message: expect.stringMatching(/^Failed to load url \/components\/hello.jsx/)
+          message: 'Import failed!'
         },
         message: 'Failed to Render Page',
         name: 'InternalServerErrorException'
       });
     });
+
     it('should throw an internal server error if the default export from the requested file is not a function', async () => {
-      reflector.get.mockReturnValueOnce({ filepath: '/components/hello.jsx' } satisfies RenderComponentOptions);
-      vi.doMock('/components/hello.jsx', () => ({ default: undefined }));
+      reflector.get.mockReturnValueOnce({ name: 'hello' } satisfies RenderComponentOptions);
+      importHello.mockReturnValueOnce({ default: undefined });
       await expect(renderInterceptor.intercept(context, next)).rejects.toMatchObject({
         cause: {
-          message: "Expected default export from file '/components/hello.jsx' to be type 'function', got 'undefined'"
+          message: "Expected default export for component 'hello' to be type 'function', got 'undefined'"
         },
         message: 'Failed to Render Page',
         name: 'InternalServerErrorException'
       });
     });
+
     it('should call the handler', async () => {
       esbuild.build.mockResolvedValueOnce({
         outputFiles: [
@@ -81,10 +108,8 @@ describe('RenderInterceptor', () => {
           }
         ]
       });
-      reflector.get.mockReturnValueOnce({ filepath: '/components/hello.jsx' } satisfies RenderComponentOptions);
-      vi.doMock('/components/hello.jsx', () => ({
-        default: ({ name }: { name: string }) => <h1>{`Hello, ${name}`}</h1>
-      }));
+      reflector.get.mockReturnValueOnce({ name: 'hello' } satisfies RenderComponentOptions);
+      importHello.mockResolvedValueOnce({ default: ({ name }: { name: string }) => <h1>{`Hello, ${name}`}</h1> });
       next.handle.mockReturnValueOnce({ pipe: vi.fn() });
       await expect(renderInterceptor.intercept(context, next)).resolves.not.toThrow();
       expect(next.handle).toHaveBeenCalledOnce();

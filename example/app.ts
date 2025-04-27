@@ -49,7 +49,10 @@ export default AppFactory.create({
     CatsModule
   ],
   jsx: {
-    baseDir: import.meta.dirname
+    baseDir: import.meta.dirname,
+    importMap: {
+      index: () => import('./pages/index.js')
+    }
   },
   prisma: {
     dbPrefix: 'libnest-example',
