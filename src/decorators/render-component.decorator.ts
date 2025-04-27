@@ -9,6 +9,14 @@ export type RenderComponentOptions = {
   filepath: string;
 };
 
-export const RenderComponent = (options: RenderComponentOptions): MethodDecorator => {
+export type RenderMethod = () => { [key: string]: unknown };
+
+export type RenderComponentDecoratorType = <T extends RenderMethod>(
+  target: object,
+  propertyKey: string | symbol,
+  descriptor: TypedPropertyDescriptor<T>
+) => void;
+
+export const RenderComponent = (options: RenderComponentOptions): RenderComponentDecoratorType => {
   return applyDecorators(SetMetadata(RENDER_COMPONENT_METADATA_KEY, options), UseInterceptors(RenderInterceptor));
 };
