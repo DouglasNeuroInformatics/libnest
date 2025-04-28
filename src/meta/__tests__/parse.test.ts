@@ -24,6 +24,15 @@ describe('parseDefaultExport', () => {
       }
     });
   });
+  it('should return an error if the default export has multiple references', () => {
+    const sourceCode = 'var config = {}; var config = {}; export default config;';
+    const sourceFile = project.createSourceFile('config.ts', sourceCode, { overwrite: true });
+    expect(parseDefaultExport(sourceFile)).toMatchObject({
+      error: {
+        message: "Default export symbol in 'config.ts' has multiple declarations (2)"
+      }
+    });
+  });
 });
 
 describe('parseEntryFromFunction', () => {
