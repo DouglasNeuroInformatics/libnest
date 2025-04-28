@@ -1,10 +1,11 @@
-import type { MiddlewareConsumer, Provider } from '@nestjs/common';
+import type { MiddlewareConsumer, Provider, Type } from '@nestjs/common';
 import { APP_FILTER, APP_GUARD, APP_PIPE } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import type { Simplify } from 'type-fest';
 import type { z } from 'zod';
 
 import { GlobalExceptionFilter } from '../filters/global-exception.filter.js';
+import { JSX_OPTIONS_TOKEN } from '../interceptors/render.interceptor.js';
 import { ConfigModule } from '../modules/config/config.module.js';
 import { CryptoModule } from '../modules/crypto/crypto.module.js';
 import { LoggingModule } from '../modules/logging/logging.module.js';
@@ -15,11 +16,11 @@ import { CONFIGURE_USER_MIDDLEWARE_TOKEN } from './app.base.js';
 import { AppContainer } from './app.container.js';
 import { AppModule } from './app.module.js';
 
+import type { JSXOptions } from '../interceptors/render.interceptor.js';
 import type { DefaultPrismaGlobalOmitConfig, PrismaModuleOptions } from '../modules/prisma/prisma.config.js';
 import type { RuntimeEnv } from '../schemas/env.schema.js';
 import type { BaseEnvSchema } from '../utils/env.utils.js';
-import type { ConditionalImport, DynamicAppModule, ImportedModule } from './app.base.js';
-import type { AppContainerParams } from './app.container.js';
+import type { AppContainerParams, ConditionalImport, DynamicAppModule, ImportedModule } from './app.base.js';
 
 export type CreateAppOptions<
   TEnvSchema extends BaseEnvSchema = BaseEnvSchema,
@@ -27,8 +28,10 @@ export type CreateAppOptions<
 > = Simplify<
   Omit<AppContainerParams, 'envConfig' | 'module'> & {
     configureMiddleware?: (consumer: MiddlewareConsumer) => void;
+    controllers?: Type<any>[];
     envSchema: TEnvSchema;
     imports?: (ConditionalImport<z.TypeOf<TEnvSchema>> | ImportedModule)[];
+    jsx?: JSXOptions;
     prisma: PrismaModuleOptions<TPrismaGlobalOmitConfig>;
     providers?: Provider[];
   }
@@ -51,12 +54,14 @@ export class AppFactory {
 
   static createModule({
     configureMiddleware,
+    controllers,
     envConfig,
     imports: userImports = [],
+    jsx,
     prisma,
     providers: userProviders = []
   }: Simplify<
-    Pick<CreateAppOptions, 'configureMiddleware' | 'imports' | 'prisma' | 'providers'> & {
+    Pick<CreateAppOptions, 'configureMiddleware' | 'controllers' | 'imports' | 'jsx' | 'prisma' | 'providers'> & {
       envConfig: RuntimeEnv;
     }
   >): DynamicAppModule {
@@ -81,6 +86,12 @@ export class AppFactory {
       coreProviders.push({
         provide: CONFIGURE_USER_MIDDLEWARE_TOKEN,
         useValue: configureMiddleware
+      });
+    }
+    if (jsx) {
+      coreProviders.push({
+        provide: JSX_OPTIONS_TOKEN,
+        useValue: jsx
       });
     }
 
@@ -122,6 +133,7 @@ export class AppFactory {
     }
 
     return {
+      controllers,
       imports: [...coreImports, ...resolvedUserImports],
       module: AppModule,
       providers: [...coreProviders, ...userProviders]

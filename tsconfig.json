@@ -5,6 +5,8 @@
     "checkJs": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
+    "jsx": "react-jsx",
+    "lib": ["DOM", "ESNext"],
     "maxNodeModuleJsDepth": 0,
     "resolveJsonModule": true,
     "strictPropertyInitialization": false

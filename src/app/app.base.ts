@@ -23,14 +23,14 @@ export type AppContainerParams<TEnv extends BaseEnv = BaseEnv> = {
   docs?: Omit<DocsConfig, 'version'>;
   envConfig: TEnv;
   module: DynamicAppModule;
-  version: AppVersion;
+  version: AppVersion | null;
 };
 
 export abstract class AbstractAppContainer<TEnv extends BaseEnv = BaseEnv> implements AppContainerParams<TEnv> {
   readonly docs?: Omit<DocsConfig, 'version'>;
   readonly envConfig: TEnv;
   readonly module: DynamicAppModule;
-  readonly version: AppVersion;
+  readonly version: AppVersion | null;
 
   constructor(params: AppContainerParams<TEnv>) {
     Object.assign(this, params);

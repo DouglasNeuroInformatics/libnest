@@ -10,6 +10,7 @@ export default defineConfig({
   test: {
     coverage: {
       exclude: [
+        'example/pages/**',
         'src/**/?(*.)index.ts',
         'src/**/*.test-d.ts',
         'src/**/*.dto.ts',

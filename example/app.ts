@@ -1,13 +1,15 @@
 import { z } from 'zod';
 
 import { $BaseEnv, AppFactory, AuthModule, CryptoService } from '../src/index.js';
+import { AppController } from './app.controller.js';
 import { CatsModule } from './cats/cats.module.js';
 
 import type { UserQueryResult } from '../src/index.js';
 
 export default AppFactory.create({
+  controllers: [AppController],
   docs: {
-    path: '/',
+    path: '/docs',
     title: 'Example API'
   },
   envSchema: $BaseEnv,
@@ -46,9 +48,15 @@ export default AppFactory.create({
     }),
     CatsModule
   ],
+  jsx: {
+    baseDir: import.meta.dirname,
+    importMap: {
+      index: () => import('./pages/index.js')
+    }
+  },
   prisma: {
     dbPrefix: 'libnest-example',
     useInMemoryDbForTesting: true
   },
-  version: '1'
+  version: null
 });
