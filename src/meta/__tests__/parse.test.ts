@@ -1,8 +1,8 @@
 import type { Ok } from 'neverthrow';
-import { ExportAssignment, Project, SyntaxKind } from 'ts-morph';
+import { ExportAssignment, Project, SyntaxKind, VariableDeclaration } from 'ts-morph';
 import { describe, expect, it } from 'vitest';
 
-import { parseDefaultExportAssignment, parseEntryFromFunction } from '../parse.js';
+import { parseDefaultExportNode, parseEntryFromFunction } from '../parse.js';
 
 const project = new Project({
   useInMemoryFileSystem: true
@@ -12,11 +12,11 @@ function createTestSourceFile(filepath: string, content: string) {
   return project.createSourceFile(filepath, content, { overwrite: true });
 }
 
-describe('parseDefaultExportAssignment', () => {
+describe('parseDefaultExportNode', () => {
   it('should return an error if the source code does not contain a default export', () => {
     const sourceCode = "const config = { value: 'foo' };";
     const sourceFile = createTestSourceFile('config.ts', sourceCode);
-    expect(parseDefaultExportAssignment(sourceFile)).toMatchObject({
+    expect(parseDefaultExportNode(sourceFile)).toMatchObject({
       error: {
         message: "Source file 'config.ts' does not include a default export symbol"
       }
@@ -25,7 +25,7 @@ describe('parseDefaultExportAssignment', () => {
   it('should return an error if the default export does not reference anything', () => {
     const sourceCode = 'export default config;';
     const sourceFile = createTestSourceFile('config.ts', sourceCode);
-    expect(parseDefaultExportAssignment(sourceFile)).toMatchObject({
+    expect(parseDefaultExportNode(sourceFile)).toMatchObject({
       error: {
         message: "Default export symbol in 'config.ts' has no declarations"
       }
@@ -34,7 +34,7 @@ describe('parseDefaultExportAssignment', () => {
   it('should return an error if the default export has multiple references', () => {
     const sourceCode = 'var config = {}; var config = {}; export default config;';
     const sourceFile = createTestSourceFile('config.ts', sourceCode);
-    expect(parseDefaultExportAssignment(sourceFile)).toMatchObject({
+    expect(parseDefaultExportNode(sourceFile)).toMatchObject({
       error: {
         message: "Default export symbol in 'config.ts' has multiple declarations (2)"
       }
@@ -42,10 +42,16 @@ describe('parseDefaultExportAssignment', () => {
   });
   it('should succeed on a simple default export (primitive)', () => {
     const file = createTestSourceFile('primitive.ts', `export default 123;`);
-    const result = parseDefaultExportAssignment(file) as Ok<ExportAssignment, never>;
+    const result = parseDefaultExportNode(file) as Ok<ExportAssignment, never>;
     expect(result.isOk()).toBe(true);
     expect(result.value.getKind()).toBe(SyntaxKind.ExportAssignment);
     expect(result.value.getExpression().getText()).toBe('123');
+  });
+  it('should succeed on a named variable default export', () => {
+    const file = createTestSourceFile('variable.ts', `const myVar = { a: 1 }; export default myVar;`);
+    const result = parseDefaultExportNode(file) as Ok<VariableDeclaration, never>;
+    expect(result.isOk()).toBe(true);
+    expect(result.value.getKind()).toBe(SyntaxKind.VariableDeclaration);
   });
 });
 
