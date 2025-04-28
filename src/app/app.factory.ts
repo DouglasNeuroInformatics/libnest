@@ -5,7 +5,6 @@ import type { Simplify } from 'type-fest';
 import type { z } from 'zod';
 
 import { GlobalExceptionFilter } from '../filters/global-exception.filter.js';
-import { JSX_OPTIONS_TOKEN } from '../interceptors/render.interceptor.js';
 import { ConfigModule } from '../modules/config/config.module.js';
 import { CryptoModule } from '../modules/crypto/crypto.module.js';
 import { LoggingModule } from '../modules/logging/logging.module.js';
@@ -16,7 +15,6 @@ import { CONFIGURE_USER_MIDDLEWARE_TOKEN } from './app.base.js';
 import { AppContainer } from './app.container.js';
 import { AppModule } from './app.module.js';
 
-import type { JSXOptions } from '../interceptors/render.interceptor.js';
 import type { DefaultPrismaGlobalOmitConfig, PrismaModuleOptions } from '../modules/prisma/prisma.config.js';
 import type { RuntimeEnv } from '../schemas/env.schema.js';
 import type { BaseEnvSchema } from '../utils/env.utils.js';
@@ -31,7 +29,6 @@ export type CreateAppOptions<
     controllers?: Type<any>[];
     envSchema: TEnvSchema;
     imports?: (ConditionalImport<z.TypeOf<TEnvSchema>> | ImportedModule)[];
-    jsx?: JSXOptions;
     prisma: PrismaModuleOptions<TPrismaGlobalOmitConfig>;
     providers?: Provider[];
   }
@@ -57,11 +54,10 @@ export class AppFactory {
     controllers,
     envConfig,
     imports: userImports = [],
-    jsx,
     prisma,
     providers: userProviders = []
   }: Simplify<
-    Pick<CreateAppOptions, 'configureMiddleware' | 'controllers' | 'imports' | 'jsx' | 'prisma' | 'providers'> & {
+    Pick<CreateAppOptions, 'configureMiddleware' | 'controllers' | 'imports' | 'prisma' | 'providers'> & {
       envConfig: RuntimeEnv;
     }
   >): DynamicAppModule {
@@ -86,12 +82,6 @@ export class AppFactory {
       coreProviders.push({
         provide: CONFIGURE_USER_MIDDLEWARE_TOKEN,
         useValue: configureMiddleware
-      });
-    }
-    if (jsx) {
-      coreProviders.push({
-        provide: JSX_OPTIONS_TOKEN,
-        useValue: jsx
       });
     }
 
