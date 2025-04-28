@@ -14,7 +14,12 @@ declare global {
       ability?: AppAbility;
     }
   }
-  var __LIBNEST_STATIC: {
-    componentMap: any;
-  };
+  interface LibnestStatic {
+    jsx?: {
+      importMap: {
+        [key: string]: string;
+      };
+    };
+  }
+  var __LIBNEST_STATIC: LibnestStatic;
 }
