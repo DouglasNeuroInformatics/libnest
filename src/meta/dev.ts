@@ -1,7 +1,7 @@
 import type { RuntimeException } from '@douglasneuroinformatics/libjs';
 import type { ResultAsync } from 'neverthrow';
 
-import { loadAppContainer, loadUserConfig } from './load.js';
+import { generateStatic, loadAppContainer, loadUserConfig } from './load.js';
 import { resolveAbsoluteImportPath } from './resolve.js';
 
 import type { NodeEnv } from '../schemas/env.schema.js';
@@ -18,12 +18,7 @@ export function runDev(configFile: string): ResultAsync<void, typeof RuntimeExce
     .andThen((config) => {
       const globals = {
         ...config.globals,
-        __LIBNEST_STATIC: {
-          configFile: configFile,
-          jsx: {
-            importMap: {}
-          }
-        } satisfies LibnestStatic
+        __LIBNEST_STATIC: generateStatic({ configFile, ...config })
       };
       Object.entries(globals).forEach(([key, value]) => {
         Object.defineProperty(globalThis, key, {

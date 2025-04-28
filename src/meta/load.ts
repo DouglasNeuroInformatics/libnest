@@ -85,4 +85,13 @@ export function loadAppContainer(
     });
 }
 
+export function generateStatic({ configFile }: UserConfigOptions & { configFile: string }): LibnestStatic {
+  return {
+    configFile,
+    jsx: {
+      importMap: {}
+    }
+  };
+}
+
 export type { UserConfigWithBaseDir };
