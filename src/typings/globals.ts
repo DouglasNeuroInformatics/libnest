@@ -1,3 +1,5 @@
+/* eslint-disable no-var */
+
 import type { Locale } from '../middleware/accept-language.middleware.js';
 import type { AppAbility } from '../modules/auth/auth.config.js';
 
@@ -12,4 +14,7 @@ declare global {
       ability?: AppAbility;
     }
   }
+  var __LIBNEST_STATIC: {
+    componentMap: any;
+  };
 }
