@@ -1,9 +1,43 @@
-import { RuntimeException } from '@douglasneuroinformatics/libjs';
+import { ExceptionBuilder, RuntimeException } from '@douglasneuroinformatics/libjs';
 import * as lexer from 'es-module-lexer';
 import { ok } from 'neverthrow';
 import type { Result } from 'neverthrow';
+import type { Node, SourceFile, Symbol } from 'ts-morph';
 
 await lexer.init;
+
+const { SyntaxParsingException } = new ExceptionBuilder().setParams({ name: 'SyntaxParsingException' }).build();
+
+function resolveAliasedSymbol(symbol: Symbol): Symbol {
+  let current = symbol;
+  while (current.getAliasedSymbol()) {
+    current = current.getAliasedSymbol()!;
+  }
+  return current;
+}
+
+export function parseDefaultExport(sourceFile: SourceFile): Result<Node, typeof SyntaxParsingException.Instance> {
+  const filename = sourceFile.getBaseName();
+  const defaultExportSymbol = sourceFile.getDefaultExportSymbol();
+  if (!defaultExportSymbol) {
+    return SyntaxParsingException.asErr(`Source file '${filename}' does not include a default export symbol`);
+  }
+  const resolvedSymbol = resolveAliasedSymbol(defaultExportSymbol);
+  const declarations = resolvedSymbol.getDeclarations();
+  if (declarations.length === 0) {
+    return SyntaxParsingException.asErr(`Default export symbol in '${filename}' has no declarations`);
+  }
+  if (declarations.length > 1) {
+    return SyntaxParsingException.asErr(
+      `Default export symbol in '${filename}' has multiple declarations (${declarations.length})`
+    );
+  }
+  return ok(declarations[0]!);
+  // console.log(declarations.length);
+  // const declaration = declarations[0]!;
+  // const configObject = declaration.getFirstDescendantByKindOrThrow(SyntaxKind.ObjectLiteralExpression);
+  // console.log(configObject.getText());
+}
 
 export function parseEntryFromFunction(
   entry: (...args: any[]) => any

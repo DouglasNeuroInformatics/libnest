@@ -1,6 +1,30 @@
+import { Project } from 'ts-morph';
 import { describe, expect, it } from 'vitest';
 
-import { parseEntryFromFunction } from '../parse.js';
+import { parseDefaultExport, parseEntryFromFunction } from '../parse.js';
+
+const project = new Project();
+
+describe('parseDefaultExport', () => {
+  it('should return an error if the source code does not contain a default export', () => {
+    const sourceCode = "const config = { value: 'foo' };";
+    const sourceFile = project.createSourceFile('config.ts', sourceCode);
+    expect(parseDefaultExport(sourceFile)).toMatchObject({
+      error: {
+        message: "Source file 'config.ts' does not include a default export symbol"
+      }
+    });
+  });
+  it('should return an error if the default export does not reference anything', () => {
+    const sourceCode = 'export default config;';
+    const sourceFile = project.createSourceFile('config.ts', sourceCode, { overwrite: true });
+    expect(parseDefaultExport(sourceFile)).toMatchObject({
+      error: {
+        message: "Default export symbol in 'config.ts' has no declarations"
+      }
+    });
+  });
+});
 
 describe('parseEntryFromFunction', () => {
   it('should return an error if there are no imports in the entry function', () => {
