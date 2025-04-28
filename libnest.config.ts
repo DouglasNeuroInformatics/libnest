@@ -10,7 +10,13 @@ const config = defineUserConfig({
   build: {
     outfile: path.resolve(import.meta.dirname, 'build/server.js')
   },
-  entry: () => import('./example/app.js')
+  entry: () => import('./example/app.js'),
+  jsx: {
+    components: {
+      index: () => import('./example/pages/index.js')
+    },
+    enabled: true
+  }
 });
 
 export default config;

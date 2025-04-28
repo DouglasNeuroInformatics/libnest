@@ -36,6 +36,14 @@ export type UserConfigOptions = {
    * Optional global variables that should be defined at runtime.
    */
   globals?: { [key: string]: Jsonifiable };
+
+  /** Configuration options for React */
+  jsx?: {
+    components: {
+      [key: string]: () => Promise<{ default: (...args: any[]) => any }>;
+    };
+    enabled: true;
+  };
 };
 
 /**
@@ -54,8 +62,12 @@ export type InferUserConfig<T extends UserConfigOptions> = T extends {
       infer TPrismaGlobalOmitConfig extends DefaultPrismaGlobalOmitConfig
     >;
   }>;
+  jsx?: {
+    components: infer TComponents;
+  };
 }
   ? {
+      Components: TComponents;
       PrismaGlobalOmitConfig: TPrismaGlobalOmitConfig;
       RuntimeEnv: TEnv;
     }
