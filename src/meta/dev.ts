@@ -16,15 +16,21 @@ export function runDev(configFile: string): ResultAsync<void, typeof RuntimeExce
   return resolveAbsoluteImportPath(configFile, process.cwd())
     .asyncAndThen(loadUserConfig)
     .andThen((config) => {
-      return loadAppContainer(config).map(async (appContainer) => {
-        if (config.globals) {
-          Object.entries(config.globals).forEach(([key, value]) => {
-            Object.defineProperty(globalThis, key, {
-              value,
-              writable: false
-            });
-          });
+      const globals = {
+        ...config.globals,
+        __LIBNEST_STATIC: {
+          jsx: {
+            importMap: {}
+          }
         }
+      };
+      Object.entries(globals).forEach(([key, value]) => {
+        Object.defineProperty(globalThis, key, {
+          value,
+          writable: false
+        });
+      });
+      return loadAppContainer(config).map(async (appContainer) => {
         await appContainer.bootstrap();
       });
     });

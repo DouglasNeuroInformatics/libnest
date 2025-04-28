@@ -11,7 +11,7 @@ import { LoggingModule } from '../modules/logging/logging.module.js';
 import { PrismaModule } from '../modules/prisma/prisma.module.js';
 import { ValidationPipe } from '../pipes/validation.pipe.js';
 import { parseEnv } from '../utils/env.utils.js';
-import { CONFIGURE_USER_MIDDLEWARE_TOKEN } from './app.base.js';
+import { CONFIGURE_USER_MIDDLEWARE_TOKEN, LIBNEST_STATIC_TOKEN } from './app.base.js';
 import { AppContainer } from './app.container.js';
 import { AppModule } from './app.module.js';
 
@@ -67,6 +67,7 @@ export class AppFactory {
       LoggingModule,
       PrismaModule.forRoot(prisma)
     ];
+
     const coreProviders: Provider[] = [
       {
         provide: APP_FILTER,
@@ -75,6 +76,10 @@ export class AppFactory {
       {
         provide: APP_PIPE,
         useClass: ValidationPipe
+      },
+      {
+        provide: LIBNEST_STATIC_TOKEN,
+        useValue: __LIBNEST_STATIC
       }
     ];
 
