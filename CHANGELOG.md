@@ -1,5 +1,16 @@
 # Changelog
 
+## [5.2.0](https://github.com/DouglasNeuroInformatics/libnest/compare/v5.1.2...v5.2.0) (2025-04-28)
+
+### Features
+
+* allow app-level controllers ([b8d8590](https://github.com/DouglasNeuroInformatics/libnest/commit/b8d8590f4dabff48a39242037320b49f939bbd31))
+
+### Bug Fixes
+
+* docs path type ([1122b00](https://github.com/DouglasNeuroInformatics/libnest/commit/1122b0024ee3cba9f7d8b5d21739c94384f0b74b))
+* issue with custom docs url ([79aa792](https://github.com/DouglasNeuroInformatics/libnest/commit/79aa792ab2aad9e62414f821575fb6fb9a4c766e))
+
 ## [5.1.2](https://github.com/DouglasNeuroInformatics/libnest/compare/v5.1.1...v5.1.2) (2025-04-25)
 
 ### Bug Fixes
