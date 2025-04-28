@@ -2,7 +2,8 @@ import { ExceptionBuilder, RuntimeException } from '@douglasneuroinformatics/lib
 import * as lexer from 'es-module-lexer';
 import { ok } from 'neverthrow';
 import type { Result } from 'neverthrow';
-import type { Node, SourceFile, Symbol } from 'ts-morph';
+import { SyntaxKind } from 'ts-morph';
+import type { ExportAssignment, SourceFile, Symbol } from 'ts-morph';
 
 await lexer.init;
 
@@ -16,7 +17,9 @@ function resolveAliasedSymbol(symbol: Symbol): Symbol {
   return current;
 }
 
-export function parseDefaultExport(sourceFile: SourceFile): Result<Node, typeof SyntaxParsingException.Instance> {
+export function parseDefaultExportAssignment(
+  sourceFile: SourceFile
+): Result<ExportAssignment, typeof SyntaxParsingException.Instance> {
   const filename = sourceFile.getBaseName();
   const defaultExportSymbol = sourceFile.getDefaultExportSymbol();
   if (!defaultExportSymbol) {
@@ -32,7 +35,7 @@ export function parseDefaultExport(sourceFile: SourceFile): Result<Node, typeof 
       `Default export symbol in '${filename}' has multiple declarations (${declarations.length})`
     );
   }
-  return ok(declarations[0]!);
+  return ok(declarations[0]!.asKindOrThrow(SyntaxKind.ExportAssignment));
   // console.log(declarations.length);
   // const declaration = declarations[0]!;
   // const configObject = declaration.getFirstDescendantByKindOrThrow(SyntaxKind.ObjectLiteralExpression);
