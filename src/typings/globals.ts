@@ -15,6 +15,7 @@ declare global {
     }
   }
   interface LibnestStatic {
+    configFile: string;
     jsx?: {
       importMap: {
         [key: string]: string;

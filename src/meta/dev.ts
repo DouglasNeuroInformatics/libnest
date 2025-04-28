@@ -19,10 +19,11 @@ export function runDev(configFile: string): ResultAsync<void, typeof RuntimeExce
       const globals = {
         ...config.globals,
         __LIBNEST_STATIC: {
+          configFile: configFile,
           jsx: {
             importMap: {}
           }
-        }
+        } satisfies LibnestStatic
       };
       Object.entries(globals).forEach(([key, value]) => {
         Object.defineProperty(globalThis, key, {
