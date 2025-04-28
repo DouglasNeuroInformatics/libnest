@@ -50,23 +50,23 @@ describe('RenderInterceptor', () => {
     };
     const reflector: MockedInstance<Reflector> = MockFactory.createMock(Reflector);
 
-    const importHello = vi.fn();
+    const importIndex = vi.fn();
 
     const renderInterceptor = new RenderInterceptor(
       {
         baseDir: '/',
         importMap: {
-          hello: importHello
+          index: importIndex
         }
       },
       reflector
     );
 
     it('should throw an internal server error if the component does not exist in the import map', async () => {
-      reflector.get.mockReturnValueOnce({ name: 'foo' } satisfies RenderComponentOptions);
+      reflector.get.mockReturnValueOnce({ name: 'foo' });
       await expect(renderInterceptor.intercept(context, next)).rejects.toMatchObject({
         cause: {
-          message: "Cannot load component 'foo' from provided import keys: hello"
+          message: "Cannot load component 'foo' from provided import keys: index"
         },
         message: 'Failed to Render Page',
         name: 'InternalServerErrorException'
@@ -74,8 +74,8 @@ describe('RenderInterceptor', () => {
     });
 
     it('should throw an internal server error if it cannot import the component', async () => {
-      reflector.get.mockReturnValueOnce({ name: 'hello' } satisfies RenderComponentOptions);
-      importHello.mockImplementationOnce(() => {
+      reflector.get.mockReturnValueOnce({ name: 'index' } satisfies RenderComponentOptions);
+      importIndex.mockImplementationOnce(() => {
         throw new Error('Import failed!');
       });
       await expect(renderInterceptor.intercept(context, next)).rejects.toMatchObject({
@@ -88,11 +88,11 @@ describe('RenderInterceptor', () => {
     });
 
     it('should throw an internal server error if the default export from the requested file is not a function', async () => {
-      reflector.get.mockReturnValueOnce({ name: 'hello' } satisfies RenderComponentOptions);
-      importHello.mockReturnValueOnce({ default: undefined });
+      reflector.get.mockReturnValueOnce({ name: 'index' } satisfies RenderComponentOptions);
+      importIndex.mockReturnValueOnce({ default: undefined });
       await expect(renderInterceptor.intercept(context, next)).rejects.toMatchObject({
         cause: {
-          message: "Expected default export for component 'hello' to be type 'function', got 'undefined'"
+          message: "Expected default export for component 'index' to be type 'function', got 'undefined'"
         },
         message: 'Failed to Render Page',
         name: 'InternalServerErrorException'
@@ -108,8 +108,8 @@ describe('RenderInterceptor', () => {
           }
         ]
       });
-      reflector.get.mockReturnValueOnce({ name: 'hello' } satisfies RenderComponentOptions);
-      importHello.mockResolvedValueOnce({ default: ({ name }: { name: string }) => <h1>{`Hello, ${name}`}</h1> });
+      reflector.get.mockReturnValueOnce({ name: 'index' } satisfies RenderComponentOptions);
+      importIndex.mockResolvedValueOnce({ default: ({ name }: { name: string }) => <h1>{`Hello, ${name}`}</h1> });
       next.handle.mockReturnValueOnce({ pipe: vi.fn() });
       await expect(renderInterceptor.intercept(context, next)).resolves.not.toThrow();
       expect(next.handle).toHaveBeenCalledOnce();
