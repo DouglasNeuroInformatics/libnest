@@ -76,6 +76,7 @@ const plugin = ({
         }
         return {
           define: {
+            __LIBNEST_STATIC: JSON.stringify({ configFile: configInfo.filepath } satisfies LibnestStatic),
             'process.env.LIBNEST_CONFIG_FILEPATH': `"${configInfo.filepath}"`
           }
         };

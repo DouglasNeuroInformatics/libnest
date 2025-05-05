@@ -1,3 +1,4 @@
+/* eslint-disable no-var */
 import type { Locale } from '../middleware/accept-language.middleware.js';
 import type { AppAbility } from '../modules/auth/auth.config.js';
 
@@ -12,4 +13,8 @@ declare global {
       ability?: AppAbility;
     }
   }
+  interface LibnestStatic {
+    configFile: string;
+  }
+  var __LIBNEST_STATIC: LibnestStatic;
 }

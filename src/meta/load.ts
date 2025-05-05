@@ -35,10 +35,9 @@ type UserConfigWithBaseDir = UserConfigOptions & {
  * @returns A `ResultAsync` containing the config options on success, or an error message on failure.
  */
 export function loadUserConfig(
-  configFile: string,
-  loader: (configFile: string) => ResultAsync<unknown, typeof RuntimeException.Instance> = importDefault
+  configFile: string
 ): ResultAsync<UserConfigWithBaseDir, typeof RuntimeException.Instance> {
-  return loader(configFile).andThen((config) => {
+  return importDefault(configFile).andThen((config) => {
     const result = $UserConfigOptions.safeParse(config);
     if (!result.success) {
       return RuntimeException.asAsyncErr(`Invalid format for user options in config file: ${configFile}`, {
