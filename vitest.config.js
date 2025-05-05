@@ -15,6 +15,7 @@ export default defineConfig({
         'src/**/*.test-d.ts',
         'src/**/*.dto.ts',
         'src/testing/helpers/*',
+        'src/typings/*',
         'src/user-config.ts'
       ],
       include: ['example/**/*', 'src/**/*'],
