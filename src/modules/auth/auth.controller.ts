@@ -16,7 +16,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @Post('login')
   @RouteAccess('public')
-  @Throttle({ long: { limit: 5 } })
+  @Throttle({ long: { limit: 50 } })
   async login(@Body() credentials: LoginCredentialsDto): Promise<LoginResponseBody> {
     return this.authService.login(credentials);
   }
