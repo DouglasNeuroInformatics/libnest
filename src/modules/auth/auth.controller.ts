@@ -1,5 +1,6 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import { ApiOperation } from '@nestjs/swagger';
+import { Throttle } from '@nestjs/throttler';
 
 import { RouteAccess } from '../../decorators/route-access.decorator.js';
 import { AuthService } from './auth.service.js';
@@ -15,6 +16,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @Post('login')
   @RouteAccess('public')
+  @Throttle({ long: { limit: 5 } })
   async login(@Body() credentials: LoginCredentialsDto): Promise<LoginResponseBody> {
     return this.authService.login(credentials);
   }
