@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.2.1](https://github.com/DouglasNeuroInformatics/libnest/compare/v5.2.0...v5.2.1) (2025-05-12)
+
+### Bug Fixes
+
+* increase throttle limit from 5 to 50 ([30d8644](https://github.com/DouglasNeuroInformatics/libnest/commit/30d86449a3b87fe1ee9cb8e8f7f865733b7f7a55))
+* limit login request to 5 per minute ([72c5137](https://github.com/DouglasNeuroInformatics/libnest/commit/72c5137fc7a52455cfe11c76bb47264e5412b0bf))
+
 ## [5.2.0](https://github.com/DouglasNeuroInformatics/libnest/compare/v5.1.2...v5.2.0) (2025-04-28)
 
 ### Features
