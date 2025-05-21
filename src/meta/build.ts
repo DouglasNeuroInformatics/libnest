@@ -68,6 +68,7 @@ export function buildProd({
         outfile: config.build.outfile,
         platform: 'node',
         plugins: [docsPlugin(), prismaPlugin(), swcPlugin()],
+        sourcemap: true,
         stdin: {
           contents: [
             `import __appContainerExport from "${entrySpecifier}";`,
