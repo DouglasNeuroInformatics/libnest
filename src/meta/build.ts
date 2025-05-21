@@ -38,6 +38,7 @@ export function buildProd({
       logVerbose('Successfully imported esbuild');
       logVerbose('Defining global variables...');
       const define: { [key: string]: string } = {
+        __LIBNEST_STATIC: JSON.stringify({}),
         'process.env.NODE_ENV': "'production'"
       };
       for (const key in config.globals) {
@@ -67,6 +68,7 @@ export function buildProd({
         outfile: config.build.outfile,
         platform: 'node',
         plugins: [docsPlugin(), prismaPlugin(), swcPlugin()],
+        sourcemap: true,
         stdin: {
           contents: [
             `import __appContainerExport from "${entrySpecifier}";`,

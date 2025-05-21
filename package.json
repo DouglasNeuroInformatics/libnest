@@ -51,7 +51,7 @@
     "docs:serve": "http-server docs -c-1",
     "example:build": "rm -rf build && ./src/cli/bin/libnest build -c libnest.config.ts -e .env.example",
     "example:dev": "./src/cli/bin/libnest dev -c libnest.config.ts -e .env.example",
-    "example:start": "node --env-file .env.example build/server.js",
+    "example:start": "node --env-file .env.example --enable-source-maps build/server.js",
     "format": "prettier --write src",
     "knip": "knip",
     "lint": "tsc && eslint --fix example src",
