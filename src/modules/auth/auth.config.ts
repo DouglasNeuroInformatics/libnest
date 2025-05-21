@@ -33,9 +33,10 @@ type AppConditions = FallbackIfNever<PrismaQuery, unknown>;
 
 type AppAbility = PureAbility<AppAbilities, AppConditions>;
 
-type DefineAbility<TPayload extends { [key: string]: unknown } = { [key: string]: unknown }> = (
+type DefineAbility<TPayload extends { [key: string]: unknown } = { [key: string]: unknown }, TMetadata = any> = (
   ability: AbilityBuilder<AppAbility>,
-  tokenPayload: TPayload
+  tokenPayload: TPayload,
+  metadata: TMetadata
 ) => void;
 
 type Permission = RawRuleOf<PureAbility<[AppAction, AppSubjectName]>>;

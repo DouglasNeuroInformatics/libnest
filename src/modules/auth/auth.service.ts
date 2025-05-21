@@ -28,7 +28,7 @@ export class AuthService {
       throw new UnauthorizedException('Invalid Credentials');
     }
 
-    const ability = this.abilityFactory.createForPayload(user.tokenPayload);
+    const ability = this.abilityFactory.createForPayload(user.tokenPayload, user.metadata);
 
     return { accessToken: await this.signToken({ ...user.tokenPayload, permissions: ability.rules }) };
   }

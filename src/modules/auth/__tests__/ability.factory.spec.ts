@@ -30,14 +30,14 @@ describe('AbilityFactory', () => {
 
   describe('createForPayload', () => {
     it('should return an empty ruleset, if defineAbility is undefined', () => {
-      const ability = abilityFactory.createForPayload({});
+      const ability = abilityFactory.createForPayload({}, null);
       expect(ability.rules).toStrictEqual([]);
     });
     it('should add the correct ruleset for the ability', () => {
       defineAbility.mockImplementationOnce((ability) => {
         ability.can('manage', 'all');
       });
-      const ability = abilityFactory.createForPayload({});
+      const ability = abilityFactory.createForPayload({}, null);
       expect(ability.rules).toStrictEqual([
         {
           action: 'manage',
@@ -50,7 +50,7 @@ describe('AbilityFactory', () => {
       defineAbility.mockImplementationOnce((ability) => {
         ability.can('manage', 'Cat', { id: { in: [0, 1] } });
       });
-      const ability = abilityFactory.createForPayload({});
+      const ability = abilityFactory.createForPayload({}, null);
       expect(ability.rules).toStrictEqual([
         {
           action: 'manage',

@@ -21,14 +21,15 @@ export class AbilityFactory {
     @Inject(DEFINE_ABILITY_TOKEN) private readonly defineAbility?: DefineAbility
   ) {}
 
-  createForPayload(payload: { [key: string]: any }): AppAbility {
+  createForPayload(payload: { [key: string]: any }, metadata: unknown): AppAbility {
     this.loggingService.verbose({
       message: 'Creating Ability From Payload',
+      metadata,
       payload
     });
     const abilityBuilder = new AbilityBuilder<AppAbility>(createPrismaAbility);
     if (this.defineAbility) {
-      this.defineAbility(abilityBuilder, payload);
+      this.defineAbility(abilityBuilder, payload, metadata);
     }
     return abilityBuilder.build({
       detectSubjectType: this.detectSubjectType
