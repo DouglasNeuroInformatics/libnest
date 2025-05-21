@@ -118,7 +118,7 @@ describe('AuthModule', () => {
 
     it('should return status code 401 if the hashed password is incorrect', async () => {
       const comparePassword = vi.spyOn(CryptoService.prototype, 'comparePassword');
-      userQuery.mockResolvedValueOnce({ hashedPassword: '123$123', tokenPayload });
+      userQuery.mockResolvedValueOnce({ hashedPassword: '123$123', metadata: null, tokenPayload });
       const response = await request(server).post('/auth/login').send(loginCredentials);
       expect(response.status).toBe(401);
       expect(userQuery).toHaveBeenCalledExactlyOnceWith(loginCredentials);
@@ -126,7 +126,7 @@ describe('AuthModule', () => {
     });
 
     it('should return status code 200 and an access token if the credentials are correct', async () => {
-      userQuery.mockResolvedValueOnce({ hashedPassword, tokenPayload });
+      userQuery.mockResolvedValueOnce({ hashedPassword, metadata: null, tokenPayload });
       const response = await request(server).post('/auth/login').send(loginCredentials);
       expect(response.status).toBe(200);
       expect(response.body).toStrictEqual({
@@ -152,7 +152,7 @@ describe('AuthModule', () => {
       });
       it('should reject queries with a valid access token, but insufficient permissions', async () => {
         const signAsync = vi.spyOn(jwtService, 'signAsync');
-        userQuery.mockResolvedValueOnce({ hashedPassword, tokenPayload });
+        userQuery.mockResolvedValueOnce({ hashedPassword, metadata: null, tokenPayload });
         defineAbility.mockImplementationOnce((ability) => {
           ability.can('delete', 'Cat');
         });
@@ -177,7 +177,7 @@ describe('AuthModule', () => {
       let accessToken: string;
 
       beforeAll(async () => {
-        userQuery.mockResolvedValueOnce({ hashedPassword, tokenPayload });
+        userQuery.mockResolvedValueOnce({ hashedPassword, metadata: null, tokenPayload });
         defineAbility.mockImplementationOnce((ability) => {
           ability.can('manage', 'Cat');
         });

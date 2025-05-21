@@ -5,6 +5,7 @@ import type { FallbackIfNever } from '@douglasneuroinformatics/libjs';
 import { ConfigurableModuleBuilder } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import type { DefaultSelection } from '@prisma/client/runtime/library';
+import type { IfNever } from 'type-fest';
 import type { z } from 'zod';
 
 import { defineToken } from '../../utils/token.utils.js';
@@ -52,9 +53,11 @@ interface JwtPayload {
   permissions: Permission[];
 }
 
-type UserQueryResult<TPayload extends { [key: string]: unknown } = { [key: string]: unknown }, TMetadata = any> = {
+type UserQueryResult<
+  TPayload extends { [key: string]: unknown } = { [key: string]: unknown },
+  TMetadata = never
+> = IfNever<TMetadata, {}, { metadata: TMetadata }> & {
   hashedPassword: string;
-  metadata?: TMetadata;
   tokenPayload: TPayload;
 };
 
@@ -71,7 +74,7 @@ type LoginResponseBody = {
 type AuthModuleOptions<
   TLoginCredentialsSchema extends BaseLoginCredentialsSchema = BaseLoginCredentialsSchema,
   TPayloadSchema extends z.ZodType<{ [key: string]: unknown }> = z.ZodType<{ [key: string]: unknown }>,
-  TMetadataSchema extends z.ZodTypeAny = z.ZodTypeAny
+  TMetadataSchema extends z.ZodTypeAny = z.ZodNever
 > = {
   defineAbility: (
     ability: AbilityBuilder<AppAbility>,
