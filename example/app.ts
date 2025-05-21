@@ -1,10 +1,10 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+
 import { z } from 'zod';
 
 import { $BaseEnv, AppFactory, AuthModule, CryptoService } from '../src/index.js';
 import { AppController } from './app.controller.js';
 import { CatsModule } from './cats/cats.module.js';
-
-import type { UserQueryResult } from '../src/index.js';
 
 export default AppFactory.create({
   controllers: [AppController],
@@ -18,7 +18,7 @@ export default AppFactory.create({
       inject: [CryptoService],
       useFactory: (cryptoService: CryptoService) => {
         return {
-          defineAbility: (ability, payload): void => {
+          defineAbility: (ability, payload) => {
             if (payload.isAdmin) {
               ability.can('manage', 'all');
             }
@@ -32,7 +32,7 @@ export default AppFactory.create({
               isAdmin: z.boolean()
             })
           },
-          userQuery: async ({ username }): Promise<null | UserQueryResult<{ isAdmin: true }>> => {
+          userQuery: async ({ username }) => {
             if (username !== 'admin') {
               return null;
             }

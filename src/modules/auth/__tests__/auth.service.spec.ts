@@ -6,6 +6,7 @@ import type { Mock } from 'vitest';
 
 import { MockFactory } from '../../../testing/index.js';
 import { CryptoService } from '../../crypto/crypto.service.js';
+import { LoggingService } from '../../logging/logging.service.js';
 import { AbilityFactory } from '../ability.factory.js';
 import { USER_QUERY_TOKEN } from '../auth.config.js';
 import { AuthService } from '../auth.service.js';
@@ -31,7 +32,8 @@ describe('AuthService', () => {
         AuthService,
         MockFactory.createForService(AbilityFactory),
         MockFactory.createForService(CryptoService),
-        MockFactory.createForService(JwtService)
+        MockFactory.createForService(JwtService),
+        MockFactory.createForService(LoggingService)
       ]
     }).compile();
     abilityFactory = moduleRef.get(AbilityFactory);

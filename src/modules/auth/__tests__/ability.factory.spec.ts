@@ -2,6 +2,8 @@ import { Test } from '@nestjs/testing';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Mock } from 'vitest';
 
+import { MockFactory } from '../../../testing/index.js';
+import { LoggingService } from '../../logging/logging.service.js';
 import { AbilityFactory } from '../ability.factory.js';
 import { DEFINE_ABILITY_TOKEN } from '../auth.config.js';
 
@@ -19,7 +21,8 @@ describe('AbilityFactory', () => {
         {
           provide: DEFINE_ABILITY_TOKEN,
           useValue: defineAbility
-        }
+        },
+        MockFactory.createForService(LoggingService)
       ]
     }).compile();
     abilityFactory = moduleRef.get(AbilityFactory);
@@ -27,14 +30,14 @@ describe('AbilityFactory', () => {
 
   describe('createForPayload', () => {
     it('should return an empty ruleset, if defineAbility is undefined', () => {
-      const ability = abilityFactory.createForPayload({});
+      const ability = abilityFactory.createForPayload({}, null);
       expect(ability.rules).toStrictEqual([]);
     });
     it('should add the correct ruleset for the ability', () => {
       defineAbility.mockImplementationOnce((ability) => {
         ability.can('manage', 'all');
       });
-      const ability = abilityFactory.createForPayload({});
+      const ability = abilityFactory.createForPayload({}, null);
       expect(ability.rules).toStrictEqual([
         {
           action: 'manage',
@@ -47,7 +50,7 @@ describe('AbilityFactory', () => {
       defineAbility.mockImplementationOnce((ability) => {
         ability.can('manage', 'Cat', { id: { in: [0, 1] } });
       });
-      const ability = abilityFactory.createForPayload({});
+      const ability = abilityFactory.createForPayload({}, null);
       expect(ability.rules).toStrictEqual([
         {
           action: 'manage',

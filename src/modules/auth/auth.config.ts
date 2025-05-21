@@ -5,6 +5,7 @@ import type { FallbackIfNever } from '@douglasneuroinformatics/libjs';
 import { ConfigurableModuleBuilder } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import type { DefaultSelection } from '@prisma/client/runtime/library';
+import type { IfNever } from 'type-fest';
 import type { z } from 'zod';
 
 import { defineToken } from '../../utils/token.utils.js';
@@ -33,9 +34,10 @@ type AppConditions = FallbackIfNever<PrismaQuery, unknown>;
 
 type AppAbility = PureAbility<AppAbilities, AppConditions>;
 
-type DefineAbility<TPayload extends { [key: string]: unknown } = { [key: string]: unknown }> = (
+type DefineAbility<TPayload extends { [key: string]: unknown } = { [key: string]: unknown }, TMetadata = any> = (
   ability: AbilityBuilder<AppAbility>,
-  tokenPayload: TPayload
+  tokenPayload: TPayload,
+  metadata: TMetadata
 ) => void;
 
 type Permission = RawRuleOf<PureAbility<[AppAction, AppSubjectName]>>;
@@ -51,15 +53,19 @@ interface JwtPayload {
   permissions: Permission[];
 }
 
-type UserQueryResult<TPayload extends { [key: string]: unknown } = { [key: string]: unknown }> = {
+type UserQueryResult<
+  TPayload extends { [key: string]: unknown } = { [key: string]: unknown },
+  TMetadata = never
+> = IfNever<TMetadata, {}, { metadata: TMetadata }> & {
   hashedPassword: string;
   tokenPayload: TPayload;
 };
 
 type UserQuery<
   TLoginCredentials extends BaseLoginCredentials = BaseLoginCredentials,
-  TPayload extends { [key: string]: unknown } = { [key: string]: unknown }
-> = (credentials: TLoginCredentials) => Promise<null | UserQueryResult<TPayload>>;
+  TPayload extends { [key: string]: unknown } = { [key: string]: unknown },
+  TMetadata = any
+> = (credentials: TLoginCredentials) => Promise<null | UserQueryResult<TPayload, TMetadata>>;
 
 type LoginResponseBody = {
   accessToken: string;
@@ -67,18 +73,24 @@ type LoginResponseBody = {
 
 type AuthModuleOptions<
   TLoginCredentialsSchema extends BaseLoginCredentialsSchema = BaseLoginCredentialsSchema,
-  TPayloadSchema extends z.ZodType<{ [key: string]: unknown }> = z.ZodType<{ [key: string]: unknown }>
+  TPayloadSchema extends z.ZodType<{ [key: string]: unknown }> = z.ZodType<{ [key: string]: unknown }>,
+  TMetadataSchema extends z.ZodTypeAny = z.ZodNever
 > = {
-  defineAbility: (ability: AbilityBuilder<AppAbility>, tokenPayload: z.TypeOf<TPayloadSchema>) => any;
+  defineAbility: (
+    ability: AbilityBuilder<AppAbility>,
+    tokenPayload: z.TypeOf<TPayloadSchema>,
+    metadata: z.TypeOf<TMetadataSchema>
+  ) => any;
   schemas: {
     loginCredentials: TLoginCredentialsSchema;
+    metadata?: TMetadataSchema;
     tokenPayload: TPayloadSchema;
   };
-  userQuery: UserQuery<z.TypeOf<TLoginCredentialsSchema>, z.TypeOf<TPayloadSchema>>;
+  userQuery: UserQuery<z.TypeOf<TLoginCredentialsSchema>, z.TypeOf<TPayloadSchema>, z.TypeOf<TMetadataSchema>>;
 };
 
 export const { ConfigurableModuleClass: ConfigurableAuthModule, MODULE_OPTIONS_TOKEN: AUTH_MODULE_OPTIONS_TOKEN } =
-  new ConfigurableModuleBuilder<AuthModuleOptions<any, any>>()
+  new ConfigurableModuleBuilder<AuthModuleOptions<any, any, any>>()
     .setClassMethodName('forRoot')
     .setExtras({}, (definition) => ({
       ...definition,
