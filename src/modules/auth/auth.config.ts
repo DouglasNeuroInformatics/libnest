@@ -72,7 +72,11 @@ type AuthModuleOptions<
   TPayloadSchema extends z.ZodType<{ [key: string]: unknown }> = z.ZodType<{ [key: string]: unknown }>,
   TMetadataSchema extends z.ZodTypeAny = z.ZodTypeAny
 > = {
-  defineAbility: (ability: AbilityBuilder<AppAbility>, tokenPayload: z.TypeOf<TPayloadSchema>) => any;
+  defineAbility: (
+    ability: AbilityBuilder<AppAbility>,
+    tokenPayload: z.TypeOf<TPayloadSchema>,
+    metadata: z.TypeOf<TMetadataSchema>
+  ) => any;
   schemas: {
     loginCredentials: TLoginCredentialsSchema;
     metadata?: TMetadataSchema;
@@ -82,7 +86,7 @@ type AuthModuleOptions<
 };
 
 export const { ConfigurableModuleClass: ConfigurableAuthModule, MODULE_OPTIONS_TOKEN: AUTH_MODULE_OPTIONS_TOKEN } =
-  new ConfigurableModuleBuilder<AuthModuleOptions<any, any>>()
+  new ConfigurableModuleBuilder<AuthModuleOptions<any, any, any>>()
     .setClassMethodName('forRoot')
     .setExtras({}, (definition) => ({
       ...definition,
