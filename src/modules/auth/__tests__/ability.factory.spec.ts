@@ -2,6 +2,8 @@ import { Test } from '@nestjs/testing';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Mock } from 'vitest';
 
+import { MockFactory } from '../../../testing/index.js';
+import { LoggingService } from '../../logging/logging.service.js';
 import { AbilityFactory } from '../ability.factory.js';
 import { DEFINE_ABILITY_TOKEN } from '../auth.config.js';
 
@@ -19,7 +21,8 @@ describe('AbilityFactory', () => {
         {
           provide: DEFINE_ABILITY_TOKEN,
           useValue: defineAbility
-        }
+        },
+        MockFactory.createForService(LoggingService)
       ]
     }).compile();
     abilityFactory = moduleRef.get(AbilityFactory);

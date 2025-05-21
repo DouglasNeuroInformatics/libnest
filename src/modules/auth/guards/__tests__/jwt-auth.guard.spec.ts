@@ -24,6 +24,7 @@ vi.mock('@nestjs/passport', () => ({ AuthGuard: () => BaseConstructor }));
 describe('JwtAuthGuard', () => {
   let guard: JwtAuthGuard;
 
+  let abilityFactory: AbilityFactory;
   let loggingService: MockedInstance<LoggingService>;
   let reflector: MockedInstance<Reflector>;
 
@@ -39,6 +40,7 @@ describe('JwtAuthGuard', () => {
     loggingService = MockFactory.createMock(LoggingService);
     reflector = MockFactory.createMock(Reflector);
     guard = new JwtAuthGuard(loggingService as any, reflector);
+    abilityFactory = new AbilityFactory(loggingService as unknown as LoggingService);
   });
 
   it('should extend BaseConstructor', () => {
@@ -94,7 +96,7 @@ describe('JwtAuthGuard', () => {
       subject: 'all'
     } satisfies RouteAccessType);
     BaseConstructor.prototype.canActivate.mockResolvedValueOnce(true);
-    const ability = AbilityFactory.prototype.createForPermissions([{ action: 'manage', subject: 'Cat' }]);
+    const ability = abilityFactory.createForPermissions([{ action: 'manage', subject: 'Cat' }]);
     getRequest.mockReturnValueOnce({ url: 'http://localhost:5500', user: { ability } });
     await expect(guard.canActivate(context)).resolves.toBe(false);
   });
@@ -111,7 +113,7 @@ describe('JwtAuthGuard', () => {
       }
     ] satisfies RouteAccessType);
     BaseConstructor.prototype.canActivate.mockResolvedValueOnce(true);
-    const ability = AbilityFactory.prototype.createForPermissions([{ action: 'read', subject: 'Cat' }]);
+    const ability = abilityFactory.createForPermissions([{ action: 'read', subject: 'Cat' }]);
     getRequest.mockReturnValueOnce({ url: 'http://localhost:5500', user: { ability } });
     await expect(guard.canActivate(context)).resolves.toBe(false);
   });
@@ -122,7 +124,7 @@ describe('JwtAuthGuard', () => {
       subject: 'all'
     } satisfies RouteAccessType);
     BaseConstructor.prototype.canActivate.mockResolvedValueOnce(true);
-    const ability = AbilityFactory.prototype.createForPermissions([{ action: 'manage', subject: 'all' }]);
+    const ability = abilityFactory.createForPermissions([{ action: 'manage', subject: 'all' }]);
     getRequest.mockReturnValueOnce({ url: 'http://localhost:5500', user: { ability } });
     await expect(guard.canActivate(context)).resolves.toBe(true);
   });
