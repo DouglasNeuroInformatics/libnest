@@ -51,15 +51,17 @@ interface JwtPayload {
   permissions: Permission[];
 }
 
-type UserQueryResult<TPayload extends { [key: string]: unknown } = { [key: string]: unknown }> = {
+type UserQueryResult<TPayload extends { [key: string]: unknown } = { [key: string]: unknown }, TMetadata = any> = {
   hashedPassword: string;
+  metadata?: TMetadata;
   tokenPayload: TPayload;
 };
 
 type UserQuery<
   TLoginCredentials extends BaseLoginCredentials = BaseLoginCredentials,
-  TPayload extends { [key: string]: unknown } = { [key: string]: unknown }
-> = (credentials: TLoginCredentials) => Promise<null | UserQueryResult<TPayload>>;
+  TPayload extends { [key: string]: unknown } = { [key: string]: unknown },
+  TMetadata = any
+> = (credentials: TLoginCredentials) => Promise<null | UserQueryResult<TPayload, TMetadata>>;
 
 type LoginResponseBody = {
   accessToken: string;
@@ -67,14 +69,16 @@ type LoginResponseBody = {
 
 type AuthModuleOptions<
   TLoginCredentialsSchema extends BaseLoginCredentialsSchema = BaseLoginCredentialsSchema,
-  TPayloadSchema extends z.ZodType<{ [key: string]: unknown }> = z.ZodType<{ [key: string]: unknown }>
+  TPayloadSchema extends z.ZodType<{ [key: string]: unknown }> = z.ZodType<{ [key: string]: unknown }>,
+  TMetadataSchema extends z.ZodTypeAny = z.ZodTypeAny
 > = {
   defineAbility: (ability: AbilityBuilder<AppAbility>, tokenPayload: z.TypeOf<TPayloadSchema>) => any;
   schemas: {
     loginCredentials: TLoginCredentialsSchema;
+    metadata?: TMetadataSchema;
     tokenPayload: TPayloadSchema;
   };
-  userQuery: UserQuery<z.TypeOf<TLoginCredentialsSchema>, z.TypeOf<TPayloadSchema>>;
+  userQuery: UserQuery<z.TypeOf<TLoginCredentialsSchema>, z.TypeOf<TPayloadSchema>, z.TypeOf<TMetadataSchema>>;
 };
 
 export const { ConfigurableModuleClass: ConfigurableAuthModule, MODULE_OPTIONS_TOKEN: AUTH_MODULE_OPTIONS_TOKEN } =

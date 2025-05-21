@@ -28,6 +28,7 @@ export default AppFactory.create({
               password: z.string().min(1),
               username: z.string().min(1)
             }),
+            metadata: z.null(),
             tokenPayload: z.object({
               isAdmin: z.boolean()
             })
@@ -38,6 +39,7 @@ export default AppFactory.create({
             }
             return {
               hashedPassword: await cryptoService.hashPassword('password'),
+              metadata: null,
               tokenPayload: {
                 isAdmin: true
               }
