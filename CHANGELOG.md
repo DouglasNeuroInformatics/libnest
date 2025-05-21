@@ -1,5 +1,15 @@
 # Changelog
 
+## [5.3.0](https://github.com/DouglasNeuroInformatics/libnest/compare/v5.2.1...v5.3.0) (2025-05-21)
+
+### Features
+
+* add metadata option to auth ([3de1f37](https://github.com/DouglasNeuroInformatics/libnest/commit/3de1f3767d7f069feb4d2748d9635c1a14b48819))
+
+### Bug Fixes
+
+* add verbose logs ([499ea7c](https://github.com/DouglasNeuroInformatics/libnest/commit/499ea7c77404ce03060e5a60e2cb730e619d13ed))
+
 ## [5.2.1](https://github.com/DouglasNeuroInformatics/libnest/compare/v5.2.0...v5.2.1) (2025-05-12)
 
 ### Bug Fixes
