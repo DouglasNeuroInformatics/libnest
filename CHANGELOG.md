@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.3.1](https://github.com/DouglasNeuroInformatics/libnest/compare/v5.3.0...v5.3.1) (2025-05-21)
+
+### Bug Fixes
+
+* add dummy value for __LIBNEST_STATIC in build ([c49b6ca](https://github.com/DouglasNeuroInformatics/libnest/commit/c49b6ca41f870de34dc52e8f0903150b53bcfc38))
+* add source maps to build ([d718c5c](https://github.com/DouglasNeuroInformatics/libnest/commit/d718c5c4447092bafca2020aff363ee93d853d32))
+
 ## [5.3.0](https://github.com/DouglasNeuroInformatics/libnest/compare/v5.2.1...v5.3.0) (2025-05-21)
 
 ### Features
