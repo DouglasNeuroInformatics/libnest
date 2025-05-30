@@ -65,14 +65,14 @@ export class AuthModule extends ConfigurableAuthModule implements OnModuleInit {
 
   static forRoot<
     TLoginCredentialsSchema extends BaseLoginCredentialsSchema,
-    TPayloadSchema extends z.ZodObject,
+    TPayloadSchema extends z.ZodType<{ [key: string]: any }>,
     TMetadataSchema extends z.ZodType = z.ZodNever
   >(options: AuthModuleOptions<TLoginCredentialsSchema, TPayloadSchema, TMetadataSchema>): DynamicModule {
     return super.forRoot(options);
   }
   static forRootAsync<
     TLoginCredentialsSchema extends BaseLoginCredentialsSchema,
-    TPayloadSchema extends z.ZodObject,
+    TPayloadSchema extends z.ZodType<{ [key: string]: any }>,
     TMetadataSchema extends z.ZodType = z.ZodNever
   >(
     options: ConfigurableModuleAsyncOptions<

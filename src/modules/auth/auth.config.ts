@@ -73,7 +73,7 @@ type LoginResponseBody = {
 
 type AuthModuleOptions<
   TLoginCredentialsSchema extends BaseLoginCredentialsSchema = BaseLoginCredentialsSchema,
-  TPayloadSchema extends z.ZodObject = z.ZodObject,
+  TPayloadSchema extends z.ZodType<{ [key: string]: any }> = z.ZodType<{ [key: string]: any }>,
   TMetadataSchema extends z.ZodType = z.ZodNever
 > = {
   defineAbility: (

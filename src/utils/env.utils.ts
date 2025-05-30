@@ -3,7 +3,7 @@ import type { z } from 'zod/v4';
 
 import type { BaseEnv } from '../schemas/env.schema.js';
 
-export type BaseEnvSchema = z.ZodType<BaseEnv, { [key: string]: string }>;
+export type BaseEnvSchema = z.ZodType<BaseEnv>;
 
 export function parseEnv<TSchema extends BaseEnvSchema = BaseEnvSchema>(schema: TSchema): z.output<TSchema> {
   // this is required so that these can be statically replaced in the bundle
