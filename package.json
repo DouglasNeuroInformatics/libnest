@@ -73,7 +73,7 @@
     "react-dom": "^19.1.0",
     "reflect-metadata": "~0.1.13",
     "rxjs": "^7.8.2",
-    "zod": "^3.22.6"
+    "zod": "^3.25.x"
   },
   "peerDependenciesMeta": {
     "react": {
@@ -86,7 +86,7 @@
   "dependencies": {
     "@casl/ability": "^6.7.3",
     "@casl/prisma": "^1.5.1",
-    "@douglasneuroinformatics/libjs": "^2.6.0",
+    "@douglasneuroinformatics/libjs": "^3.0.1",
     "@nestjs/jwt": "^11.0.0",
     "@nestjs/passport": "^11.0.5",
     "@nestjs/swagger": "^11.0.6",
