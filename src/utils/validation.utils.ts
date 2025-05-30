@@ -1,6 +1,6 @@
 import { BadRequestException } from '@nestjs/common';
 import type { Class } from 'type-fest';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 import { defineToken } from './token.utils.js';
 
@@ -11,10 +11,7 @@ export const { VALIDATION_SCHEMA_METADATA_KEY } = defineToken('VALIDATION_SCHEMA
  * @param target The class to apply the schema to.
  * @param schema The Zod schema to apply.
  */
-export function applyValidationSchema<T extends z.ZodType<{ [key: string]: unknown }>>(
-  target: Class<z.TypeOf<T>>,
-  schema: T
-): void {
+export function applyValidationSchema<T extends z.ZodObject>(target: Class<z.output<T>>, schema: T): void {
   Reflect.defineMetadata(VALIDATION_SCHEMA_METADATA_KEY, schema, target);
 }
 
@@ -41,10 +38,10 @@ export function getValidationSchema<T>(target: Class<T>): z.ZodTypeAny {
   return schema;
 }
 
-export async function parseRequestBody<TSchema extends z.ZodTypeAny>(
+export async function parseRequestBody<TSchema extends z.ZodType>(
   value: unknown,
   schema: TSchema
-): Promise<z.TypeOf<TSchema>> {
+): Promise<z.output<TSchema>> {
   const result = await schema.safeParseAsync(value);
   if (!result.success) {
     throw new BadRequestException({
