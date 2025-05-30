@@ -6,7 +6,7 @@ import { ConfigurableModuleBuilder } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import type { DefaultSelection } from '@prisma/client/runtime/library';
 import type { IfNever } from 'type-fest';
-import type { z } from 'zod';
+import type { z } from 'zod/v4';
 
 import { defineToken } from '../../utils/token.utils.js';
 
@@ -73,8 +73,8 @@ type LoginResponseBody = {
 
 type AuthModuleOptions<
   TLoginCredentialsSchema extends BaseLoginCredentialsSchema = BaseLoginCredentialsSchema,
-  TPayloadSchema extends z.ZodType<{ [key: string]: unknown }> = z.ZodType<{ [key: string]: unknown }>,
-  TMetadataSchema extends z.ZodTypeAny = z.ZodNever
+  TPayloadSchema extends z.ZodObject = z.ZodObject,
+  TMetadataSchema extends z.ZodType = z.ZodNever
 > = {
   defineAbility: (
     ability: AbilityBuilder<AppAbility>,
