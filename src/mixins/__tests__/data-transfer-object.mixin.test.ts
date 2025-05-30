@@ -1,17 +1,20 @@
 import { describe, expect, expectTypeOf, it } from 'vitest';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 import { getValidationSchema } from '../../utils/validation.utils.js';
 import { DataTransferObject } from '../data-transfer-object.mixin.js';
 
 describe('DataTransferObject', () => {
   it('should create a class with the expected metadata', () => {
-    const Cat = DataTransferObject({
+    const $Cat = z.object({
       age: z.union([z.string(), z.number()]).transform(Number),
       breed: z.string()
     });
-    expect(getValidationSchema(Cat)).toBeInstanceOf(z.ZodType);
-    expectTypeOf(Cat.prototype).toMatchTypeOf<{
+    const Cat1 = DataTransferObject($Cat);
+    expect(getValidationSchema(Cat1)).toBeInstanceOf(z.ZodType);
+    const Cat2 = DataTransferObject($Cat.shape);
+    expect(getValidationSchema(Cat2)).toBeInstanceOf(z.ZodType);
+    expectTypeOf(Cat1.prototype).toMatchTypeOf<{
       age: number;
       breed: string;
     }>();

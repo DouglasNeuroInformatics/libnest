@@ -1,5 +1,5 @@
 import type { Class } from 'type-fest';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 import { applyValidationSchema } from '../utils/validation.utils.js';
 
@@ -8,19 +8,19 @@ import { applyValidationSchema } from '../utils/validation.utils.js';
  * @param schema - Zod object schema for the DTO.
  * @returns A DTO class with validation.
  */
-export function DataTransferObject<T extends z.ZodType<{ [key: string]: any }>>(schema: T): Class<z.output<T>>;
+export function DataTransferObject<T extends z.ZodObject>(schema: T): Class<z.output<T>>;
 /**
  * Creates a Data Transfer Object (DTO) class with a Zod schema for validation.
  * @param shape - Zod raw shape for the DTO.
  * @returns A DTO class with validation.
  */
-export function DataTransferObject<T extends z.ZodRawShape>(shape: T): Class<z.output<z.ZodObject<T>>>;
+export function DataTransferObject<T extends z.core.$ZodShape>(shape: T): Class<z.output<z.ZodObject<T>>>;
 /**
  * Creates a Data Transfer Object (DTO) class with a Zod schema for validation.
  * @param shapeOrSchema - Zod raw shape or schema for the DTO.
  * @returns A DTO class with validation.
  */
-export function DataTransferObject(shapeOrSchema: z.ZodRawShape | z.ZodType<{ [key: string]: any }>): unknown {
+export function DataTransferObject(shapeOrSchema: z.ZodObject | z.ZodRawShape): unknown {
   const schema = shapeOrSchema instanceof z.ZodType ? shapeOrSchema : z.object(shapeOrSchema);
   const Target = class {} as Class<z.output<typeof schema>>;
   applyValidationSchema(Target, schema);
