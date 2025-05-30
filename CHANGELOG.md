@@ -1,5 +1,19 @@
 # Changelog
 
+## [6.0.0](https://github.com/DouglasNeuroInformatics/libnest/compare/v5.3.1...v6.0.0) (2025-05-30)
+
+### ⚠ BREAKING CHANGES
+
+* consumers must use zod v4
+
+### Bug Fixes
+
+* allow onComplete to optional as before ([85e1b4f](https://github.com/DouglasNeuroInformatics/libnest/commit/85e1b4f27693b62983985e04cdcbd2eeffe61c5d))
+
+### Miscellaneous Chores
+
+* migrate to zod v4 ([c5dd7d7](https://github.com/DouglasNeuroInformatics/libnest/commit/c5dd7d70d9959ef0099c0270df11d931286b0d42))
+
 ## [5.3.1](https://github.com/DouglasNeuroInformatics/libnest/compare/v5.3.0...v5.3.1) (2025-05-21)
 
 ### Bug Fixes
