@@ -78,15 +78,15 @@ type AuthModuleOptions<
 > = {
   defineAbility: (
     ability: AbilityBuilder<AppAbility>,
-    tokenPayload: z.TypeOf<TPayloadSchema>,
-    metadata: z.TypeOf<TMetadataSchema>
+    tokenPayload: z.output<TPayloadSchema>,
+    metadata: z.output<TMetadataSchema>
   ) => any;
   schemas: {
     loginCredentials: TLoginCredentialsSchema;
     metadata?: TMetadataSchema;
     tokenPayload: TPayloadSchema;
   };
-  userQuery: UserQuery<z.TypeOf<TLoginCredentialsSchema>, z.TypeOf<TPayloadSchema>, z.TypeOf<TMetadataSchema>>;
+  userQuery: UserQuery<z.output<TLoginCredentialsSchema>, z.output<TPayloadSchema>, z.output<TMetadataSchema>>;
 };
 
 export const { ConfigurableModuleClass: ConfigurableAuthModule, MODULE_OPTIONS_TOKEN: AUTH_MODULE_OPTIONS_TOKEN } =

@@ -5,9 +5,9 @@ import { applyValidationSchema } from '../utils/validation.utils.js';
 
 export function ValidationSchema<T extends z.ZodType<{ [key: string]: any }>>(
   schema: T
-): (target: Class<z.TypeOf<T>>) => void;
+): (target: Class<z.output<T>>) => void;
 
-export function ValidationSchema<T extends z.ZodRawShape>(shape: T): (target: Class<z.TypeOf<z.ZodObject<T>>>) => void;
+export function ValidationSchema<T extends z.ZodRawShape>(shape: T): (target: Class<z.output<z.ZodObject<T>>>) => void;
 
 /**
  * Decorator to define the Zod validation schema for DTO classes

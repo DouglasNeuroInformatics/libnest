@@ -30,7 +30,7 @@ export type CreateAppOptions<
     configureMiddleware?: (consumer: MiddlewareConsumer) => void;
     controllers?: Type<any>[];
     envSchema: TEnvSchema;
-    imports?: (ConditionalImport<z.TypeOf<TEnvSchema>> | ImportedModule)[];
+    imports?: (ConditionalImport<z.output<TEnvSchema>> | ImportedModule)[];
     jsx?: JSXOptions;
     prisma: PrismaModuleOptions<TPrismaGlobalOmitConfig>;
     providers?: Provider[];
@@ -44,7 +44,7 @@ export class AppFactory {
     version,
     ...options
   }: CreateAppOptions<TEnvSchema, TPrismaGlobalOmitConfig>): AppContainer<
-    z.TypeOf<TEnvSchema>,
+    z.output<TEnvSchema>,
     TPrismaGlobalOmitConfig
   > {
     const envConfig = parseEnv(envSchema);
