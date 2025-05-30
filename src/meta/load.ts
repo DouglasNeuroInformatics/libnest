@@ -3,7 +3,7 @@ import * as path from 'node:path';
 import { RuntimeException } from '@douglasneuroinformatics/libjs';
 import { fromAsyncThrowable, ok } from 'neverthrow';
 import type { ResultAsync } from 'neverthrow';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 import { AbstractAppContainer } from '../app/app.base.js';
 import { importDefault } from './import.js';
@@ -16,13 +16,13 @@ const $EntryFunction = z.custom<(...args: any[]) => any>((arg) => typeof arg ===
 
 const $UserConfigOptions: z.ZodType<UserConfigOptions> = z.object({
   build: z.object({
-    esbuildOptions: z.record(z.any()).optional(),
+    esbuildOptions: z.record(z.string(), z.any()).optional(),
     mode: z.enum(['module', 'server']).optional(),
-    onComplete: z.function().returns(z.any()).optional(),
+    onComplete: z.custom<(...args: any[]) => any>((data) => typeof data === 'function'),
     outfile: z.string().min(1)
   }),
   entry: $EntryFunction,
-  globals: z.record(z.any()).optional()
+  globals: z.record(z.string(), z.any()).optional()
 });
 
 type UserConfigWithBaseDir = UserConfigOptions & {
