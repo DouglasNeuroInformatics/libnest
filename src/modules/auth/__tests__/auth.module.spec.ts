@@ -7,7 +7,7 @@ import { Test } from '@nestjs/testing';
 import request from 'supertest';
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 import type { Mock } from 'vitest';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 import { RouteAccess } from '../../../decorators/route-access.decorator.js';
 import { ConfigModule } from '../../config/config.module.js';

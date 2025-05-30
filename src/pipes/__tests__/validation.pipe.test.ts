@@ -1,6 +1,6 @@
 import { BadRequestException } from '@nestjs/common';
 import { describe, expect, it } from 'vitest';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 import { ValidationSchema } from '../../decorators/validation-schema.decorator.js';
 import { DataTransferObject } from '../../mixins/data-transfer-object.mixin.js';
@@ -39,7 +39,7 @@ describe('ValidationPipe', () => {
     class Test {
       isTest: boolean;
     }
-    applyValidationSchema(Test, {} as z.ZodTypeAny);
+    applyValidationSchema(Test, {} as any);
     await expect(validationPipe.transform({}, { metatype: Test, type: 'body' })).rejects.toThrow(
       "Schema for 'Test' must be instance of ZodType"
     );

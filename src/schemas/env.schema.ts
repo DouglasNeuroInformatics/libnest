@@ -1,5 +1,5 @@
 import { $BooleanLike, $NumberLike, $UrlLike } from '@douglasneuroinformatics/libjs';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 import type { UserConfig } from '../user-config.js';
 
@@ -37,7 +37,7 @@ export const $BaseEnv = z.object({
  *
  * @see {@link $BaseEnv}
  */
-export type BaseEnv = z.infer<typeof $BaseEnv>;
+export type BaseEnv = z.output<typeof $BaseEnv>;
 
 export type NodeEnv = BaseEnv['NODE_ENV'];
 

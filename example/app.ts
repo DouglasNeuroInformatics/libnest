@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 import { $BaseEnv, AppFactory, AuthModule, CryptoService } from '../src/index.js';
 import { AppController } from './app.controller.js';

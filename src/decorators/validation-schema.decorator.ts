@@ -1,13 +1,15 @@
-import type { Class } from 'type-fest';
-import { z } from 'zod';
+import type { Class, OmitIndexSignature } from 'type-fest';
+import { z } from 'zod/v4';
 
 import { applyValidationSchema } from '../utils/validation.utils.js';
 
 export function ValidationSchema<T extends z.ZodType<{ [key: string]: any }>>(
   schema: T
-): (target: Class<z.TypeOf<T>>) => void;
+): (target: Class<OmitIndexSignature<T['_output']>>) => void;
 
-export function ValidationSchema<T extends z.ZodRawShape>(shape: T): (target: Class<z.TypeOf<z.ZodObject<T>>>) => void;
+export function ValidationSchema<T extends z.ZodRawShape>(
+  shape: T
+): (target: Class<OmitIndexSignature<z.ZodObject<T>['_output']>>) => void;
 
 /**
  * Decorator to define the Zod validation schema for DTO classes

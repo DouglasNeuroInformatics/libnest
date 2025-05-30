@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 import { VALIDATION_SCHEMA_METADATA_KEY } from '../../utils/validation.utils.js';
 import { ValidationSchema } from '../validation-schema.decorator.js';
@@ -18,7 +18,7 @@ describe('ValidationSchema', () => {
     class Test {
       foo: null;
     }
-    const $Schema = Reflect.getMetadata(VALIDATION_SCHEMA_METADATA_KEY, Test) as z.AnyZodObject;
+    const $Schema = Reflect.getMetadata(VALIDATION_SCHEMA_METADATA_KEY, Test) as z.ZodObject;
     expect($Schema).toBeInstanceOf(z.ZodType);
     expect($Schema.shape).toMatchObject({
       foo: expect.any(z.ZodNull)
