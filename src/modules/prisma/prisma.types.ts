@@ -13,6 +13,8 @@ type RuntimePrismaModule = UserConfig extends {
   ? TRuntimePrismaModule
   : typeof PrismaModuleLike;
 
+type RuntimePrismaClient = RuntimePrismaModule['PrismaClient'];
+
 export type PrismaModelName = FallbackIfNever<
   Extract<keyof RuntimePrismaModule['Prisma']['ModelName'], string>,
   string
@@ -20,13 +22,13 @@ export type PrismaModelName = FallbackIfNever<
 
 export type PrismaModelKey<T extends PrismaModelName = PrismaModelName> = Uncapitalize<T>;
 
-// export type PrismaModelWhereInputMap = {
-//   [K in PrismaModelName]: PrismaClientLike[PrismaModelKey<K>] extends {
-//     findFirst: (args: { where: infer TWhereInput }) => any;
-//   }
-//     ? TWhereInput
-//     : never;
-// };
+export type PrismaModelWhereInputMap = {
+  [K in PrismaModelName]: RuntimePrismaClient[PrismaModelKey<K>] extends {
+    findFirst: (args: { where: infer TWhereInput }) => any;
+  }
+    ? TWhereInput
+    : never;
+};
 
 // export type Model<T extends PrismaModelName> =
 //   ExtendedPrismaClient extends SingleKeyMap<`${Uncapitalize<T>}`, infer U> ? U : never;

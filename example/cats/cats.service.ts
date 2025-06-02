@@ -9,7 +9,7 @@ import type { Cat } from './schemas/cat.schema.js';
 
 @Injectable()
 export class CatsService {
-  constructor(@InjectPrismaClient() private readonly prismaClient: InstanceType<PrismaClientLike>) {}
+  constructor(@InjectPrismaClient() private readonly prismaClient: PrismaClientLike) {}
 
   async create(cat: Omit<Cat, '_id'>): Promise<Cat> {
     const id = crypto.randomUUID();

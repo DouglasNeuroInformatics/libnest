@@ -2,7 +2,7 @@ import type { BuildOptions } from 'esbuild';
 import type { Jsonifiable, Promisable } from 'type-fest';
 
 import type { AppContainer } from './app/app.container.js';
-import type { PrismaClientLike, PrismaLike, PrismaModuleLike } from './modules/prisma/prisma.base.js';
+import type { PrismaModuleLike } from './modules/prisma/prisma.base.js';
 import type { DefaultPrismaGlobalOmitConfig } from './modules/prisma/prisma.config.js';
 import type { BaseEnv } from './schemas/env.schema.js';
 
@@ -39,7 +39,7 @@ export type UserConfigOptions = {
   globals?: { [key: string]: Jsonifiable };
 
   /** Function to load the generated PrismaClient module */
-  importPrismaClient: () => Promise<{ Prisma: typeof PrismaLike; PrismaClient: PrismaClientLike }>;
+  importPrismaClient: () => Promise<typeof PrismaModuleLike>;
 };
 
 /**

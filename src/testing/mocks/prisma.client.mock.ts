@@ -4,7 +4,7 @@ import type { Mock } from 'vitest';
 import { getModelKey } from '../../modules/prisma/prisma.utils.js';
 import { MockPrismaModel } from './prisma.model.mock.js';
 
-import type { PrismaClientLike } from '../../modules/prisma/prisma.types.js';
+import type { PrismaClientLike } from '../../modules/prisma/prisma.base.js';
 
 type MockPrismaClientOptions = {
   modelNames: string[];

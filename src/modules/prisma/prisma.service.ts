@@ -10,7 +10,7 @@ import type { PrismaClientLike } from './prisma.base.js';
 
 @Injectable()
 export class PrismaService implements OnApplicationShutdown, OnModuleInit {
-  constructor(@Inject(PRISMA_CLIENT_TOKEN) public readonly client: InstanceType<PrismaClientLike>) {}
+  constructor(@Inject(PRISMA_CLIENT_TOKEN) public readonly client: PrismaClientLike) {}
 
   async dropDatabase(): Promise<void> {
     const result = await this.client.$runCommandRaw({ dropDatabase: 1 });
