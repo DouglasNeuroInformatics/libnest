@@ -1,12 +1,15 @@
 import type { SingleKeyMap } from '@douglasneuroinformatics/libjs';
-import type { Prisma, PrismaClient } from '@prisma/client';
+import type { Prisma } from '@prisma/client';
 import type { IfNever } from 'type-fest';
 
 import type { UserConfig } from '../../user-config.js';
 import type { DefaultPrismaGlobalOmitConfig } from './prisma.config.js';
 import type { ExtendedPrismaClient } from './prisma.factory.js';
 
-export type PrismaClientLike = PrismaClient & {
+export type PrismaClientLike = {
+  $connect(...args: any[]): Promise<void>;
+  $disconnect(...args: any[]): Promise<void>;
+  $runCommandRaw(...args: any[]): Promise<{ [key: string]: any }>;
   [key: string]: any;
 };
 
