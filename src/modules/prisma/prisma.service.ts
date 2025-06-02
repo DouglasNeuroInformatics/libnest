@@ -6,11 +6,11 @@ import { $MongoStats } from '../../schemas/mongo-stats.schema.js';
 import { PRISMA_CLIENT_TOKEN } from './prisma.config.js';
 
 import type { MongoStats } from '../../schemas/mongo-stats.schema.js';
-import type { PrismaClientLike } from './prisma.types.js';
+import type { PrismaClientLike } from './prisma.base.js';
 
 @Injectable()
 export class PrismaService implements OnApplicationShutdown, OnModuleInit {
-  constructor(@Inject(PRISMA_CLIENT_TOKEN) public readonly client: PrismaClientLike) {}
+  constructor(@Inject(PRISMA_CLIENT_TOKEN) public readonly client: InstanceType<PrismaClientLike>) {}
 
   async dropDatabase(): Promise<void> {
     const result = await this.client.$runCommandRaw({ dropDatabase: 1 });
