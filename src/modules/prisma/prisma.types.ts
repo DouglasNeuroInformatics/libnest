@@ -6,18 +6,6 @@ import type { UserConfig } from '../../user-config.js';
 import type { DefaultPrismaGlobalOmitConfig } from './prisma.config.js';
 import type { ExtendedPrismaClient } from './prisma.factory.js';
 
-export declare namespace PrismaLike {
-  export type ModelName = string;
-  export const prismaVersion: any;
-}
-
-export type PrismaClientLike = {
-  $connect(...args: any[]): Promise<void>;
-  $disconnect(...args: any[]): Promise<void>;
-  $runCommandRaw(...args: any[]): Promise<{ [key: string]: any }>;
-  [key: string]: any;
-};
-
 export type PrismaModelName = IfNever<Prisma.ModelName, string, Prisma.ModelName>;
 
 export type PrismaModelKey<T extends PrismaModelName = PrismaModelName> = Uncapitalize<T>;
