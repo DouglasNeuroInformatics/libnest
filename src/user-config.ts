@@ -2,7 +2,7 @@ import type { BuildOptions } from 'esbuild';
 import type { Jsonifiable, Promisable } from 'type-fest';
 
 import type { AppContainer } from './app/app.container.js';
-import type { PrismaClientLike, PrismaLike } from './modules/prisma/prisma.base.js';
+import type { PrismaClientLike, PrismaLike, PrismaModuleLike } from './modules/prisma/prisma.base.js';
 import type { DefaultPrismaGlobalOmitConfig } from './modules/prisma/prisma.config.js';
 import type { BaseEnv } from './schemas/env.schema.js';
 
@@ -58,10 +58,12 @@ export type InferUserConfig<T extends UserConfigOptions> = T extends {
       infer TPrismaGlobalOmitConfig extends DefaultPrismaGlobalOmitConfig
     >;
   }>;
+  importPrismaClient: () => Promise<infer TPrismaModule extends typeof PrismaModuleLike>;
 }
   ? {
       PrismaGlobalOmitConfig: TPrismaGlobalOmitConfig;
       RuntimeEnv: TEnv;
+      RuntimePrismaModule: TPrismaModule;
     }
   : never;
 

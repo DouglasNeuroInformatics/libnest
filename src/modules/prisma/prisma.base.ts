@@ -9,3 +9,8 @@ export type PrismaClientLike = new (...args: any[]) => {
   $runCommandRaw(...args: any[]): Promise<{ [key: string]: any }>;
   [key: string]: any;
 };
+
+export declare namespace PrismaModuleLike {
+  export const PrismaClient: PrismaClientLike;
+  export const Prisma: typeof PrismaLike;
+}
