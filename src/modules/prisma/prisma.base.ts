@@ -1,5 +1,5 @@
 export declare namespace PrismaLike {
-  export type ModelName = string;
+  export const ModelName: { [key: string]: string };
   export const prismaVersion: any;
 }
 
