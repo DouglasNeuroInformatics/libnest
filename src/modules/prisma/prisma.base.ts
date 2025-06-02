@@ -3,16 +3,14 @@ export declare namespace PrismaLike {
   export const prismaVersion: any;
 }
 
-export type PrismaClientLike = {
-  $connect(...args: any[]): Promise<void>;
-  $disconnect(...args: any[]): Promise<void>;
-  $runCommandRaw(...args: any[]): Promise<{ [key: string]: any }>;
+export abstract class PrismaClientLike {
   [key: string]: any;
-};
-
-export type PrismaClientConstructorLike = new (...args: any[]) => PrismaClientLike;
+  abstract $connect(...args: any[]): Promise<void>;
+  abstract $disconnect(...args: any[]): Promise<void>;
+  abstract $runCommandRaw(...args: any[]): Promise<{ [key: string]: any }>;
+}
 
 export declare namespace PrismaModuleLike {
-  export const PrismaClient: PrismaClientConstructorLike;
+  export const PrismaClient: typeof PrismaClientLike;
   export const Prisma: typeof PrismaLike;
 }
