@@ -1,11 +1,7 @@
-import type { FallbackIfNever, SingleKeyMap } from '@douglasneuroinformatics/libjs';
-import type { Prisma } from '@prisma/client';
-import type { IfNever } from 'type-fest';
+import type { FallbackIfNever } from '@douglasneuroinformatics/libjs';
 
 import type { UserConfig } from '../../user-config.js';
 import type { PrismaModuleLike } from './prisma.base.js';
-import type { DefaultPrismaGlobalOmitConfig } from './prisma.config.js';
-import type { ExtendedPrismaClient } from './prisma.factory.js';
 
 type RuntimePrismaModule = UserConfig extends {
   RuntimePrismaModule: infer TRuntimePrismaModule extends typeof PrismaModuleLike;
@@ -13,7 +9,9 @@ type RuntimePrismaModule = UserConfig extends {
   ? TRuntimePrismaModule
   : typeof PrismaModuleLike;
 
-type RuntimePrismaClient = RuntimePrismaModule['PrismaClient'];
+type RuntimePrismaClient = InstanceType<RuntimePrismaModule['PrismaClient']> & {
+  [key: string]: any;
+};
 
 export type PrismaModelName = FallbackIfNever<
   Extract<keyof RuntimePrismaModule['Prisma']['ModelName'], string>,
