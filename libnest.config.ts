@@ -11,7 +11,7 @@ const config = defineUserConfig({
     outfile: path.resolve(import.meta.dirname, 'build/server.js')
   },
   entry: () => import('./example/app.js'),
-  importPrismaClient: () => import('@prisma/client')
+  importPrismaClient: () => import('@prisma/generated-client')
 });
 
 export default config;

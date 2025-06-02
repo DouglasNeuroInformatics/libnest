@@ -3,6 +3,7 @@ import type { Jsonifiable, Promisable } from 'type-fest';
 
 import type { AppContainer } from './app/app.container.js';
 import type { DefaultPrismaGlobalOmitConfig } from './modules/prisma/prisma.config.js';
+import type { PrismaLike } from './modules/prisma/prisma.types.js';
 import type { BaseEnv } from './schemas/env.schema.js';
 
 /**
@@ -38,7 +39,7 @@ export type UserConfigOptions = {
   globals?: { [key: string]: Jsonifiable };
 
   /** Function to load the generated PrismaClient module */
-  importPrismaClient: () => Promise<any>;
+  importPrismaClient: () => Promise<{ Prisma: typeof PrismaLike }>;
 };
 
 /**
