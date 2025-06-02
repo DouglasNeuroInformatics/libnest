@@ -4,12 +4,12 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 
 import { InjectPrismaClient } from '../../src/index.js';
 
-import type { PrismaClientLike } from '../../src/modules/prisma/prisma.types.js';
+import type { PrismaClientLike } from '../../src/modules/prisma/prisma.base.js';
 import type { Cat } from './schemas/cat.schema.js';
 
 @Injectable()
 export class CatsService {
-  constructor(@InjectPrismaClient() private readonly prismaClient: PrismaClientLike) {}
+  constructor(@InjectPrismaClient() private readonly prismaClient: InstanceType<PrismaClientLike>) {}
 
   async create(cat: Omit<Cat, '_id'>): Promise<Cat> {
     const id = crypto.randomUUID();
