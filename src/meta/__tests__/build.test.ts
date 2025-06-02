@@ -9,6 +9,8 @@ import { buildProd } from '../build.js';
 
 import type { UserConfigOptions } from '../../user-config.js';
 
+const importPrismaClient = vi.fn().mockImplementation(() => import('@prisma/client'));
+
 const { loadUserConfig, parseEntryFromFunction } = vi.hoisted(() => ({
   loadUserConfig: vi.fn(),
   parseEntryFromFunction: vi.fn()
@@ -56,7 +58,8 @@ describe('buildProd', () => {
           mode: 'server',
           outfile
         },
-        entry: vi.fn()
+        entry: vi.fn(),
+        importPrismaClient
       } satisfies UserConfigOptions)
     );
     parseEntryFromFunction.mockReturnValueOnce(ok('./example/app.js'));
@@ -77,7 +80,8 @@ describe('buildProd', () => {
           mode: 'server',
           outfile
         },
-        entry: vi.fn()
+        entry: vi.fn(),
+        importPrismaClient
       } satisfies UserConfigOptions)
     );
     parseEntryFromFunction.mockReturnValueOnce(ok('./example/app.js'));
@@ -102,7 +106,8 @@ describe('buildProd', () => {
           __RELEASE__: {
             version: 'latest'
           }
-        }
+        },
+        importPrismaClient
       } satisfies UserConfigOptions)
     );
     parseEntryFromFunction.mockReturnValueOnce(ok('./example/app.js'));
@@ -129,7 +134,8 @@ describe('buildProd', () => {
           onComplete,
           outfile: '/dev/null'
         },
-        entry: vi.fn()
+        entry: vi.fn(),
+        importPrismaClient
       } satisfies UserConfigOptions)
     );
     parseEntryFromFunction.mockReturnValueOnce(ok('./example/app.js'));

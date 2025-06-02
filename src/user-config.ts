@@ -36,6 +36,9 @@ export type UserConfigOptions = {
    * Optional global variables that should be defined at runtime.
    */
   globals?: { [key: string]: Jsonifiable };
+
+  /** Function to load the generated PrismaClient module */
+  importPrismaClient: () => Promise<any>;
 };
 
 /**
