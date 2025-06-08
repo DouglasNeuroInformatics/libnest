@@ -40,7 +40,7 @@ type DefineAbility<TPayload extends { [key: string]: unknown } = { [key: string]
   metadata: TMetadata
 ) => void;
 
-type Permission = RawRuleOf<PureAbility<[AppAction, AppSubjectName]>>;
+type Permission = RawRuleOf<PureAbility<[AppAction, AppSubjectName], AppConditions>>;
 
 type BaseLoginCredentials = {
   password: string;

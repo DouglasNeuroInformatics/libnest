@@ -15,6 +15,7 @@ export { ValidationSchema } from './decorators/validation-schema.decorator.js';
 export type { AppVersion, DocsConfig } from './docs/docs.factory.js';
 export { acceptLanguage } from './middleware/accept-language.middleware.js';
 export { DataTransferObject } from './mixins/data-transfer-object.mixin.js';
+export { createAppAbility } from './modules/auth/ability.utils.js';
 export type {
   AppAbility,
   AppAction,
