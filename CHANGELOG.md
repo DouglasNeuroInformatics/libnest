@@ -1,5 +1,11 @@
 # Changelog
 
+## [6.0.1](https://github.com/DouglasNeuroInformatics/libnest/compare/v6.0.0...v6.0.1) (2025-06-08)
+
+### Bug Fixes
+
+* export createAppAbility for testing ([c3aec05](https://github.com/DouglasNeuroInformatics/libnest/commit/c3aec0553025862faa480524bae16df0fae310b0))
+
 ## [6.0.0](https://github.com/DouglasNeuroInformatics/libnest/compare/v5.3.1...v6.0.0) (2025-05-30)
 
 ### ⚠ BREAKING CHANGES
