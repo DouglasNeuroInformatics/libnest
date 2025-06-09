@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import { Test, TestingModule } from '@nestjs/testing';
+import { PrismaClient } from '@prisma/client';
 import request from 'supertest';
 import type { Class } from 'type-fest';
 import { expect, suite } from 'vitest';
@@ -29,6 +30,9 @@ export class IntegrationTestModule {
           },
           imports: [module],
           prisma: {
+            client: {
+              constructor: PrismaClient
+            },
             dbPrefix: null,
             useInMemoryDbForTesting: true
           }

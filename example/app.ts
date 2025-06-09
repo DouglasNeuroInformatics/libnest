@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 
+import { PrismaClient } from '@prisma/client';
 import { z } from 'zod/v4';
 
 import { $BaseEnv, AppFactory, AuthModule, CryptoService } from '../src/index.js';
@@ -55,6 +56,9 @@ export default AppFactory.create({
     }
   },
   prisma: {
+    client: {
+      constructor: PrismaClient
+    },
     dbPrefix: 'libnest-example',
     useInMemoryDbForTesting: true
   },
