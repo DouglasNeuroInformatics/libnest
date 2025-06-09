@@ -17,7 +17,7 @@ script:pre-request {
     const baseUrl = 'http://localhost:5500';
     const username = 'admin';
     const password = 'password';
-    const response = await axios.post(`${baseUrl}/v1/auth/login`, {
+    const response = await axios.post(`${baseUrl}/auth/login`, {
       username,
       password
     });
