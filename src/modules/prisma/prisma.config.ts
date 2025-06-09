@@ -1,5 +1,4 @@
 import type { Prisma, PrismaClient } from '@prisma/client';
-import type { DefaultArgs } from '@prisma/client/runtime/library';
 
 import { defineToken } from '../../utils/token.utils.js';
 
@@ -8,7 +7,7 @@ export type DefaultPrismaClientOptions = Omit<Prisma.PrismaClientOptions, 'datas
 export type PrismaModuleOptions<TPrismaClientOptions extends DefaultPrismaClientOptions = DefaultPrismaClientOptions> =
   {
     client: {
-      constructor: new <T extends Prisma.PrismaClientOptions>(options?: T) => PrismaClient<T, never, DefaultArgs>;
+      constructor: new (options?: Prisma.PrismaClientOptions) => PrismaClient;
       options?: TPrismaClientOptions;
     };
     dbPrefix: null | string;
