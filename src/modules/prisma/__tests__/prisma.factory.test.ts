@@ -81,6 +81,7 @@ describe('PrismaFactory', () => {
           exists: expect.any(Function)
         }
       },
+      name: 'libnest',
       result: Object.fromEntries(
         Object.keys(Prisma.ModelName).map((modelName) => [
           getModelKey(modelName),

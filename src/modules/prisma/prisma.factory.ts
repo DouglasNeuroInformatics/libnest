@@ -10,18 +10,14 @@ import type {
 } from '@prisma/client/runtime/library';
 
 import { MONGO_CONNECTION_TOKEN } from './prisma.config.js';
-import { getModelKey } from './prisma.utils.js';
+import { LibnestPrismaExtension } from './prisma.extensions.js';
 
 import type { MongoConnection } from './connection.factory.js';
 import type { DefaultPrismaGlobalOmitConfig } from './prisma.config.js';
-import type {
-  PrismaModelKey,
-  PrismaModelName,
-  RuntimePrismaClientOptions,
-  RuntimePrismaGlobalOmitConfig
-} from './prisma.types.js';
+import type { ResultExtArgs } from './prisma.extensions.js';
+import type { RuntimePrismaClientOptions, RuntimePrismaGlobalOmitConfig } from './prisma.types.js';
 
-const MODEL_EXTENSION_ARGS = {
+const _MODEL_EXTENSION_ARGS = {
   $allModels: {
     async exists<T>(this: T, where: Prisma.Args<T, 'findFirst'>['where']): Promise<boolean> {
       const context = Prisma.getExtensionContext(this) as unknown as {
@@ -33,15 +29,7 @@ const MODEL_EXTENSION_ARGS = {
   }
 } satisfies ExtensionArgs['model'];
 
-type ModelExtArgs = typeof MODEL_EXTENSION_ARGS;
-
-type ResultExtArgs = {
-  [K in PrismaModelName as PrismaModelKey<K>]: {
-    __modelName: {
-      compute: () => K;
-    };
-  };
-};
+type ModelExtArgs = typeof _MODEL_EXTENSION_ARGS;
 
 type InferPrismaExtensionArgs<TArgs extends { [key: string]: unknown }> = MergeExtArgs<
   Prisma.TypeMap<DefaultArgs, RuntimePrismaGlobalOmitConfig>,
@@ -71,16 +59,6 @@ export class PrismaFactory {
     if (omit) {
       options.omit = omit;
     }
-    return new PrismaClient(options).$extends((client) => {
-      const result = {} as ResultExtArgs;
-      Object.keys(Prisma.ModelName).forEach((modelName) => {
-        result[getModelKey(modelName)] = {
-          __modelName: {
-            compute: (): string => modelName
-          }
-        };
-      });
-      return client.$extends({ model: MODEL_EXTENSION_ARGS, result });
-    });
+    return new PrismaClient(options).$extends(LibnestPrismaExtension);
   }
 }
