@@ -4,7 +4,7 @@ import { Prisma } from '@prisma/client';
 
 import { ConnectionFactory } from './connection.factory.js';
 import { MONGO_CONNECTION_TOKEN, PRISMA_CLIENT_TOKEN, PRISMA_MODULE_OPTIONS_TOKEN } from './prisma.config.js';
-import { PrismaFactory } from './prisma.factory.js';
+import { LibnestPrismaExtension } from './prisma.extensions.js';
 import { PrismaService } from './prisma.service.js';
 import { getModelKey, getModelToken } from './prisma.utils.js';
 
@@ -35,14 +35,16 @@ export class PrismaModule {
           }
         },
         {
-          inject: [PrismaFactory, PRISMA_MODULE_OPTIONS_TOKEN],
+          inject: [MONGO_CONNECTION_TOKEN, PRISMA_MODULE_OPTIONS_TOKEN],
           provide: PRISMA_CLIENT_TOKEN,
-          useFactory: (prismaFactory: PrismaFactory, { client }: PrismaModuleOptions): ExtendedPrismaClient => {
-            return prismaFactory.createClient(client.options ?? {});
+          useFactory: (mongoConnection: MongoConnection, { client }: PrismaModuleOptions): ExtendedPrismaClient => {
+            return new client.constructor({
+              ...client.options,
+              datasourceUrl: mongoConnection.url.href
+            }).$extends(LibnestPrismaExtension);
           }
         },
         ConnectionFactory,
-        PrismaFactory,
         PrismaService,
         ...modelProviders
       ]

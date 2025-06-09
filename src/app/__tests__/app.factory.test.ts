@@ -2,7 +2,6 @@ import { ValidationException } from '@douglasneuroinformatics/libjs';
 import { APP_FILTER, APP_GUARD, APP_PIPE } from '@nestjs/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
-import { PrismaClient } from '@prisma/client';
 import { beforeAll, describe, expect, it, vi } from 'vitest';
 import type { Mock } from 'vitest';
 
@@ -10,13 +9,10 @@ import { GlobalExceptionFilter } from '../../filters/global-exception.filter.js'
 import { delay } from '../../middleware/delay.middleware.js';
 import { ConfigService } from '../../modules/config/config.service.js';
 import { CryptoService } from '../../modules/crypto/crypto.service.js';
-import { MONGO_CONNECTION_TOKEN } from '../../modules/prisma/prisma.config.js';
-import { PrismaFactory } from '../../modules/prisma/prisma.factory.js';
 import { ValidationPipe } from '../../pipes/validation.pipe.js';
 import { $BaseEnv } from '../../schemas/env.schema.js';
 import { AppFactory } from '../app.factory.js';
 
-import type { MongoConnection } from '../../modules/prisma/connection.factory.js';
 import type { PrismaModuleOptions } from '../../modules/prisma/prisma.config.js';
 import type { BaseEnv } from '../../schemas/env.schema.js';
 import type { CreateAppOptions } from '../app.factory.js';
@@ -49,7 +45,13 @@ const defaultAppOptions: CreateAppOptions = {
   envSchema: $BaseEnv,
   prisma: {
     client: {
-      constructor: PrismaClient
+      constructor: vi.fn(() => {
+        return {
+          $connect: vi.fn(),
+          $disconnect: vi.fn(),
+          $extends: vi.fn().mockReturnThis()
+        } as any;
+      })
     },
     dbPrefix: null
   },
@@ -127,10 +129,9 @@ describe('AppFactory', () => {
       });
 
       it('should create an app with a custom prisma configuration', async () => {
-        const createClient = vi.spyOn(PrismaFactory.prototype, 'createClient');
         const prisma: PrismaModuleOptions = {
           client: {
-            constructor: PrismaClient,
+            constructor: defaultAppOptions.prisma.client.constructor,
             options: {
               omit: {
                 user: {
@@ -141,10 +142,11 @@ describe('AppFactory', () => {
           },
           dbPrefix: 'example'
         };
-        const app = await createAppContainer({ prisma }).createApplicationInstance();
-        const mongoConnection: MongoConnection = app.get(MONGO_CONNECTION_TOKEN);
-        expect(createClient).toHaveBeenCalledExactlyOnceWith(prisma.client.options);
-        expect(mongoConnection.url.href).toBe(`${defaultEnv.MONGO_URI}/example-test`);
+        await createAppContainer({ prisma }).createApplicationInstance();
+        expect(prisma.client.constructor).toHaveBeenLastCalledWith({
+          datasourceUrl: `${defaultEnv.MONGO_URI}/example-test`,
+          ...prisma.client.options
+        });
       });
     });
 

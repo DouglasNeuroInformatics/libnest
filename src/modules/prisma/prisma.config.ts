@@ -8,7 +8,7 @@ export type DefaultPrismaClientOptions = Omit<Prisma.PrismaClientOptions, 'datas
 export type PrismaModuleOptions<TPrismaClientOptions extends DefaultPrismaClientOptions = DefaultPrismaClientOptions> =
   {
     client: {
-      constructor: new () => PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs>;
+      constructor: new <T extends Prisma.PrismaClientOptions>(options?: T) => PrismaClient<T, never, DefaultArgs>;
       options?: TPrismaClientOptions;
     };
     dbPrefix: null | string;
