@@ -4,7 +4,6 @@ import type {
   Call,
   DefaultArgs,
   DynamicClientExtensionThis,
-  ExtensionArgs,
   InternalArgs,
   MergeExtArgs
 } from '@prisma/client/runtime/library';
@@ -14,22 +13,8 @@ import { LibnestPrismaExtension } from './prisma.extensions.js';
 
 import type { MongoConnection } from './connection.factory.js';
 import type { DefaultPrismaGlobalOmitConfig } from './prisma.config.js';
-import type { ResultExtArgs } from './prisma.extensions.js';
+import type { ModelExtArgs, ResultExtArgs } from './prisma.extensions.js';
 import type { RuntimePrismaClientOptions, RuntimePrismaGlobalOmitConfig } from './prisma.types.js';
-
-const _MODEL_EXTENSION_ARGS = {
-  $allModels: {
-    async exists<T>(this: T, where: Prisma.Args<T, 'findFirst'>['where']): Promise<boolean> {
-      const context = Prisma.getExtensionContext(this) as unknown as {
-        findFirst: (...args: unknown[]) => Promise<unknown>;
-      };
-      const result = await context.findFirst({ where });
-      return result !== null;
-    }
-  }
-} satisfies ExtensionArgs['model'];
-
-type ModelExtArgs = typeof _MODEL_EXTENSION_ARGS;
 
 type InferPrismaExtensionArgs<TArgs extends { [key: string]: unknown }> = MergeExtArgs<
   Prisma.TypeMap<DefaultArgs, RuntimePrismaGlobalOmitConfig>,
