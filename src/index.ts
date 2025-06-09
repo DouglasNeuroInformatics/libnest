@@ -39,7 +39,7 @@ export type { PrismaModuleOptions } from './modules/prisma/prisma.config.js';
 export { InjectModel, InjectPrismaClient } from './modules/prisma/prisma.decorators.js';
 export type { ExtendedPrismaClient } from './modules/prisma/prisma.factory.js';
 export { PrismaService } from './modules/prisma/prisma.service.js';
-export type { Model, PrismaModelName } from './modules/prisma/prisma.types.js';
+export type { Model, PrismaClientLike, PrismaModelName } from './modules/prisma/prisma.types.js';
 export { accessibleQuery, getModelToken } from './modules/prisma/prisma.utils.js';
 export type { VirtualizationModuleOptions } from './modules/virtualization/virtualization.config.js';
 export { VirtualizationModule } from './modules/virtualization/virtualization.module.js';
