@@ -4,22 +4,23 @@ import { getModelKey } from './prisma.utils.js';
 
 import type { PrismaModelKey, PrismaModelName } from './prisma.types.js';
 
-export type ModelExtArgs = {
-  $allModels: {
-    exists<T>(this: T, where: Prisma.Args<T, 'findFirst'>['where']): Promise<boolean>;
+export type LibnestPrismaExtensionArgs = {
+  model: {
+    $allModels: {
+      exists<T>(this: T, where: Prisma.Args<T, 'findFirst'>['where']): Promise<boolean>;
+    };
   };
-};
-
-export type ResultExtArgs = {
-  [K in PrismaModelName as PrismaModelKey<K>]: {
-    __modelName: {
-      compute: () => K;
+  result: {
+    [K in PrismaModelName as PrismaModelKey<K>]: {
+      __modelName: {
+        compute: () => K;
+      };
     };
   };
 };
 
 export const LibnestPrismaExtension = Prisma.defineExtension((client) => {
-  const result = {} as ResultExtArgs;
+  const result = {} as LibnestPrismaExtensionArgs['result'];
   Object.keys(Prisma.ModelName).forEach((modelName) => {
     result[getModelKey(modelName)] = {
       __modelName: {
@@ -38,7 +39,7 @@ export const LibnestPrismaExtension = Prisma.defineExtension((client) => {
           return result !== null;
         }
       }
-    } satisfies ModelExtArgs,
+    } satisfies LibnestPrismaExtensionArgs['model'],
     name: 'libnest',
     result
   });

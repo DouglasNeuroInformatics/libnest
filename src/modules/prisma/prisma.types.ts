@@ -11,23 +11,29 @@ import type { IfNever } from 'type-fest';
 
 import type { UserConfig } from '../../user-config.js';
 import type { DefaultPrismaClientOptions } from './prisma.config.js';
-import type { ModelExtArgs, ResultExtArgs } from './prisma.extensions.js';
+import type { LibnestPrismaExtensionArgs } from './prisma.extensions.js';
 
-type InferPrismaExtensionArgs<TArgs extends { [key: string]: unknown }> = MergeExtArgs<
-  Prisma.TypeMap<DefaultArgs, RuntimePrismaClientOptions['omit']>,
+type InferPrismaExtensionArgs<
+  TExtension extends Partial<Prisma.Extension>,
+  TClientOptions extends Prisma.PrismaClientOptions
+> = MergeExtArgs<
+  Prisma.TypeMap<DefaultArgs, TClientOptions['omit']>,
   {},
-  InternalArgs<TArgs['result'], TArgs['model'], TArgs['query'], TArgs['client']>
+  InternalArgs<TExtension['result'], TExtension['model'], TExtension['query'], TExtension['client']>
 >;
 
-type InferExtendedClient<TArgs extends { [key: string]: unknown }> = DynamicClientExtensionThis<
+type InferExtendedClient<
+  TExtension extends Partial<Prisma.Extension>,
+  TClientOptions extends Prisma.PrismaClientOptions
+> = DynamicClientExtensionThis<
   Call<
-    Prisma.TypeMapCb<RuntimePrismaClientOptions>,
+    Prisma.TypeMapCb<TClientOptions>,
     {
-      extArgs: InferPrismaExtensionArgs<TArgs>;
+      extArgs: InferPrismaExtensionArgs<TExtension, TClientOptions>;
     }
   >,
-  Prisma.TypeMapCb<RuntimePrismaClientOptions>,
-  InferPrismaExtensionArgs<TArgs>
+  Prisma.TypeMapCb<TClientOptions>,
+  InferPrismaExtensionArgs<TExtension, TClientOptions>
 >;
 
 export type PrismaClientLike = PrismaClient & {
@@ -55,4 +61,4 @@ export type RuntimePrismaClientOptions = UserConfig extends {
   ? TPrismaClientOptions
   : DefaultPrismaClientOptions;
 
-export type ExtendedPrismaClient = InferExtendedClient<{ model: ModelExtArgs; result: ResultExtArgs }>;
+export type ExtendedPrismaClient = InferExtendedClient<LibnestPrismaExtensionArgs, RuntimePrismaClientOptions>;
