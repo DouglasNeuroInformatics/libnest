@@ -10,8 +10,7 @@ import { getModelKey, getModelToken } from './prisma.utils.js';
 
 import type { MongoConnection } from './connection.factory.js';
 import type { PrismaModuleOptions } from './prisma.config.js';
-import type { ExtendedPrismaClient } from './prisma.factory.js';
-import type { PrismaClientLike } from './prisma.types.js';
+import type { ExtendedPrismaClient, PrismaClientLike } from './prisma.types.js';
 
 @Module({})
 export class PrismaModule {
