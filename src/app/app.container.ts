@@ -5,13 +5,13 @@ import { JSONLogger } from '../modules/logging/json.logger.js';
 import { AbstractAppContainer } from './app.base.js';
 import { configureApp } from './app.utils.js';
 
-import type { DefaultPrismaGlobalOmitConfig } from '../modules/prisma/prisma.config.js';
+import type { DefaultPrismaClientOptions } from '../modules/prisma/prisma.config.js';
 import type { BaseEnv } from '../schemas/env.schema.js';
 import type { AppContainerParams } from './app.base.js';
 
 export class AppContainer<
   TEnv extends BaseEnv,
-  _TPrismaGlobalOmitConfig extends DefaultPrismaGlobalOmitConfig
+  _TPrismaClientOptions extends DefaultPrismaClientOptions
 > extends AbstractAppContainer<TEnv> {
   constructor(params: AppContainerParams<TEnv>) {
     super(params);

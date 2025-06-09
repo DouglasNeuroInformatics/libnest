@@ -125,16 +125,18 @@ describe('AppFactory', () => {
       it('should create an app with a custom prisma configuration', async () => {
         const createClient = vi.spyOn(PrismaFactory.prototype, 'createClient');
         const prisma: PrismaModuleOptions = {
-          dbPrefix: 'example',
-          omit: {
-            user: {
-              password: true
+          clientOptions: {
+            omit: {
+              user: {
+                password: true
+              }
             }
-          }
+          },
+          dbPrefix: 'example'
         };
         const app = await createAppContainer({ prisma }).createApplicationInstance();
         const mongoConnection: MongoConnection = app.get(MONGO_CONNECTION_TOKEN);
-        expect(createClient).toHaveBeenCalledExactlyOnceWith({ omit: prisma.omit });
+        expect(createClient).toHaveBeenCalledExactlyOnceWith(prisma.clientOptions);
         expect(mongoConnection.url.href).toBe(`${defaultEnv.MONGO_URI}/example-test`);
       });
     });

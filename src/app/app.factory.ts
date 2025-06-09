@@ -17,14 +17,14 @@ import { AppContainer } from './app.container.js';
 import { AppModule } from './app.module.js';
 
 import type { JSXOptions } from '../interceptors/render.interceptor.js';
-import type { DefaultPrismaGlobalOmitConfig, PrismaModuleOptions } from '../modules/prisma/prisma.config.js';
+import type { DefaultPrismaClientOptions, PrismaModuleOptions } from '../modules/prisma/prisma.config.js';
 import type { RuntimeEnv } from '../schemas/env.schema.js';
 import type { BaseEnvSchema } from '../utils/env.utils.js';
 import type { AppContainerParams, ConditionalImport, DynamicAppModule, ImportedModule } from './app.base.js';
 
 export type CreateAppOptions<
   TEnvSchema extends BaseEnvSchema = BaseEnvSchema,
-  TPrismaGlobalOmitConfig extends DefaultPrismaGlobalOmitConfig = DefaultPrismaGlobalOmitConfig
+  TPrismaClientOptions extends DefaultPrismaClientOptions = DefaultPrismaClientOptions
 > = Simplify<
   Omit<AppContainerParams, 'envConfig' | 'module'> & {
     configureMiddleware?: (consumer: MiddlewareConsumer) => void;
@@ -32,21 +32,18 @@ export type CreateAppOptions<
     envSchema: TEnvSchema;
     imports?: (ConditionalImport<z.output<TEnvSchema>> | ImportedModule)[];
     jsx?: JSXOptions;
-    prisma: PrismaModuleOptions<TPrismaGlobalOmitConfig>;
+    prisma: PrismaModuleOptions<TPrismaClientOptions>;
     providers?: Provider[];
   }
 >;
 
 export class AppFactory {
-  static create<TEnvSchema extends BaseEnvSchema, TPrismaGlobalOmitConfig extends DefaultPrismaGlobalOmitConfig>({
+  static create<TEnvSchema extends BaseEnvSchema, TPrismaClientOptions extends DefaultPrismaClientOptions>({
     docs,
     envSchema,
     version,
     ...options
-  }: CreateAppOptions<TEnvSchema, TPrismaGlobalOmitConfig>): AppContainer<
-    z.output<TEnvSchema>,
-    TPrismaGlobalOmitConfig
-  > {
+  }: CreateAppOptions<TEnvSchema, TPrismaClientOptions>): AppContainer<z.output<TEnvSchema>, TPrismaClientOptions> {
     const envConfig = parseEnv(envSchema);
     const module = this.createModule({ envConfig, ...options });
     return new AppContainer({ docs, envConfig, module, version });

@@ -12,12 +12,12 @@ import { MONGO_CONNECTION_TOKEN } from './prisma.config.js';
 import { LibnestPrismaExtension } from './prisma.extensions.js';
 
 import type { MongoConnection } from './connection.factory.js';
-import type { DefaultPrismaGlobalOmitConfig } from './prisma.config.js';
+import type { DefaultPrismaClientOptions } from './prisma.config.js';
 import type { ModelExtArgs, ResultExtArgs } from './prisma.extensions.js';
-import type { RuntimePrismaClientOptions, RuntimePrismaGlobalOmitConfig } from './prisma.types.js';
+import type { RuntimePrismaClientOptions } from './prisma.types.js';
 
 type InferPrismaExtensionArgs<TArgs extends { [key: string]: unknown }> = MergeExtArgs<
-  Prisma.TypeMap<DefaultArgs, RuntimePrismaGlobalOmitConfig>,
+  Prisma.TypeMap<DefaultArgs, RuntimePrismaClientOptions['omit']>,
   {},
   InternalArgs<TArgs['result'], TArgs['model'], TArgs['query'], TArgs['client']>
 >;
@@ -39,11 +39,8 @@ export type ExtendedPrismaClient = InferExtendedClient<{ model: ModelExtArgs; re
 export class PrismaFactory {
   constructor(@Inject(MONGO_CONNECTION_TOKEN) private readonly mongoConnection: MongoConnection) {}
 
-  createClient({ omit }: { omit?: DefaultPrismaGlobalOmitConfig }): ExtendedPrismaClient {
-    const options: Prisma.PrismaClientOptions = { datasourceUrl: this.mongoConnection.url.href };
-    if (omit) {
-      options.omit = omit;
-    }
+  createClient(clientOptions: DefaultPrismaClientOptions): ExtendedPrismaClient {
+    const options: Prisma.PrismaClientOptions = { ...clientOptions, datasourceUrl: this.mongoConnection.url.href };
     return new PrismaClient(options).$extends(LibnestPrismaExtension);
   }
 }

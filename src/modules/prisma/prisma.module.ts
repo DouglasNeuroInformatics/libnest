@@ -37,8 +37,8 @@ export class PrismaModule {
         {
           inject: [PrismaFactory, PRISMA_MODULE_OPTIONS_TOKEN],
           provide: PRISMA_CLIENT_TOKEN,
-          useFactory: (prismaFactory: PrismaFactory, { omit }: PrismaModuleOptions): ExtendedPrismaClient => {
-            return prismaFactory.createClient({ omit });
+          useFactory: (prismaFactory: PrismaFactory, { clientOptions }: PrismaModuleOptions): ExtendedPrismaClient => {
+            return prismaFactory.createClient(clientOptions ?? {});
           }
         },
         ConnectionFactory,

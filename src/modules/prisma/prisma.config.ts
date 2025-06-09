@@ -2,15 +2,14 @@ import type { Prisma } from '@prisma/client';
 
 import { defineToken } from '../../utils/token.utils.js';
 
-export type DefaultPrismaGlobalOmitConfig = Prisma.GlobalOmitConfig;
+export type DefaultPrismaClientOptions = Omit<Prisma.PrismaClientOptions, 'datasources' | 'datasourceUrl' | 'log'>;
 
-export type PrismaModuleOptions<
-  TGlobalOmitConfig extends DefaultPrismaGlobalOmitConfig = DefaultPrismaGlobalOmitConfig
-> = {
-  dbPrefix: null | string;
-  omit?: TGlobalOmitConfig;
-  useInMemoryDbForTesting?: boolean;
-};
+export type PrismaModuleOptions<TPrismaClientOptions extends DefaultPrismaClientOptions = DefaultPrismaClientOptions> =
+  {
+    clientOptions?: TPrismaClientOptions;
+    dbPrefix: null | string;
+    useInMemoryDbForTesting?: boolean;
+  };
 
 export const { PRISMA_CLIENT_TOKEN } = defineToken('PRISMA_CLIENT_TOKEN');
 

@@ -3,7 +3,7 @@ import type { Prisma, PrismaClient } from '@prisma/client';
 import type { IfNever } from 'type-fest';
 
 import type { UserConfig } from '../../user-config.js';
-import type { DefaultPrismaGlobalOmitConfig } from './prisma.config.js';
+import type { DefaultPrismaClientOptions } from './prisma.config.js';
 import type { ExtendedPrismaClient } from './prisma.factory.js';
 
 export type PrismaClientLike = PrismaClient & {
@@ -25,13 +25,8 @@ export type PrismaModelWhereInputMap = {
 export type Model<T extends PrismaModelName> =
   ExtendedPrismaClient extends SingleKeyMap<`${Uncapitalize<T>}`, infer U> ? U : never;
 
-export type RuntimePrismaGlobalOmitConfig = UserConfig extends {
-  PrismaGlobalOmitConfig: infer TPrismaGlobalOmitConfig extends DefaultPrismaGlobalOmitConfig;
+export type RuntimePrismaClientOptions = UserConfig extends {
+  RuntimePrismaClientOptions: infer TPrismaClientOptions extends DefaultPrismaClientOptions;
 }
-  ? TPrismaGlobalOmitConfig
-  : DefaultPrismaGlobalOmitConfig;
-
-export type RuntimePrismaClientOptions = {
-  datasourceUrl: string;
-  omit: RuntimePrismaGlobalOmitConfig;
-};
+  ? TPrismaClientOptions
+  : DefaultPrismaClientOptions;
