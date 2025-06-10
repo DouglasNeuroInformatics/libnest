@@ -19,6 +19,7 @@ export function applySwaggerMetadata<T extends z.ZodType<{ [key: string]: any }>
   }
   // the swagger module uses stronger typing (e.g., type is 'string'| 'number' vs string), but is a superset of JSONSchema
   const schemaMetadata = z.toJSONSchema(schema, {
+    io: 'input',
     target: 'draft-7',
     unrepresentable: 'any'
   }) as SchemaObjectMetadata;
