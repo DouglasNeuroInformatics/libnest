@@ -6,12 +6,14 @@ import { AbstractAppContainer } from './app.base.js';
 import { configureApp } from './app.utils.js';
 
 import type { DefaultPrismaClientOptions } from '../modules/prisma/prisma.config.js';
+import type { LibnestExtendedPrismaClient } from '../modules/prisma/prisma.extensions.js';
 import type { BaseEnv } from '../schemas/env.schema.js';
 import type { AppContainerParams } from './app.base.js';
 
 export class AppContainer<
   TEnv extends BaseEnv,
-  _TPrismaClientOptions extends DefaultPrismaClientOptions
+  _TPrismaClientOptions extends DefaultPrismaClientOptions,
+  _TExtendedPrismaClient extends LibnestExtendedPrismaClient
 > extends AbstractAppContainer<TEnv> {
   constructor(params: AppContainerParams<TEnv>) {
     super(params);

@@ -22,18 +22,20 @@ type InferPrismaExtensionArgs<
   InternalArgs<TExtension['result'], TExtension['model'], TExtension['query'], TExtension['client']>
 >;
 
-type InferExtendedClient<
+type InferPrismaTypeMap<
   TExtension extends Partial<Prisma.Extension>,
   TClientOptions extends Prisma.PrismaClientOptions
-> = DynamicClientExtensionThis<
-  Call<
-    Prisma.TypeMapCb<TClientOptions>,
-    {
-      extArgs: InferPrismaExtensionArgs<TExtension, TClientOptions>;
-    }
-  >,
+> = Call<
   Prisma.TypeMapCb<TClientOptions>,
-  InferPrismaExtensionArgs<TExtension, TClientOptions>
+  {
+    extArgs: InferPrismaExtensionArgs<TExtension, TClientOptions>;
+  }
+>;
+
+export type InferExtendedClient<TClientOptions extends Prisma.PrismaClientOptions> = DynamicClientExtensionThis<
+  InferPrismaTypeMap<LibnestPrismaExtensionArgs, TClientOptions>,
+  Prisma.TypeMapCb<TClientOptions>,
+  InferPrismaExtensionArgs<LibnestPrismaExtensionArgs, TClientOptions>
 >;
 
 export type PrismaClientLike = PrismaClient & {
@@ -61,4 +63,4 @@ export type RuntimePrismaClientOptions = UserConfig extends {
   ? TPrismaClientOptions
   : DefaultPrismaClientOptions;
 
-export type ExtendedPrismaClient = InferExtendedClient<LibnestPrismaExtensionArgs, RuntimePrismaClientOptions>;
+export type ExtendedPrismaClient = InferExtendedClient<RuntimePrismaClientOptions>;

@@ -44,3 +44,5 @@ export const LibnestPrismaExtension = Prisma.defineExtension((client) => {
     result
   });
 });
+
+export type LibnestExtendedPrismaClient = ReturnType<typeof LibnestPrismaExtension>;
