@@ -1,5 +1,6 @@
-import { BadRequestException } from '@nestjs/common';
+import { BadRequestException, InternalServerErrorException } from '@nestjs/common';
 import { DECORATORS as SWAGGER_DECORATORS } from '@nestjs/swagger/dist/constants.js';
+import type { SchemaObjectMetadata } from '@nestjs/swagger/dist/interfaces/schema-object-metadata.interface.js';
 import type { Class } from 'type-fest';
 import { z } from 'zod/v4';
 
@@ -11,7 +12,17 @@ export function applySwaggerMetadata<T extends z.ZodType<{ [key: string]: any }>
   target: Class<z.output<T>>,
   schema: T
 ): void {
-  Reflect.defineMetadata(SWAGGER_DECORATORS.API_SCHEMA, [z.toJSONSchema(schema)], target);
+  const key = SWAGGER_DECORATORS.API_SCHEMA;
+  const prevValue: unknown = Reflect.getMetadata(key, target) ?? [];
+  if (!Array.isArray(prevValue)) {
+    throw new InternalServerErrorException(`Expected swagger metadata with key '${key}' to be array if defined`);
+  }
+  // the swagger module uses stronger typing (e.g., type is 'string'| 'number' vs string), but is a superset of JSONSchema
+  const schemaMetadata = z.toJSONSchema(schema, {
+    target: 'draft-7',
+    unrepresentable: 'any'
+  }) as SchemaObjectMetadata;
+  Reflect.defineMetadata(key, [...(prevValue as unknown[]), schemaMetadata], target);
 }
 
 /**
