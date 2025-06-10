@@ -1,7 +1,8 @@
+import { IntersectionType } from '@nestjs/swagger';
 import type { Class } from 'type-fest';
 import { z } from 'zod/v4';
 
-import { applyValidationSchema } from '../utils/validation.utils.js';
+import { applySwaggerMetadata, applyValidationSchema } from '../utils/validation.utils.js';
 
 /**
  * Creates a Data Transfer Object (DTO) class with a Zod schema for validation.
@@ -24,5 +25,6 @@ export function DataTransferObject(shapeOrSchema: z.ZodRawShape | z.ZodType<{ [k
   const schema = shapeOrSchema instanceof z.ZodType ? shapeOrSchema : z.object(shapeOrSchema);
   const Target = class {} as Class<z.output<typeof schema>>;
   applyValidationSchema(Target, schema);
-  return Target;
+  applySwaggerMetadata(Target, schema);
+  return IntersectionType(Target);
 }
