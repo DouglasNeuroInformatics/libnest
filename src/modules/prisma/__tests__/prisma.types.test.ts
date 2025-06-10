@@ -2,7 +2,8 @@ import { Prisma } from '@prisma/client';
 import type { DynamicClientExtensionThis, InternalArgs } from '@prisma/client/runtime/library';
 import { expectTypeOf, test } from 'vitest';
 
-import type { ExtendedPrismaClient, RuntimePrismaClientOptions } from '../prisma.types.js';
+import type { RuntimePrismaClientOptions } from '../../../user-types.js';
+import type { ExtendedPrismaClient } from '../prisma.types.js';
 
 test('ExtendedPrismaClient', () => {
   expectTypeOf<ExtendedPrismaClient>().toMatchTypeOf<

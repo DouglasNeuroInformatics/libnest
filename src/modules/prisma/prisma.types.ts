@@ -9,8 +9,7 @@ import type {
 } from '@prisma/client/runtime/library';
 import type { IfNever } from 'type-fest';
 
-import type { UserConfig } from '../../user-config.js';
-import type { DefaultPrismaClientOptions } from './prisma.config.js';
+import type { RuntimePrismaClientOptions } from '../../user-types.js';
 import type { LibnestPrismaExtensionArgs } from './prisma.extensions.js';
 
 type InferPrismaExtensionArgs<
@@ -56,11 +55,5 @@ export type PrismaModelWhereInputMap = {
 
 export type Model<T extends PrismaModelName> =
   ExtendedPrismaClient extends SingleKeyMap<`${Uncapitalize<T>}`, infer U> ? U : never;
-
-export type RuntimePrismaClientOptions = UserConfig extends {
-  RuntimePrismaClientOptions: infer TPrismaClientOptions extends DefaultPrismaClientOptions;
-}
-  ? TPrismaClientOptions
-  : DefaultPrismaClientOptions;
 
 export type ExtendedPrismaClient = InferExtendedClient<RuntimePrismaClientOptions>;

@@ -3,7 +3,7 @@ import type { DynamicModule } from '@nestjs/common';
 
 import { ConfigService } from '../../index.js';
 
-import type { RuntimeEnv } from '../../schemas/env.schema.js';
+import type { RuntimeEnv } from '../../user-types.js';
 
 @Module({})
 export class ConfigModule {

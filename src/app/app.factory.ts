@@ -19,7 +19,7 @@ import { AppModule } from './app.module.js';
 import type { JSXOptions } from '../interceptors/render.interceptor.js';
 import type { DefaultPrismaClientOptions, PrismaModuleOptions } from '../modules/prisma/prisma.config.js';
 import type { LibnestExtendedPrismaClient } from '../modules/prisma/prisma.extensions.js';
-import type { RuntimeEnv } from '../schemas/env.schema.js';
+import type { RuntimeEnv } from '../user-types.js';
 import type { BaseEnvSchema } from '../utils/env.utils.js';
 import type { AppContainerParams, ConditionalImport, DynamicAppModule, ImportedModule } from './app.base.js';
 
