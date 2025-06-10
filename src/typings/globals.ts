@@ -1,11 +1,12 @@
 /* eslint-disable no-var */
+
 import type { AppAbility } from '../modules/auth/auth.config.js';
-import type { RuntimeLocale } from '../user-types.js';
+import type { Locale } from '../user-types.js';
 
 declare global {
   namespace Express {
     interface Request {
-      locale?: RuntimeLocale;
+      locale?: Locale;
       user?: User;
     }
     interface User {

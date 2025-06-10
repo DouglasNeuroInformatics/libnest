@@ -70,6 +70,7 @@ export interface CustomTypeOptions {}
 export interface UserConfig {}
 
 export namespace UserTypes {
+  export interface Locales {}
   export interface UserQueryMetadata {}
   export interface TokenPayload {
     permissions: Permission[];
