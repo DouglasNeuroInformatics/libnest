@@ -2,6 +2,7 @@ import type { BuildOptions } from 'esbuild';
 import type { Jsonifiable, Promisable } from 'type-fest';
 
 import type { AppContainer } from './app/app.container.js';
+import type { Permission } from './modules/auth/auth.config.js';
 import type { DefaultPrismaClientOptions } from './modules/prisma/prisma.config.js';
 import type { LibnestExtendedPrismaClient } from './modules/prisma/prisma.extensions.js';
 import type { BaseEnv } from './schemas/env.schema.js';
@@ -67,3 +68,10 @@ export type InferUserConfig<T extends UserConfigOptions> = T extends {
 export interface CustomTypeOptions {}
 
 export interface UserConfig {}
+
+export namespace UserTypes {
+  export interface UserQueryMetadata {}
+  export interface TokenPayload {
+    permissions: Permission[];
+  }
+}

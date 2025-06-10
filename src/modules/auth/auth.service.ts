@@ -6,7 +6,8 @@ import { LoggingService } from '../logging/logging.service.js';
 import { AbilityFactory } from './ability.factory.js';
 import { USER_QUERY_TOKEN } from './auth.config.js';
 
-import type { BaseLoginCredentials, JwtPayload, LoginResponseBody, UserQuery } from './auth.config.js';
+import type { UserTypes } from '../../user-config.js';
+import type { BaseLoginCredentials, LoginResponseBody, UserQuery } from './auth.config.js';
 
 @Injectable()
 export class AuthService {
@@ -33,7 +34,7 @@ export class AuthService {
     return { accessToken: await this.signToken({ ...user.tokenPayload, permissions: ability.rules }) };
   }
 
-  private async signToken(payload: JwtPayload): Promise<string> {
+  private async signToken(payload: UserTypes.TokenPayload): Promise<string> {
     this.loggingService.verbose({
       message: 'Signing JWT',
       payload

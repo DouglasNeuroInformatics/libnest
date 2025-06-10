@@ -7,7 +7,7 @@ export function acceptLanguage({
   supportedLanguages
 }: {
   fallbackLanguage: RuntimeLocale;
-  supportedLanguages: RuntimeLocale;
+  supportedLanguages: RuntimeLocale[];
 }) {
   return (req: Request, _res: Response, next: NextFunction): void => {
     req.locale = req.acceptsLanguages(supportedLanguages) || fallbackLanguage;

@@ -48,11 +48,6 @@ type BaseLoginCredentials = {
 
 type BaseLoginCredentialsSchema = z.ZodType<BaseLoginCredentials>;
 
-interface JwtPayload {
-  [key: string]: any;
-  permissions: Permission[];
-}
-
 type UserQueryResult<
   TPayload extends { [key: string]: unknown } = { [key: string]: unknown },
   TMetadata = never
@@ -112,7 +107,6 @@ export type {
   BaseLoginCredentials,
   BaseLoginCredentialsSchema,
   DefineAbility,
-  JwtPayload,
   LoginResponseBody,
   Permission,
   UserQuery,
