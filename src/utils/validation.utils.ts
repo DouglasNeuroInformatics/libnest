@@ -1,10 +1,18 @@
 import { BadRequestException } from '@nestjs/common';
+import { DECORATORS as SWAGGER_DECORATORS } from '@nestjs/swagger/dist/constants.js';
 import type { Class } from 'type-fest';
 import { z } from 'zod/v4';
 
 import { defineToken } from './token.utils.js';
 
 export const { VALIDATION_SCHEMA_METADATA_KEY } = defineToken('VALIDATION_SCHEMA_METADATA_KEY');
+
+export function applySwaggerMetadata<T extends z.ZodType<{ [key: string]: any }>>(
+  target: Class<z.output<T>>,
+  schema: T
+): void {
+  Reflect.defineMetadata(SWAGGER_DECORATORS.API_SCHEMA, [z.toJSONSchema(schema)], target);
+}
 
 /**
  * Applies a Zod validation schema to a target class using Reflect metadata.
