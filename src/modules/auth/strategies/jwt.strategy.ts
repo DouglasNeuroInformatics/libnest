@@ -21,7 +21,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     });
   }
 
-  validate(payload: UserTypes.TokenPayload): { ability: AppAbility } {
+  validate(payload: UserTypes.JwtPayload): { ability: AppAbility } {
     const ability = this.abilityFactory.createForPermissions(payload.permissions);
     return { ability, ...payload };
   }

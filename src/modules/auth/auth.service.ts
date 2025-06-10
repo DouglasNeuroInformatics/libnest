@@ -34,7 +34,7 @@ export class AuthService {
     return { accessToken: await this.signToken({ ...user.tokenPayload, permissions: ability.rules }) };
   }
 
-  private async signToken(payload: UserTypes.TokenPayload): Promise<string> {
+  private async signToken(payload: UserTypes.JwtPayload): Promise<string> {
     this.loggingService.verbose({
       message: 'Signing JWT',
       payload

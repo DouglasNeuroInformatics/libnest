@@ -20,7 +20,8 @@ export default AppFactory.create({
       useFactory: (cryptoService: CryptoService) => {
         return {
           defineAbility: (ability, payload) => {
-            if (payload.isAdmin) {
+            // We cannot correctly declare UserTypes here until we migrate to a monorepo setup
+            if ((payload as { isAdmin: true }).isAdmin) {
               ability.can('manage', 'all');
             }
           },
@@ -28,9 +29,6 @@ export default AppFactory.create({
             loginCredentials: z.object({
               password: z.string().min(1),
               username: z.string().min(1)
-            }),
-            tokenPayload: z.object({
-              isAdmin: z.boolean()
             })
           },
           userQuery: async ({ username }) => {
