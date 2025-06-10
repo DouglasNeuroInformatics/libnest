@@ -1,8 +1,15 @@
-import { BadRequestException } from '@nestjs/common';
+import { BadRequestException, InternalServerErrorException } from '@nestjs/common';
 import { describe, expect, it } from 'vitest';
 import { z } from 'zod/v4';
 
-import { parseRequestBody } from '../validation.utils.js';
+import { applySwaggerMetadata, parseRequestBody } from '../validation.utils.js';
+
+describe('applySwaggerMetadata', () => {
+  it('should throw an InternalServerErrorException if the schema is not for an object', () => {
+    class Target {}
+    expect(() => applySwaggerMetadata(Target, z.number() as any)).toThrow(InternalServerErrorException);
+  });
+});
 
 describe('parseRequestBody', () => {
   it('should throw a BadRequestException if the input value cannot be parsed', async () => {
