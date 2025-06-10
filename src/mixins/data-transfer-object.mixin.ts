@@ -1,4 +1,3 @@
-import { IntersectionType } from '@nestjs/swagger';
 import type { Class } from 'type-fest';
 import { z } from 'zod/v4';
 
@@ -26,5 +25,5 @@ export function DataTransferObject(shapeOrSchema: z.ZodRawShape | z.ZodType<{ [k
   const Target = class {} as Class<z.output<typeof schema>>;
   applyValidationSchema(Target, schema);
   applySwaggerMetadata(Target, schema);
-  return IntersectionType(Target);
+  return Target;
 }
