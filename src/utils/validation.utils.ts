@@ -13,7 +13,7 @@ const JSON_SCHEMA_TYPES = ['string', 'number', 'boolean', 'object', 'array', 'in
 
 const JSON_SCHEMA_TYPES_WITHOUT_ARRAY_OR_INT = JSON_SCHEMA_TYPES.filter((arg) => arg !== 'array' && arg !== 'integer');
 
-const ANY_SCHEMA = {
+const ANY_SWAGGER_SCHEMA = {
   additionalProperties: false,
   example: null,
   oneOf: [
@@ -46,13 +46,7 @@ export function getSwaggerPropertyMetadata(schema: z.core.JSONSchema.BaseSchema)
       case 'array': {
         const items = schema.items;
         return {
-          items:
-            items && !Array.isArray(items)
-              ? getSwaggerPropertyMetadata(items)
-              : {
-                  items: ANY_SCHEMA,
-                  type: 'array'
-                },
+          items: items && !Array.isArray(items) ? getSwaggerPropertyMetadata(items) : ANY_SWAGGER_SCHEMA,
           type: 'array'
         };
       }
@@ -96,7 +90,7 @@ export function getSwaggerPropertyMetadata(schema: z.core.JSONSchema.BaseSchema)
         );
     }
   }
-  return ANY_SCHEMA;
+  return ANY_SWAGGER_SCHEMA;
 }
 
 export function applySwaggerMetadata<T extends z.ZodType<{ [key: string]: any }>>(
@@ -163,4 +157,4 @@ export async function parseRequestBody<TSchema extends z.ZodType>(
   return result.data;
 }
 
-export { VALIDATION_SCHEMA_METADATA_KEY };
+export { ANY_SWAGGER_SCHEMA, VALIDATION_SCHEMA_METADATA_KEY };

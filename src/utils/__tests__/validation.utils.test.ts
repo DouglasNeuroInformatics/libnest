@@ -5,6 +5,7 @@ import { describe, expect, it } from 'vitest';
 import { z } from 'zod/v4';
 
 import {
+  ANY_SWAGGER_SCHEMA,
   applySwaggerMetadata,
   getJsonSchemaForSwagger,
   getSwaggerPropertyMetadata,
@@ -36,6 +37,22 @@ describe('getSwaggerPropertyMetadata', () => {
         items: {
           type: 'boolean'
         },
+        type: 'array'
+      }
+    });
+    expectSwaggerMetadata({
+      input: z.array(z.boolean().nullish()),
+      output: {
+        items: ANY_SWAGGER_SCHEMA,
+        type: 'array'
+      }
+    });
+  });
+  it('should correctly handle tuples', () => {
+    expectSwaggerMetadata({
+      input: z.tuple([z.string(), z.number()]),
+      output: {
+        items: ANY_SWAGGER_SCHEMA,
         type: 'array'
       }
     });
