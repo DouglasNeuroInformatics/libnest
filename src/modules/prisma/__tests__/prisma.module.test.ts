@@ -1,5 +1,6 @@
 import { Test } from '@nestjs/testing';
 import type { TestingModule } from '@nestjs/testing';
+import { PrismaClient } from '@prisma/client';
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import { mockEnvConfig } from '../../../testing/mocks/env-config.mock.js';
@@ -30,6 +31,9 @@ describe('PrismaModule', () => {
           }),
           LoggingModule,
           PrismaModule.forRoot({
+            client: {
+              constructor: PrismaClient
+            },
             dbPrefix: 'example'
           })
         ]

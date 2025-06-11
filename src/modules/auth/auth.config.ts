@@ -5,10 +5,12 @@ import type { FallbackIfNever } from '@douglasneuroinformatics/libjs';
 import { ConfigurableModuleBuilder } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import type { DefaultSelection } from '@prisma/client/runtime/library';
-import type { IfNever } from 'type-fest';
+import type { IfEmptyObject } from 'type-fest';
 import type { z } from 'zod/v4';
 
 import { defineToken } from '../../utils/token.utils.js';
+
+import type { UserTypes } from '../../user-config.js';
 
 type AppAction = 'create' | 'delete' | 'manage' | 'read' | 'update';
 
@@ -34,13 +36,13 @@ type AppConditions = FallbackIfNever<PrismaQuery, unknown>;
 
 type AppAbility = PureAbility<AppAbilities, AppConditions>;
 
-type DefineAbility<TPayload extends { [key: string]: unknown } = { [key: string]: unknown }, TMetadata = any> = (
-  ability: AbilityBuilder<AppAbility>,
-  tokenPayload: TPayload,
-  metadata: TMetadata
-) => void;
-
 type Permission = RawRuleOf<PureAbility<[AppAction, AppSubjectName], AppConditions>>;
+
+type DefineAbility = (
+  ability: AbilityBuilder<AppAbility>,
+  tokenPayload: Omit<UserTypes.JwtPayload, 'permissions'>,
+  metadata: IfEmptyObject<UserTypes.UserQueryMetadata, unknown, UserTypes.UserQueryMetadata>
+) => void;
 
 type BaseLoginCredentials = {
   password: string;
@@ -48,49 +50,33 @@ type BaseLoginCredentials = {
 
 type BaseLoginCredentialsSchema = z.ZodType<BaseLoginCredentials>;
 
-interface JwtPayload {
-  [key: string]: any;
-  permissions: Permission[];
-}
-
-type UserQueryResult<
-  TPayload extends { [key: string]: unknown } = { [key: string]: unknown },
-  TMetadata = never
-> = IfNever<TMetadata, {}, { metadata: TMetadata }> & {
+type UserQueryResult = IfEmptyObject<
+  UserTypes.UserQueryMetadata,
+  { metadata?: unknown },
+  { metadata: UserTypes.UserQueryMetadata }
+> & {
   hashedPassword: string;
-  tokenPayload: TPayload;
+  tokenPayload: Omit<UserTypes.JwtPayload, 'permissions'>;
 };
 
-type UserQuery<
-  TLoginCredentials extends BaseLoginCredentials = BaseLoginCredentials,
-  TPayload extends { [key: string]: unknown } = { [key: string]: unknown },
-  TMetadata = any
-> = (credentials: TLoginCredentials) => Promise<null | UserQueryResult<TPayload, TMetadata>>;
+type UserQuery<TLoginCredentials extends BaseLoginCredentials = BaseLoginCredentials> = (
+  credentials: TLoginCredentials
+) => Promise<null | UserQueryResult>;
 
 type LoginResponseBody = {
   accessToken: string;
 };
 
-type AuthModuleOptions<
-  TLoginCredentialsSchema extends BaseLoginCredentialsSchema = BaseLoginCredentialsSchema,
-  TPayloadSchema extends z.ZodType<{ [key: string]: any }> = z.ZodType<{ [key: string]: any }>,
-  TMetadataSchema extends z.ZodType = z.ZodNever
-> = {
-  defineAbility: (
-    ability: AbilityBuilder<AppAbility>,
-    tokenPayload: z.output<TPayloadSchema>,
-    metadata: z.output<TMetadataSchema>
-  ) => any;
+type AuthModuleOptions<TLoginCredentialsSchema extends BaseLoginCredentialsSchema = BaseLoginCredentialsSchema> = {
+  defineAbility: DefineAbility;
   schemas: {
     loginCredentials: TLoginCredentialsSchema;
-    metadata?: TMetadataSchema;
-    tokenPayload: TPayloadSchema;
   };
-  userQuery: UserQuery<z.output<TLoginCredentialsSchema>, z.output<TPayloadSchema>, z.output<TMetadataSchema>>;
+  userQuery: UserQuery<z.output<TLoginCredentialsSchema>>;
 };
 
 export const { ConfigurableModuleClass: ConfigurableAuthModule, MODULE_OPTIONS_TOKEN: AUTH_MODULE_OPTIONS_TOKEN } =
-  new ConfigurableModuleBuilder<AuthModuleOptions<any, any, any>>()
+  new ConfigurableModuleBuilder<AuthModuleOptions<any>>()
     .setClassMethodName('forRoot')
     .setExtras({}, (definition) => ({
       ...definition,
@@ -112,7 +98,6 @@ export type {
   BaseLoginCredentials,
   BaseLoginCredentialsSchema,
   DefineAbility,
-  JwtPayload,
   LoginResponseBody,
   Permission,
   UserQuery,

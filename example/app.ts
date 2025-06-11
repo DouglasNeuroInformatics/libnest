@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 
+import { PrismaClient } from '@prisma/client';
 import { z } from 'zod/v4';
 
 import { $BaseEnv, AppFactory, AuthModule, CryptoService } from '../src/index.js';
@@ -19,7 +20,8 @@ export default AppFactory.create({
       useFactory: (cryptoService: CryptoService) => {
         return {
           defineAbility: (ability, payload) => {
-            if (payload.isAdmin) {
+            // We cannot correctly declare UserTypes here until we migrate to a monorepo setup
+            if ((payload as { isAdmin: true }).isAdmin) {
               ability.can('manage', 'all');
             }
           },
@@ -27,9 +29,6 @@ export default AppFactory.create({
             loginCredentials: z.object({
               password: z.string().min(1),
               username: z.string().min(1)
-            }),
-            tokenPayload: z.object({
-              isAdmin: z.boolean()
             })
           },
           userQuery: async ({ username }) => {
@@ -55,6 +54,9 @@ export default AppFactory.create({
     }
   },
   prisma: {
+    client: {
+      constructor: PrismaClient
+    },
     dbPrefix: 'libnest-example',
     useInMemoryDbForTesting: true
   },

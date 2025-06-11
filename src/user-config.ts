@@ -2,7 +2,9 @@ import type { BuildOptions } from 'esbuild';
 import type { Jsonifiable, Promisable } from 'type-fest';
 
 import type { AppContainer } from './app/app.container.js';
-import type { DefaultPrismaGlobalOmitConfig } from './modules/prisma/prisma.config.js';
+import type { Permission } from './modules/auth/auth.config.js';
+import type { DefaultPrismaClientOptions } from './modules/prisma/prisma.config.js';
+import type { LibnestExtendedPrismaClient } from './modules/prisma/prisma.extensions.js';
 import type { BaseEnv } from './schemas/env.schema.js';
 
 /**
@@ -51,16 +53,24 @@ export type InferUserConfig<T extends UserConfigOptions> = T extends {
   entry: () => Promise<{
     default: AppContainer<
       infer TEnv extends BaseEnv,
-      infer TPrismaGlobalOmitConfig extends DefaultPrismaGlobalOmitConfig
+      infer TPrismaClientOptions extends DefaultPrismaClientOptions,
+      infer TExtendedPrismaClient extends LibnestExtendedPrismaClient
     >;
   }>;
 }
   ? {
-      PrismaGlobalOmitConfig: TPrismaGlobalOmitConfig;
       RuntimeEnv: TEnv;
+      RuntimePrismaClient: TExtendedPrismaClient;
+      RuntimePrismaClientOptions: TPrismaClientOptions;
     }
   : never;
 
-export interface CustomTypeOptions {}
-
 export interface UserConfig {}
+
+export namespace UserTypes {
+  export interface Locales {}
+  export interface JwtPayload {
+    permissions: Permission[];
+  }
+  export interface UserQueryMetadata {}
+}

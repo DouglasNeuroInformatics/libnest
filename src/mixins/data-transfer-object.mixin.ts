@@ -1,7 +1,7 @@
 import type { Class } from 'type-fest';
 import { z } from 'zod/v4';
 
-import { applyValidationSchema } from '../utils/validation.utils.js';
+import { applySwaggerMetadata, applyValidationSchema } from '../utils/validation.utils.js';
 
 /**
  * Creates a Data Transfer Object (DTO) class with a Zod schema for validation.
@@ -22,7 +22,9 @@ export function DataTransferObject<T extends z.ZodRawShape>(shape: T): Class<z.o
  */
 export function DataTransferObject(shapeOrSchema: z.ZodRawShape | z.ZodType<{ [key: string]: any }>): unknown {
   const schema = shapeOrSchema instanceof z.ZodType ? shapeOrSchema : z.object(shapeOrSchema);
-  const Target = class {} as Class<z.output<typeof schema>>;
+  // this is to avoid the name being set to "Target"
+  const Target = ((): Class<z.output<typeof schema>> => class {})();
   applyValidationSchema(Target, schema);
+  applySwaggerMetadata(Target, schema);
   return Target;
 }

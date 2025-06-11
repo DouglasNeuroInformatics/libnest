@@ -9,13 +9,10 @@ import { GlobalExceptionFilter } from '../../filters/global-exception.filter.js'
 import { delay } from '../../middleware/delay.middleware.js';
 import { ConfigService } from '../../modules/config/config.service.js';
 import { CryptoService } from '../../modules/crypto/crypto.service.js';
-import { MONGO_CONNECTION_TOKEN } from '../../modules/prisma/prisma.config.js';
-import { PrismaFactory } from '../../modules/prisma/prisma.factory.js';
 import { ValidationPipe } from '../../pipes/validation.pipe.js';
 import { $BaseEnv } from '../../schemas/env.schema.js';
 import { AppFactory } from '../app.factory.js';
 
-import type { MongoConnection } from '../../modules/prisma/connection.factory.js';
 import type { PrismaModuleOptions } from '../../modules/prisma/prisma.config.js';
 import type { BaseEnv } from '../../schemas/env.schema.js';
 import type { CreateAppOptions } from '../app.factory.js';
@@ -47,6 +44,15 @@ const defaultEnv = {
 const defaultAppOptions: CreateAppOptions = {
   envSchema: $BaseEnv,
   prisma: {
+    client: {
+      constructor: vi.fn(() => {
+        return {
+          $connect: vi.fn(),
+          $disconnect: vi.fn(),
+          $extends: vi.fn().mockReturnThis()
+        } as any;
+      })
+    },
     dbPrefix: null
   },
   version: '1'
@@ -123,19 +129,24 @@ describe('AppFactory', () => {
       });
 
       it('should create an app with a custom prisma configuration', async () => {
-        const createClient = vi.spyOn(PrismaFactory.prototype, 'createClient');
         const prisma: PrismaModuleOptions = {
-          dbPrefix: 'example',
-          omit: {
-            user: {
-              password: true
+          client: {
+            constructor: defaultAppOptions.prisma.client.constructor,
+            options: {
+              omit: {
+                user: {
+                  password: true
+                }
+              }
             }
-          }
+          },
+          dbPrefix: 'example'
         };
-        const app = await createAppContainer({ prisma }).createApplicationInstance();
-        const mongoConnection: MongoConnection = app.get(MONGO_CONNECTION_TOKEN);
-        expect(createClient).toHaveBeenCalledExactlyOnceWith({ omit: prisma.omit });
-        expect(mongoConnection.url.href).toBe(`${defaultEnv.MONGO_URI}/example-test`);
+        await createAppContainer({ prisma }).createApplicationInstance();
+        expect(prisma.client.constructor).toHaveBeenLastCalledWith({
+          datasourceUrl: `${defaultEnv.MONGO_URI}/example-test`,
+          ...prisma.client.options
+        });
       });
     });
 

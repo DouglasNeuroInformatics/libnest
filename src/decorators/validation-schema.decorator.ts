@@ -1,7 +1,7 @@
 import type { Class, OmitIndexSignature } from 'type-fest';
 import { z } from 'zod/v4';
 
-import { applyValidationSchema } from '../utils/validation.utils.js';
+import { applySwaggerMetadata, applyValidationSchema } from '../utils/validation.utils.js';
 
 export function ValidationSchema<T extends z.ZodType<{ [key: string]: any }>>(
   schema: T
@@ -20,5 +20,6 @@ export function ValidationSchema(shapeOrSchema: z.ZodRawShape | z.ZodType<{ [key
   const schema = shapeOrSchema instanceof z.ZodType ? shapeOrSchema : z.object(shapeOrSchema);
   return (target: Class<any>): void => {
     applyValidationSchema(target, schema);
+    applySwaggerMetadata(target, schema);
   };
 }

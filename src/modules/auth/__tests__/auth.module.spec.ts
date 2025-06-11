@@ -43,7 +43,7 @@ describe('AuthModule', () => {
   let jwtStrategy: JwtStrategy;
 
   let defineAbility: Mock<DefineAbility>;
-  let userQuery: Mock<UserQuery<{ password: string; username: string }, { username: string }>>;
+  let userQuery: Mock<UserQuery<{ password: string; username: string }>>;
 
   const loginCredentials = {
     password: 'password',
@@ -65,9 +65,6 @@ describe('AuthModule', () => {
           schemas: {
             loginCredentials: z.object({
               password: z.string(),
-              username: z.string()
-            }),
-            tokenPayload: z.object({
               username: z.string()
             })
           },

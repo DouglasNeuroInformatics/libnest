@@ -19,4 +19,7 @@ describe('DataTransferObject', () => {
       breed: string;
     }>();
   });
+  it('should create a class with an empty string for the name', () => {
+    expect(DataTransferObject({}).name).toBe('');
+  });
 });

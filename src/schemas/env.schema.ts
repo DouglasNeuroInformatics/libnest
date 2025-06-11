@@ -1,8 +1,6 @@
 import { $BooleanLike, $NumberLike, $UrlLike } from '@douglasneuroinformatics/libjs';
 import { z } from 'zod/v4';
 
-import type { UserConfig } from '../user-config.js';
-
 /**
  * Schema definition for the base environment options.
  *
@@ -40,5 +38,3 @@ export const $BaseEnv = z.object({
 export type BaseEnv = z.output<typeof $BaseEnv>;
 
 export type NodeEnv = BaseEnv['NODE_ENV'];
-
-export type RuntimeEnv = UserConfig extends { RuntimeEnv: infer TRuntimeEnv extends BaseEnv } ? TRuntimeEnv : BaseEnv;

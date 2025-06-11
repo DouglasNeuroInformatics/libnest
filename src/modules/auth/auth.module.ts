@@ -2,7 +2,6 @@ import { Inject, Module } from '@nestjs/common';
 import type { ConfigurableModuleAsyncOptions, DynamicModule, OnModuleInit } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
-import { z } from 'zod/v4';
 
 import { applyValidationSchema } from '../../utils/validation.utils.js';
 import { ConfigService } from '../config/config.service.js';
@@ -63,22 +62,13 @@ export class AuthModule extends ConfigurableAuthModule implements OnModuleInit {
     this.loginCredentialsSchema = schemas.loginCredentials;
   }
 
-  static forRoot<
-    TLoginCredentialsSchema extends BaseLoginCredentialsSchema,
-    TPayloadSchema extends z.ZodType<{ [key: string]: any }>,
-    TMetadataSchema extends z.ZodType = z.ZodNever
-  >(options: AuthModuleOptions<TLoginCredentialsSchema, TPayloadSchema, TMetadataSchema>): DynamicModule {
+  static forRoot<TLoginCredentialsSchema extends BaseLoginCredentialsSchema>(
+    options: AuthModuleOptions<TLoginCredentialsSchema>
+  ): DynamicModule {
     return super.forRoot(options);
   }
-  static forRootAsync<
-    TLoginCredentialsSchema extends BaseLoginCredentialsSchema,
-    TPayloadSchema extends z.ZodType<{ [key: string]: any }>,
-    TMetadataSchema extends z.ZodType = z.ZodNever
-  >(
-    options: ConfigurableModuleAsyncOptions<
-      AuthModuleOptions<TLoginCredentialsSchema, TPayloadSchema, TMetadataSchema>,
-      'create'
-    >
+  static forRootAsync<TLoginCredentialsSchema extends BaseLoginCredentialsSchema>(
+    options: ConfigurableModuleAsyncOptions<AuthModuleOptions<TLoginCredentialsSchema>, 'create'>
   ): DynamicModule {
     return super.forRootAsync(options);
   }

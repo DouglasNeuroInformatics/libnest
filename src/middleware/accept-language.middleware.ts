@@ -1,8 +1,6 @@
 import type { NextFunction, Request, Response } from 'express';
 
-import type { CustomTypeOptions } from '../user-config.js';
-
-export type Locale = CustomTypeOptions extends { Locale: infer TLocale extends string } ? TLocale : string;
+import type { Locale } from '../user-types.js';
 
 export function acceptLanguage({
   fallbackLanguage,
