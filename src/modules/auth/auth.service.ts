@@ -1,10 +1,9 @@
 import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
 
 import { CryptoService } from '../crypto/crypto.service.js';
-import { LoggingService } from '../logging/logging.service.js';
 import { AbilityFactory } from './ability.factory.js';
 import { USER_QUERY_TOKEN } from './auth.config.js';
+import { TokenService } from './token.service.js';
 
 import type { UserTypes } from '../../user-config.js';
 import type { BaseLoginCredentials, LoginResponseBody, UserQuery } from './auth.config.js';
@@ -15,8 +14,7 @@ export class AuthService {
     @Inject(USER_QUERY_TOKEN) private readonly userQuery: UserQuery,
     private readonly abilityFactory: AbilityFactory,
     private readonly cryptoService: CryptoService,
-    private readonly jwtService: JwtService,
-    private readonly loggingService: LoggingService
+    private readonly tokenService: TokenService
   ) {}
 
   async login(credentials: BaseLoginCredentials): Promise<LoginResponseBody> {
@@ -31,16 +29,16 @@ export class AuthService {
 
     const ability = this.abilityFactory.createForPayload(user.tokenPayload, user.metadata);
 
-    return { accessToken: await this.signToken({ ...user.tokenPayload, permissions: ability.rules }) };
-  }
-
-  private async signToken(payload: UserTypes.JwtPayload): Promise<string> {
-    this.loggingService.verbose({
-      message: 'Signing JWT',
-      payload
-    });
-    return this.jwtService.signAsync(payload, {
-      expiresIn: '1d'
-    });
+    return {
+      accessToken: await this.tokenService.signToken(
+        {
+          ...user.tokenPayload,
+          permissions: ability.rules
+        } satisfies UserTypes.JwtPayload,
+        {
+          expiresIn: '1d'
+        }
+      )
+    };
   }
 }

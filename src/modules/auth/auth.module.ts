@@ -17,11 +17,13 @@ import { AuthService } from './auth.service.js';
 import { LoginCredentialsDto } from './dto/login-credentials.dto.js';
 import { JwtAuthGuard } from './guards/jwt-auth.guard.js';
 import { JwtStrategy } from './strategies/jwt.strategy.js';
+import { TokenService } from './token.service.js';
 
 import type { AuthModuleOptions, BaseLoginCredentialsSchema } from './auth.config.js';
 
 @Module({
   controllers: [AuthController],
+  exports: [TokenService],
   imports: [
     JwtModule.registerAsync({
       inject: [ConfigService],
@@ -34,6 +36,7 @@ import type { AuthModuleOptions, BaseLoginCredentialsSchema } from './auth.confi
     AbilityFactory,
     AuthService,
     JwtStrategy,
+    TokenService,
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard
