@@ -16,6 +16,19 @@ describe('getSwaggerPropertyMetadata', () => {
     expect(getSwaggerPropertyMetadata(getJsonSchemaForSwagger(input))).toStrictEqual(output);
   };
 
+  const expectMetadataEqualAndNotEmpty = (a: object, b: object) => {
+    const keysA = Reflect.getMetadataKeys(a);
+    const keysB = Reflect.getMetadataKeys(b);
+    expect(keysA.length).toBeGreaterThanOrEqual(1);
+    expect(keysA).toStrictEqual(keysB);
+    keysA.forEach((key) => {
+      const valueA = Reflect.getMetadata(key, a);
+      const valueB = Reflect.getMetadata(key, b);
+      expect(valueA).toBeDefined();
+      expect(valueA).toStrictEqual(valueB);
+    });
+  };
+
   it('should correctly handle arrays', () => {
     expectSwaggerMetadata({
       input: z.array(z.boolean()),
@@ -99,26 +112,14 @@ describe('getSwaggerPropertyMetadata', () => {
       name: string;
     }
 
-    const swaggerMetadataKeys = Reflect.getMetadataKeys(Swagger.prototype);
-    expect(swaggerMetadataKeys.length).toBeGreaterThanOrEqual(1);
-
+    const $Schema = z.object({ name: z.string() });
     class Zod {
       name: string;
     }
-    applySwaggerMetadata(
-      Zod,
-      z.object({
-        name: z.string()
-      })
-    );
-    const zodMetadataKeys = Reflect.getMetadataKeys(Zod.prototype);
-    expect(zodMetadataKeys.length).toBe(swaggerMetadataKeys.length);
 
-    swaggerMetadataKeys.forEach((key) => {
-      const swaggerValue = Reflect.get(Swagger.prototype, key);
-      const zodValue = Reflect.get(Zod.prototype, key);
-      expect(swaggerValue).toStrictEqual(zodValue);
-    });
+    applySwaggerMetadata(Zod, $Schema);
+
+    expectMetadataEqualAndNotEmpty(Swagger.prototype, Zod.prototype);
   });
 });
 
