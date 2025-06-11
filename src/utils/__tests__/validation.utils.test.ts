@@ -1,4 +1,5 @@
 import { BadRequestException, InternalServerErrorException } from '@nestjs/common';
+import { ApiProperty } from '@nestjs/swagger';
 import type { SchemaObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.interface.js';
 import { describe, expect, it } from 'vitest';
 import { z } from 'zod/v4';
@@ -90,6 +91,33 @@ describe('getSwaggerPropertyMetadata', () => {
       output: {
         type: 'string'
       }
+    });
+  });
+  it('should generate the same metadata as using swagger decorators', () => {
+    class Swagger {
+      @ApiProperty()
+      name: string;
+    }
+
+    const swaggerMetadataKeys = Reflect.getMetadataKeys(Swagger.prototype);
+    expect(swaggerMetadataKeys.length).toBeGreaterThanOrEqual(1);
+
+    class Zod {
+      name: string;
+    }
+    applySwaggerMetadata(
+      Zod,
+      z.object({
+        name: z.string()
+      })
+    );
+    const zodMetadataKeys = Reflect.getMetadataKeys(Zod.prototype);
+    expect(zodMetadataKeys.length).toBe(swaggerMetadataKeys.length);
+
+    swaggerMetadataKeys.forEach((key) => {
+      const swaggerValue = Reflect.get(Swagger.prototype, key);
+      const zodValue = Reflect.get(Zod.prototype, key);
+      expect(swaggerValue).toStrictEqual(zodValue);
     });
   });
 });
