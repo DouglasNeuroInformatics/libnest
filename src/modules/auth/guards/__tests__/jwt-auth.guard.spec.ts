@@ -97,7 +97,7 @@ describe('JwtAuthGuard', () => {
     } satisfies RouteAccessType);
     BaseConstructor.prototype.canActivate.mockResolvedValueOnce(true);
     const ability = abilityFactory.createForPermissions([{ action: 'manage', subject: 'Cat' }]);
-    getRequest.mockReturnValueOnce({ url: 'http://localhost:5500', user: { ability } });
+    getRequest.mockReturnValueOnce({ url: 'http://localhost:5500', user: { ability } as any });
     await expect(guard.canActivate(context)).resolves.toBe(false);
   });
 
@@ -114,7 +114,7 @@ describe('JwtAuthGuard', () => {
     ] satisfies RouteAccessType);
     BaseConstructor.prototype.canActivate.mockResolvedValueOnce(true);
     const ability = abilityFactory.createForPermissions([{ action: 'read', subject: 'Cat' }]);
-    getRequest.mockReturnValueOnce({ url: 'http://localhost:5500', user: { ability } });
+    getRequest.mockReturnValueOnce({ url: 'http://localhost:5500', user: { ability } as any });
     await expect(guard.canActivate(context)).resolves.toBe(false);
   });
 
@@ -125,7 +125,7 @@ describe('JwtAuthGuard', () => {
     } satisfies RouteAccessType);
     BaseConstructor.prototype.canActivate.mockResolvedValueOnce(true);
     const ability = abilityFactory.createForPermissions([{ action: 'manage', subject: 'all' }]);
-    getRequest.mockReturnValueOnce({ url: 'http://localhost:5500', user: { ability } });
+    getRequest.mockReturnValueOnce({ url: 'http://localhost:5500', user: { ability } as any });
     await expect(guard.canActivate(context)).resolves.toBe(true);
   });
 });

@@ -1,6 +1,7 @@
 /* eslint-disable no-var */
 
 import type { AppAbility } from '../modules/auth/auth.config.js';
+import type { UserTypes } from '../user-config.js';
 import type { Locale } from '../user-types.js';
 
 declare global {
@@ -9,9 +10,9 @@ declare global {
       locale?: Locale;
       user?: User;
     }
-    interface User {
+    interface User extends UserTypes.JwtPayload {
       [key: string]: unknown;
-      ability?: AppAbility;
+      ability: AppAbility;
     }
   }
   interface LibnestStatic {

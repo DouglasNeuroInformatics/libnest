@@ -35,7 +35,7 @@ describe('CurrentUser', () => {
     app.use((req: Request, _res: Response, next: NextFunction) => {
       const username = req.query.username;
       if (username) {
-        req.user = { username };
+        req.user = { username } as any;
       }
       return next();
     });
