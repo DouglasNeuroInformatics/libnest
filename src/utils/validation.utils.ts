@@ -50,6 +50,7 @@ export function getSwaggerPropertyMetadata(_schema: z.core.JSONSchema.BaseSchema
       }
       return {
         properties,
+        required: schema.required,
         type: 'object'
       };
     }

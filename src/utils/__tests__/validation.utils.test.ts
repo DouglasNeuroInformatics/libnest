@@ -68,7 +68,7 @@ describe('getSwaggerPropertyMetadata', () => {
     expectSwaggerMetadata({
       input: z.object({
         a: z.number(),
-        b: z.string()
+        b: z.string().optional()
       }),
       output: {
         properties: {
@@ -79,6 +79,7 @@ describe('getSwaggerPropertyMetadata', () => {
             type: 'string'
           }
         },
+        required: ['a'],
         type: 'object'
       }
     });
