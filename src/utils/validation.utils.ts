@@ -43,11 +43,16 @@ export function getSwaggerPropertyMetadata(_schema: z.core.JSONSchema.BaseSchema
       return {
         type: 'number'
       };
-    case 'object':
+    case 'object': {
+      const properties: { [key: string]: ApiPropertyOptions & SchemaObject } = {};
+      for (const key in schema.properties) {
+        properties[key] = getSwaggerPropertyMetadata(schema.properties[key]!);
+      }
       return {
-        properties: {},
+        properties,
         type: 'object'
       };
+    }
     case 'string':
       return {
         type: 'string'

@@ -26,6 +26,71 @@ describe('getSwaggerPropertyMetadata', () => {
       }
     });
   });
+  it('should correctly handle booleans', () => {
+    expectSwaggerMetadata({
+      input: z.boolean(),
+      output: {
+        type: 'boolean'
+      }
+    });
+  });
+  it('should correctly handle integers', () => {
+    expectSwaggerMetadata({
+      input: z.int(),
+      output: {
+        type: 'integer'
+      }
+    });
+    expectSwaggerMetadata({
+      input: z.number().int(),
+      output: {
+        type: 'integer'
+      }
+    });
+  });
+  it('should correctly handle null', () => {
+    expectSwaggerMetadata({
+      input: z.null(),
+      output: {
+        type: 'null'
+      }
+    });
+  });
+  it('should correctly handle numbers', () => {
+    expectSwaggerMetadata({
+      input: z.number(),
+      output: {
+        type: 'number'
+      }
+    });
+  });
+  it('should correctly handle objects', () => {
+    expectSwaggerMetadata({
+      input: z.object({
+        a: z.number(),
+        b: z.string()
+      }),
+      output: {
+        properties: {
+          a: {
+            type: 'number'
+          },
+          b: {
+            type: 'string'
+          }
+        },
+        type: 'object'
+      }
+    });
+  });
+  it('should correctly handle strings', () => {
+    expectSwaggerMetadata({
+      input: z.string(),
+      output: {
+        type: 'string'
+      }
+    });
+  });
 });
 
 describe('applySwaggerMetadata', () => {
