@@ -1,8 +1,32 @@
 import { BadRequestException, InternalServerErrorException } from '@nestjs/common';
+import type { SchemaObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.interface.js';
 import { describe, expect, it } from 'vitest';
 import { z } from 'zod/v4';
 
-import { applySwaggerMetadata, parseRequestBody } from '../validation.utils.js';
+import {
+  applySwaggerMetadata,
+  getJsonSchemaForSwagger,
+  getSwaggerPropertyMetadata,
+  parseRequestBody
+} from '../validation.utils.js';
+
+describe('getSwaggerPropertyMetadata', () => {
+  const expectSwaggerMetadata = ({ input, output }: { input: z.ZodType; output: SchemaObject }) => {
+    expect(getSwaggerPropertyMetadata(getJsonSchemaForSwagger(input))).toStrictEqual(output);
+  };
+
+  it('should correctly handle arrays', () => {
+    expectSwaggerMetadata({
+      input: z.array(z.boolean()),
+      output: {
+        items: {
+          type: 'boolean'
+        },
+        type: 'array'
+      }
+    });
+  });
+});
 
 describe('applySwaggerMetadata', () => {
   it('should throw an InternalServerErrorException if the schema is not for an object', () => {

@@ -9,23 +9,73 @@ import { defineToken } from './token.utils.js';
 
 export const { VALIDATION_SCHEMA_METADATA_KEY } = defineToken('VALIDATION_SCHEMA_METADATA_KEY');
 
+export function getJsonSchemaForSwagger(schema: z.ZodType): z.core.JSONSchema.Schema {
+  return z.toJSONSchema(schema, {
+    io: 'input',
+    target: 'draft-7',
+    unrepresentable: 'throw'
+  }) as z.core.JSONSchema.Schema;
+}
+
+export function getSwaggerPropertyMetadata(_schema: z.core.JSONSchema.BaseSchema): ApiPropertyOptions & SchemaObject {
+  const schema = _schema as z.core.JSONSchema.Schema;
+  switch (schema.type) {
+    case 'array': {
+      const items = schema.items;
+      return {
+        items: items && !Array.isArray(items) ? getSwaggerPropertyMetadata(items) : {},
+        type: 'array'
+      };
+    }
+    case 'boolean':
+      return {
+        type: 'boolean'
+      };
+    case 'integer':
+      return {
+        type: 'integer'
+      };
+    case 'null':
+      return {
+        type: 'null'
+      };
+    case 'number':
+      return {
+        type: 'number'
+      };
+    case 'object':
+      return {
+        properties: {},
+        type: 'object'
+      };
+    case 'string':
+      return {
+        type: 'string'
+      };
+    default:
+      return {
+        properties: {},
+        type: 'object'
+      };
+    // throw new Error(
+    //   [
+    //     `Unexpected type for JSON schema '${Reflect.get(schema satisfies never, 'type')}' in schema:`,
+    //     JSON.stringify(schema, null, 2)
+    //   ].join('\n')
+    // );
+  }
+}
+
 export function applySwaggerMetadata<T extends z.ZodType<{ [key: string]: any }>>(
   target: Class<z.output<T>>,
   schema: T
 ): void {
-  const baseSchema = z.toJSONSchema(schema, {
-    io: 'input',
-    target: 'draft-7',
-    unrepresentable: 'any'
-  }) as z.core.JSONSchema.ObjectSchema;
+  const baseSchema = getJsonSchemaForSwagger(schema);
   if (!(baseSchema.type === 'object')) {
     throw new InternalServerErrorException(`Expected schema to be of type 'object', not '${baseSchema.type}'`);
   }
   for (const propertyKey in baseSchema.properties) {
-    const propertySchema: SchemaObject = baseSchema.properties[propertyKey]!;
-    const propertyMetadata = {
-      type: propertySchema.type
-    } as ApiPropertyOptions;
+    const propertyMetadata = getSwaggerPropertyMetadata(baseSchema.properties[propertyKey]!);
     createApiPropertyDecorator(propertyMetadata, true)(target.prototype, propertyKey);
   }
 }
