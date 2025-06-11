@@ -7,7 +7,30 @@ import { z } from 'zod/v4';
 
 import { defineToken } from './token.utils.js';
 
-export const { VALIDATION_SCHEMA_METADATA_KEY } = defineToken('VALIDATION_SCHEMA_METADATA_KEY');
+const { VALIDATION_SCHEMA_METADATA_KEY } = defineToken('VALIDATION_SCHEMA_METADATA_KEY');
+
+const JSON_SCHEMA_TYPES = ['string', 'number', 'boolean', 'object', 'array', 'integer', 'null'];
+
+const JSON_SCHEMA_TYPES_WITHOUT_ARRAY_OR_INT = JSON_SCHEMA_TYPES.filter((arg) => arg !== 'array' && arg !== 'integer');
+
+const ANY_SCHEMA = {
+  additionalProperties: false,
+  example: null,
+  oneOf: [
+    ...JSON_SCHEMA_TYPES_WITHOUT_ARRAY_OR_INT.map((type) => ({ type })),
+    {
+      items: {
+        oneOf: JSON_SCHEMA_TYPES_WITHOUT_ARRAY_OR_INT.map((type) => ({ type }))
+      },
+      type: 'array'
+    }
+  ],
+  type: 'object' as const
+} satisfies SchemaObject;
+
+function isTypedZodSchema(schema: z.core.JSONSchema.BaseSchema): schema is z.core.JSONSchema.Schema {
+  return JSON_SCHEMA_TYPES.includes(schema.type as z.core.JSONSchema.Schema['type']);
+}
 
 export function getJsonSchemaForSwagger(schema: z.ZodType): z.core.JSONSchema.Schema {
   return z.toJSONSchema(schema, {
@@ -17,59 +40,63 @@ export function getJsonSchemaForSwagger(schema: z.ZodType): z.core.JSONSchema.Sc
   }) as z.core.JSONSchema.Schema;
 }
 
-export function getSwaggerPropertyMetadata(_schema: z.core.JSONSchema.BaseSchema): ApiPropertyOptions & SchemaObject {
-  const schema = _schema as z.core.JSONSchema.Schema;
-  switch (schema.type) {
-    case 'array': {
-      const items = schema.items;
-      return {
-        items: items && !Array.isArray(items) ? getSwaggerPropertyMetadata(items) : {},
-        type: 'array'
-      };
-    }
-    case 'boolean':
-      return {
-        type: 'boolean'
-      };
-    case 'integer':
-      return {
-        type: 'integer'
-      };
-    case 'null':
-      return {
-        type: 'null'
-      };
-    case 'number':
-      return {
-        type: 'number'
-      };
-    case 'object': {
-      const properties: { [key: string]: ApiPropertyOptions & SchemaObject } = {};
-      for (const key in schema.properties) {
-        properties[key] = getSwaggerPropertyMetadata(schema.properties[key]!);
+export function getSwaggerPropertyMetadata(schema: z.core.JSONSchema.BaseSchema): ApiPropertyOptions & SchemaObject {
+  if (isTypedZodSchema(schema)) {
+    switch (schema.type) {
+      case 'array': {
+        const items = schema.items;
+        return {
+          items:
+            items && !Array.isArray(items)
+              ? getSwaggerPropertyMetadata(items)
+              : {
+                  items: ANY_SCHEMA,
+                  type: 'array'
+                },
+          type: 'array'
+        };
       }
-      return {
-        properties,
-        required: schema.required,
-        type: 'object'
-      };
+      case 'boolean':
+        return {
+          type: 'boolean'
+        };
+      case 'integer':
+        return {
+          type: 'integer'
+        };
+      case 'null':
+        return {
+          type: 'null'
+        };
+      case 'number':
+        return {
+          type: 'number'
+        };
+      case 'object': {
+        const properties: { [key: string]: ApiPropertyOptions & SchemaObject } = {};
+        for (const key in schema.properties) {
+          properties[key] = getSwaggerPropertyMetadata(schema.properties[key]!);
+        }
+        return {
+          properties,
+          required: schema.required,
+          type: 'object'
+        };
+      }
+      case 'string':
+        return {
+          type: 'string'
+        };
+      default:
+        throw new Error(
+          [
+            `Unexpected type for JSON schema '${Reflect.get(schema satisfies never, 'type')}' in schema:`,
+            JSON.stringify(schema, null, 2)
+          ].join('\n')
+        );
     }
-    case 'string':
-      return {
-        type: 'string'
-      };
-    default:
-      return {
-        properties: {},
-        type: 'object'
-      };
-    // throw new Error(
-    //   [
-    //     `Unexpected type for JSON schema '${Reflect.get(schema satisfies never, 'type')}' in schema:`,
-    //     JSON.stringify(schema, null, 2)
-    //   ].join('\n')
-    // );
   }
+  return ANY_SCHEMA;
 }
 
 export function applySwaggerMetadata<T extends z.ZodType<{ [key: string]: any }>>(
@@ -135,3 +162,5 @@ export async function parseRequestBody<TSchema extends z.ZodType>(
   // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   return result.data;
 }
+
+export { VALIDATION_SCHEMA_METADATA_KEY };
