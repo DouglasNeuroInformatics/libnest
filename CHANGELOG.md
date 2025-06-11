@@ -1,5 +1,29 @@
 # Changelog
 
+## [7.0.0](https://github.com/DouglasNeuroInformatics/libnest/compare/v6.0.1...v7.0.0) (2025-06-11)
+
+### ⚠ BREAKING CHANGES
+
+* Use UserTypes to declare JwtPayload and UserQueryMetadata
+* use UserTypes.Locales
+* Prisma options in app config have changed. See example for more details.
+
+### Features
+
+* allow users to define custom prisma extensions ([84c702d](https://github.com/DouglasNeuroInformatics/libnest/commit/84c702d32336f2dbff55780c2dc77609d8fc24a8))
+
+### Bug Fixes
+
+* issue where mixin class names are set to target ([844e2ef](https://github.com/DouglasNeuroInformatics/libnest/commit/844e2eff944329d637abed676df2ed8494fa70b5))
+
+### Miscellaneous Chores
+
+* remove CustomTypeOptions ([0caf5de](https://github.com/DouglasNeuroInformatics/libnest/commit/0caf5de07df6ea5e27d627a81e2570f07fb57396))
+
+### Code Refactoring
+
+* remove Zod schemas for token payload and metadata ([782f293](https://github.com/DouglasNeuroInformatics/libnest/commit/782f293dd452aae1ec5811a156ace73bc1d313a0))
+
 ## [6.0.1](https://github.com/DouglasNeuroInformatics/libnest/compare/v6.0.0...v6.0.1) (2025-06-08)
 
 ### Bug Fixes
