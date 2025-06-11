@@ -1,7 +1,7 @@
 import { BadRequestException, InternalServerErrorException } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
 import type { SchemaObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.interface.js';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { z } from 'zod/v4';
 
 import {
@@ -40,6 +40,15 @@ describe('getSwaggerPropertyMetadata', () => {
         type: 'array'
       }
     });
+    expectSwaggerMetadata({
+      input: z.array(z.boolean().nullish()),
+      output: {
+        items: ANY_SWAGGER_SCHEMA,
+        type: 'array'
+      }
+    });
+    // I have no idea when (or if) this is possible, but test it just in case
+    vi.spyOn(Array, 'isArray').mockReturnValueOnce(true);
     expectSwaggerMetadata({
       input: z.array(z.boolean().nullish()),
       output: {
