@@ -8,6 +8,7 @@ import { GlobalExceptionFilter } from '../filters/global-exception.filter.js';
 import { JSX_OPTIONS_TOKEN } from '../interceptors/render.interceptor.js';
 import { ConfigModule } from '../modules/config/config.module.js';
 import { CryptoModule } from '../modules/crypto/crypto.module.js';
+import { JSXModule } from '../modules/jsx/jsx.module.js';
 import { LoggingModule } from '../modules/logging/logging.module.js';
 import { PrismaModule } from '../modules/prisma/prisma.module.js';
 import { ValidationPipe } from '../pipes/validation.pipe.js';
@@ -104,6 +105,10 @@ export class AppFactory {
         provide: JSX_OPTIONS_TOKEN,
         useValue: jsx
       });
+    }
+
+    if (jsx) {
+      coreImports.push(JSXModule);
     }
 
     if (envConfig.THROTTLER_ENABLED) {
