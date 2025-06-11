@@ -9,6 +9,7 @@ import {
   applySwaggerMetadata,
   getJsonSchemaForSwagger,
   getSwaggerPropertyMetadata,
+  JSON_SCHEMA_TYPES,
   parseRequestBody
 } from '../validation.utils.js';
 
@@ -146,6 +147,10 @@ describe('getSwaggerPropertyMetadata', () => {
     applySwaggerMetadata(Zod, $Schema);
 
     expectMetadataEqualAndNotEmpty(Swagger.prototype, Zod.prototype);
+  });
+  it('should throw if for any reason the schema has an invalid type, but passes the type guard', () => {
+    vi.spyOn(JSON_SCHEMA_TYPES, 'includes').mockReturnValueOnce(true);
+    expect(() => getSwaggerPropertyMetadata({ type: 'UNKNOWN' })).toThrow();
   });
 });
 

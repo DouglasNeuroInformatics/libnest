@@ -83,10 +83,7 @@ export function getSwaggerPropertyMetadata(schema: z.core.JSONSchema.BaseSchema)
         };
       default:
         throw new Error(
-          [
-            `Unexpected type for JSON schema '${Reflect.get(schema satisfies never, 'type')}' in schema:`,
-            JSON.stringify(schema, null, 2)
-          ].join('\n')
+          `Unexpected type for JSON schema '${Reflect.get(schema satisfies never, 'type')}' in schema: ${JSON.stringify(schema, null, 2)}`
         );
     }
   }
@@ -157,4 +154,4 @@ export async function parseRequestBody<TSchema extends z.ZodType>(
   return result.data;
 }
 
-export { ANY_SWAGGER_SCHEMA, VALIDATION_SCHEMA_METADATA_KEY };
+export { ANY_SWAGGER_SCHEMA, JSON_SCHEMA_TYPES, VALIDATION_SCHEMA_METADATA_KEY };
