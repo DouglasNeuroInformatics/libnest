@@ -27,6 +27,7 @@ export type {
   UserQueryResult
 } from './modules/auth/auth.config.js';
 export { AuthModule } from './modules/auth/auth.module.js';
+export { TokenService } from './modules/auth/token.service.js';
 export { ConfigService } from './modules/config/config.service.js';
 export type { CryptoOptions } from './modules/crypto/crypto.config.js';
 export { CryptoService } from './modules/crypto/crypto.service.js';

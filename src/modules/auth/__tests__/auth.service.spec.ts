@@ -1,15 +1,14 @@
 import { UnauthorizedException } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
 import { Test } from '@nestjs/testing';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Mock } from 'vitest';
 
 import { MockFactory } from '../../../testing/index.js';
 import { CryptoService } from '../../crypto/crypto.service.js';
-import { LoggingService } from '../../logging/logging.service.js';
 import { AbilityFactory } from '../ability.factory.js';
 import { USER_QUERY_TOKEN } from '../auth.config.js';
 import { AuthService } from '../auth.service.js';
+import { TokenService } from '../token.service.js';
 
 import type { MockedInstance } from '../../../testing/index.js';
 
@@ -17,7 +16,7 @@ describe('AuthService', () => {
   let authService: AuthService;
   let abilityFactory: MockedInstance<AbilityFactory>;
   let cryptoService: MockedInstance<CryptoService>;
-  let jwtService: MockedInstance<JwtService>;
+  let tokenService: MockedInstance<TokenService>;
 
   let userQuery: Mock;
 
@@ -32,15 +31,13 @@ describe('AuthService', () => {
         AuthService,
         MockFactory.createForService(AbilityFactory),
         MockFactory.createForService(CryptoService),
-        MockFactory.createForService(JwtService),
-        MockFactory.createForService(LoggingService)
+        MockFactory.createForService(TokenService)
       ]
     }).compile();
     abilityFactory = moduleRef.get(AbilityFactory);
     authService = moduleRef.get(AuthService);
     cryptoService = moduleRef.get(CryptoService);
-    jwtService = moduleRef.get(JwtService);
-
+    tokenService = moduleRef.get(TokenService);
     abilityFactory.createForPayload.mockReturnValue([]);
   });
 
@@ -78,7 +75,7 @@ describe('AuthService', () => {
       cryptoService.comparePassword.mockImplementationOnce((password, hashedPassword) => {
         return password === loginRequest.password && hashedPassword === 'HASHED_PASSWORD';
       });
-      jwtService.signAsync.mockResolvedValueOnce('ACCESS_TOKEN');
+      tokenService.signToken.mockResolvedValueOnce('ACCESS_TOKEN');
       await expect(authService.login(loginRequest)).resolves.toStrictEqual({
         accessToken: 'ACCESS_TOKEN'
       });
