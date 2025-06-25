@@ -36,7 +36,7 @@ export function getJsonSchemaForSwagger(schema: z.ZodType): z.core.JSONSchema.Sc
   return z.toJSONSchema(schema, {
     io: 'input',
     target: 'draft-7',
-    unrepresentable: 'throw'
+    unrepresentable: 'any'
   }) as z.core.JSONSchema.Schema;
 }
 
