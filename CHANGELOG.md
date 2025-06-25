@@ -1,5 +1,15 @@
 # Changelog
 
+## [7.1.0](https://github.com/DouglasNeuroInformatics/libnest/compare/v7.0.0...v7.1.0) (2025-06-25)
+
+### Features
+
+* implement jsx in MailService ([e0dda06](https://github.com/DouglasNeuroInformatics/libnest/commit/e0dda06025fca44991e36878af89b5241e224d9e))
+
+### Bug Fixes
+
+* ignore unrepresentable types in json schema docs (temporary) ([4c9ce3f](https://github.com/DouglasNeuroInformatics/libnest/commit/4c9ce3f2291be18e2eaf7965669a230b483c0422))
+
 ## [7.0.0](https://github.com/DouglasNeuroInformatics/libnest/compare/v6.0.1...v7.0.0) (2025-06-11)
 
 ### ⚠ BREAKING CHANGES
