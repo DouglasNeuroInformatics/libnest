@@ -1,5 +1,15 @@
 # Changelog
 
+## [7.2.0](https://github.com/DouglasNeuroInformatics/libnest/compare/v7.1.0...v7.2.0) (2025-06-29)
+
+### Features
+
+* allow using Zod schema directly to parse request body ([7c8e022](https://github.com/DouglasNeuroInformatics/libnest/commit/7c8e0229eca187b0561f62b4d0fed2910bd92fbc))
+
+### Bug Fixes
+
+* set MailModule as global ([6f0c817](https://github.com/DouglasNeuroInformatics/libnest/commit/6f0c817abe9ee00e337e6e65c5232018227b7973))
+
 ## [7.1.0](https://github.com/DouglasNeuroInformatics/libnest/compare/v7.0.0...v7.1.0) (2025-06-25)
 
 ### Features
