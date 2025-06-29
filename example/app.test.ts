@@ -6,8 +6,7 @@ import { afterAll, beforeAll, beforeEach, describe, expect, vi } from 'vitest';
 import { e2e } from '../src/testing/index.js';
 import app from './app.js';
 
-import type { CreateCatDto } from './cats/dto/create-cat.dto.js';
-import type { Cat } from './cats/schemas/cat.schema.js';
+import type { $Cat, $CreateCatData } from './cats/schemas/cat.schema.js';
 
 vi.unmock('@prisma/client');
 
@@ -102,7 +101,7 @@ e2e(app, ({ api }) => {
 
   describe('/cats', (it) => {
     let accessToken: string;
-    let createdCat: Cat;
+    let createdCat: $Cat;
 
     beforeEach(async () => {
       const response = await api.post('/auth/login').send({ password: 'password', username: 'admin' });
@@ -126,13 +125,13 @@ e2e(app, ({ api }) => {
         .send({
           age: 1,
           name: 'Winston'
-        } satisfies CreateCatDto);
+        } satisfies $CreateCatData);
       expect(response.status).toBe(201);
       expect(response.body).toMatchObject({
         _id: expect.any(String),
         age: expect.any(Number),
         name: expect.any(String)
-      } satisfies Cat);
+      } satisfies $Cat);
       createdCat = response.body;
     });
 

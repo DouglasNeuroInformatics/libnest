@@ -5,7 +5,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { PRISMA_CLIENT_TOKEN } from '../../../src/modules/prisma/prisma.config.js';
 import { CatsService } from '../cats.service.js';
 
-import type { Cat } from '../schemas/cat.schema.js';
+import type { $Cat } from '../schemas/cat.schema.js';
 
 describe('CatsService', () => {
   let catsService: CatsService;
@@ -29,7 +29,7 @@ describe('CatsService', () => {
 
   describe('create', () => {
     it('should create a new cat successfully', async () => {
-      const mockCat: Omit<Cat, '_id'> = {
+      const mockCat: Omit<$Cat, '_id'> = {
         age: 3,
         name: 'Whiskers'
       };
@@ -46,7 +46,7 @@ describe('CatsService', () => {
     });
 
     it('should throw InternalServerErrorException when creation fails', async () => {
-      const mockCat: Omit<Cat, '_id'> = {
+      const mockCat: Omit<$Cat, '_id'> = {
         age: 3,
         name: 'Whiskers'
       };
@@ -57,7 +57,7 @@ describe('CatsService', () => {
 
   describe('findAll', () => {
     it('should return all cats successfully', async () => {
-      const mockCats: Cat[] = [
+      const mockCats: $Cat[] = [
         { _id: '1', age: 3, name: 'Whiskers' },
         { _id: '2', age: 2, name: 'Mittens' }
       ];
