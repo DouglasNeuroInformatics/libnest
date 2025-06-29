@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import type { JSX } from 'react';
 
-import type { Cat } from '../cats/schemas/cat.schema.js';
+import type { $Cat } from '../cats/schemas/cat.schema.js';
 
 type CatsProps = {
-  cats: Cat[];
+  cats: $Cat[];
 };
 
 const Cats: React.FC<CatsProps> = ({ cats }): JSX.Element => {
