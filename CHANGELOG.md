@@ -1,5 +1,11 @@
 # Changelog
 
+## [7.3.0](https://github.com/DouglasNeuroInformatics/libnest/compare/v7.2.0...v7.3.0) (2025-07-10)
+
+### Features
+
+* add new LOGIN_REQUEST_TROTTLER_LIMIT and LOGIN_REQUEST_TROTTLER_TTL options ([57ca737](https://github.com/DouglasNeuroInformatics/libnest/commit/57ca7378ece911d92d13784e170ffe1918555514))
+
 ## [7.2.0](https://github.com/DouglasNeuroInformatics/libnest/compare/v7.1.0...v7.2.0) (2025-06-29)
 
 ### Features
