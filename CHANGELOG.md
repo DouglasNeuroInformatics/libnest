@@ -1,5 +1,11 @@
 # Changelog
 
+## [7.3.1](https://github.com/DouglasNeuroInformatics/libnest/compare/v7.3.0...v7.3.1) (2025-07-10)
+
+### Bug Fixes
+
+* env parsing issue ([31c68cf](https://github.com/DouglasNeuroInformatics/libnest/commit/31c68cf3a2f1aa6be4e9768b3fe243312b6c4538))
+
 ## [7.3.0](https://github.com/DouglasNeuroInformatics/libnest/compare/v7.2.0...v7.3.0) (2025-07-10)
 
 ### Features
