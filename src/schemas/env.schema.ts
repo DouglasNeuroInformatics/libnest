@@ -16,6 +16,8 @@ export const $BaseEnv = z.object({
   DEBUG: $BooleanLike.optional(),
   /** enable log-level logs (default = true in development or production, false in tests) */
   LOG: $BooleanLike.optional(),
+  LOGIN_REQUEST_TROTTLER_LIMIT: z.number().int().optional(),
+  LOGIN_REQUEST_TROTTLER_TTL: z.number().int().optional(),
   MONGO_DIRECT_CONNECTION: $BooleanLike.optional(),
   MONGO_REPLICA_SET: z.enum(['rs0']).optional(),
   MONGO_RETRY_WRITES: $BooleanLike.optional(),
