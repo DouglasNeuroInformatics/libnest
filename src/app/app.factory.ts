@@ -122,12 +122,21 @@ export class AppFactory {
           {
             limit: 100,
             name: 'medium',
-            ttl: 10000
+            ttl: 10_000
           },
           {
             limit: 250,
             name: 'long',
-            ttl: 60000
+            ttl: 60_000
+          },
+          {
+            limit: envConfig.LOGIN_REQUEST_TROTTLER_LIMIT ?? 50,
+            name: 'login',
+            skipIf: (context): boolean => {
+              const handler = context.getHandler();
+              return handler.name !== 'login';
+            },
+            ttl: envConfig.LOGIN_REQUEST_TROTTLER_TTL ?? 60_000
           }
         ])
       );
