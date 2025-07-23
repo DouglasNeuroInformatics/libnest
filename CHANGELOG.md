@@ -1,5 +1,11 @@
 # Changelog
 
+## [7.3.2](https://github.com/DouglasNeuroInformatics/libnest/compare/v7.3.1...v7.3.2) (2025-07-23)
+
+### Bug Fixes
+
+* adjust shell scripts to remove dependency on coreutils ([ab67f45](https://github.com/DouglasNeuroInformatics/libnest/commit/ab67f4507daf782ed9b7a451e8ca2c04c317eb89))
+
 ## [7.3.1](https://github.com/DouglasNeuroInformatics/libnest/compare/v7.3.0...v7.3.1) (2025-07-10)
 
 ### Bug Fixes
