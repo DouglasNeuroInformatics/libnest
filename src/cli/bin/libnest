@@ -1,6 +1,6 @@
 #!/bin/sh
 
-DIR="$(dirname "$(realpath "$0")")"
+DIR=$(cd "$(dirname "$0")" && pwd)
 PARENT_DIR="$(dirname "$DIR")"
 
 node --enable-source-maps "${PARENT_DIR}"/libnest.js "$@"
