@@ -37,6 +37,7 @@ export type { MailModuleOptions } from './modules/mail/mail.config.js';
 export { MailModule } from './modules/mail/mail.module.js';
 export { MailService } from './modules/mail/mail.service.js';
 export type { PrismaModuleOptions } from './modules/prisma/prisma.config.js';
+export { PRISMA_CLIENT_TOKEN } from './modules/prisma/prisma.config.js';
 export { InjectModel, InjectPrismaClient } from './modules/prisma/prisma.decorators.js';
 export { PrismaService } from './modules/prisma/prisma.service.js';
 export type { ExtendedPrismaClient, Model, PrismaClientLike, PrismaModelName } from './modules/prisma/prisma.types.js';
