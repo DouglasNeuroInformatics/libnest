@@ -1,5 +1,11 @@
 # Changelog
 
+## [7.3.3](https://github.com/DouglasNeuroInformatics/libnest/compare/v7.3.2...v7.3.3) (2025-08-06)
+
+### Bug Fixes
+
+* export PRISMA_CLIENT_TOKEN ([1d42928](https://github.com/DouglasNeuroInformatics/libnest/commit/1d42928799f0a3e4056cd0ee12f7bf08ace53f71))
+
 ## [7.3.2](https://github.com/DouglasNeuroInformatics/libnest/compare/v7.3.1...v7.3.2) (2025-07-23)
 
 ### Bug Fixes
