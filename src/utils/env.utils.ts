@@ -14,7 +14,9 @@ export function parseEnv<TSchema extends BaseEnvSchema = BaseEnvSchema>(schema: 
   );
   if (envConfigResult.isErr()) {
     throw new RuntimeException('Failed to parse environment config', {
-      cause: envConfigResult.error
+      details: {
+        issues: envConfigResult.error.details.issues
+      }
     });
   }
   // eslint-disable-next-line @typescript-eslint/no-unsafe-return
