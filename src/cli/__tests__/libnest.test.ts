@@ -46,10 +46,10 @@ describe('libnest', () => {
     expect(hook).toHaveBeenCalledExactlyOnceWith('preSubcommand', expect.any(Function));
     const callback = hook.mock.lastCall![1];
     const getOptionValue = vi.fn();
-    getOptionValue.mockReturnValueOnce('.env');
+    getOptionValue.mockReturnValueOnce(['.env']);
     await callback({ getOptionValue } as any, null!);
     expect(getOptionValue).toHaveBeenCalled();
-    expect(process.loadEnvFile).toHaveBeenCalledOnce();
+    expect(process.loadEnvFile).toHaveBeenCalledExactlyOnceWith('.env');
   });
   it('should pass the resolved config file to the subcommand', async () => {
     const hook = vi.spyOn(Command.prototype, 'hook');
