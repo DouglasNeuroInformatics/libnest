@@ -1,5 +1,11 @@
 # Changelog
 
+## [7.4.0](https://github.com/DouglasNeuroInformatics/libnest/compare/v7.3.3...v7.4.0) (2025-08-26)
+
+### Features
+
+* allow specifying multiple env files ([9fedd2f](https://github.com/DouglasNeuroInformatics/libnest/commit/9fedd2f4320043d2212d63f71bcfeb9311b9890d))
+
 ## [7.3.3](https://github.com/DouglasNeuroInformatics/libnest/compare/v7.3.2...v7.3.3) (2025-08-06)
 
 ### Bug Fixes
