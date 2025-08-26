@@ -1,4 +1,3 @@
-import { ValidationException } from '@douglasneuroinformatics/libjs';
 import { APP_FILTER, APP_GUARD, APP_PIPE } from '@nestjs/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
@@ -188,7 +187,20 @@ describe('AppFactory', () => {
         vi.stubEnv('VERBOSE', '1');
         expect(() => createAppContainer()).toThrow(
           expect.objectContaining({
-            cause: expect.any(ValidationException),
+            // cause: {
+            // details: {
+            //   issues: [expect.any(Object)]
+            // }
+            // },
+            details: {
+              issues: [
+                expect.objectContaining({
+                  code: 'invalid_type',
+                  expected: 'boolean',
+                  path: ['VERBOSE']
+                })
+              ]
+            },
             message: 'Failed to parse environment config'
           })
         );
