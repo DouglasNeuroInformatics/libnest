@@ -36,8 +36,8 @@ program.requiredOption('-c, --config-file <path>', 'path to the config file', (f
   return parseResult(resolveAbsoluteImportPath(filename, process.cwd()));
 });
 
-program.option('-e, --env-file <path>', 'path to an env file to source', (filename) => {
-  return parseResult(resolveAbsolutePath(filename, process.cwd()));
+program.option('-e, --env-file <paths...>', 'path to env file(s) to source', (filename, previous) => {
+  return (previous ?? []).concat(parseResult(resolveAbsolutePath(filename, process.cwd())));
 });
 
 program.addOption(
@@ -52,10 +52,9 @@ program.command('dev', 'run application in development mode', {
 });
 
 program.hook('preSubcommand', (command) => {
-  const envFile = command.getOptionValue('envFile');
-  if (envFile) {
+  command.getOptionValue('envFile')?.forEach((/** @type {string} */ envFile) => {
     process.loadEnvFile(envFile);
-  }
+  });
   process.env.LIBNEST_CONFIG_FILEPATH = command.getOptionValue('configFile');
   process.env.LIBNEST_JAVASCRIPT_RUNTIME = command.getOptionValue('runtime');
 });
