@@ -54,11 +54,13 @@ export default AppFactory.create({
     }
   },
   prisma: {
-    client: {
-      constructor: PrismaClient
-    },
-    dbPrefix: 'libnest-example',
-    useInMemoryDbForTesting: true
+    useFactory: () => {
+      return {
+        client: new PrismaClient({
+          datasourceUrl: 'mongodb://localhost:27017/libnest-example'
+        })
+      };
+    }
   },
   version: null
 });

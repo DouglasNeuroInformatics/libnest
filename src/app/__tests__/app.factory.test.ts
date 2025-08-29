@@ -12,7 +12,6 @@ import { ValidationPipe } from '../../pipes/validation.pipe.js';
 import { $BaseEnv } from '../../schemas/env.schema.js';
 import { AppFactory } from '../app.factory.js';
 
-import type { PrismaModuleOptions } from '../../modules/prisma/prisma.config.js';
 import type { BaseEnv } from '../../schemas/env.schema.js';
 import type { CreateAppOptions } from '../app.factory.js';
 
@@ -33,7 +32,6 @@ vi.mock('../../modules/crypto/crypto.service.js', async (importOriginal) => {
 const defaultEnv = {
   API_PORT: '5500',
   DEBUG: 'false',
-  MONGO_URI: 'mongodb://localhost:27017',
   NODE_ENV: 'test',
   SECRET_KEY: '2622d72669dd194b98cffd9098b0d04b',
   THROTTLER_ENABLED: 'false',
@@ -43,16 +41,15 @@ const defaultEnv = {
 const defaultAppOptions: CreateAppOptions = {
   envSchema: $BaseEnv,
   prisma: {
-    client: {
-      constructor: vi.fn(() => {
-        return {
+    useFactory: () => {
+      return {
+        client: {
           $connect: vi.fn(),
           $disconnect: vi.fn(),
           $extends: vi.fn().mockReturnThis()
-        } as any;
-      })
-    },
-    dbPrefix: null
+        } as any
+      };
+    }
   },
   version: '1'
 };
@@ -125,27 +122,6 @@ describe('AppFactory', () => {
 
         const appContainer = createAppContainer({ docs: docsConfig });
         expect(appContainer.docs).toEqual(docsConfig);
-      });
-
-      it('should create an app with a custom prisma configuration', async () => {
-        const prisma: PrismaModuleOptions = {
-          client: {
-            constructor: defaultAppOptions.prisma.client.constructor,
-            options: {
-              omit: {
-                user: {
-                  password: true
-                }
-              }
-            }
-          },
-          dbPrefix: 'example'
-        };
-        await createAppContainer({ prisma }).createApplicationInstance();
-        expect(prisma.client.constructor).toHaveBeenLastCalledWith({
-          datasourceUrl: `${defaultEnv.MONGO_URI}/example-test`,
-          ...prisma.client.options
-        });
       });
     });
 

@@ -15,7 +15,7 @@ type EndToEndTestAgent = TestAgent<{
 
 type EndToEndTestFactory = (ctx: { api: EndToEndTestAgent; expect: ExpectStatic; it: TestAPI; test: TestAPI }) => void;
 
-export function e2e(appContainer: AppContainer<any, any, any>, fn: EndToEndTestFactory): void {
+export function e2e(appContainer: AppContainer<any, any>, fn: EndToEndTestFactory): void {
   let app: NestExpressApplication;
   const api = {} as EndToEndTestAgent;
 
