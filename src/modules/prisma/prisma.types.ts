@@ -1,41 +1,6 @@
 import type { SingleKeyMap } from '@douglasneuroinformatics/libjs';
 import type { Prisma, PrismaClient } from '@prisma/client';
-import type {
-  Call,
-  DefaultArgs,
-  DynamicClientExtensionThis,
-  InternalArgs,
-  MergeExtArgs
-} from '@prisma/client/runtime/library';
 import type { IfNever } from 'type-fest';
-
-import type { RuntimePrismaClientOptions } from '../../user-types.js';
-import type { LibnestPrismaExtensionArgs } from './prisma.extensions.js';
-
-type InferPrismaExtensionArgs<
-  TExtension extends Partial<Prisma.Extension>,
-  TClientOptions extends Prisma.PrismaClientOptions
-> = MergeExtArgs<
-  Prisma.TypeMap<DefaultArgs, TClientOptions['omit']>,
-  {},
-  InternalArgs<TExtension['result'], TExtension['model'], TExtension['query'], TExtension['client']>
->;
-
-type InferPrismaTypeMap<
-  TExtension extends Partial<Prisma.Extension>,
-  TClientOptions extends Prisma.PrismaClientOptions
-> = Call<
-  Prisma.TypeMapCb<TClientOptions>,
-  {
-    extArgs: InferPrismaExtensionArgs<TExtension, TClientOptions>;
-  }
->;
-
-export type InferExtendedClient<TClientOptions extends Prisma.PrismaClientOptions> = DynamicClientExtensionThis<
-  InferPrismaTypeMap<LibnestPrismaExtensionArgs, TClientOptions>,
-  Prisma.TypeMapCb<TClientOptions>,
-  InferPrismaExtensionArgs<LibnestPrismaExtensionArgs, TClientOptions>
->;
 
 export type PrismaClientLike = PrismaClient & {
   [key: string]: any;
@@ -53,7 +18,7 @@ export type PrismaModelWhereInputMap = {
     : never;
 };
 
+export type ExtendedPrismaClient = PrismaClient;
+
 export type Model<T extends PrismaModelName> =
   ExtendedPrismaClient extends SingleKeyMap<`${Uncapitalize<T>}`, infer U> ? U : never;
-
-export type ExtendedPrismaClient = InferExtendedClient<RuntimePrismaClientOptions>;
