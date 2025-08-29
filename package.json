@@ -76,6 +76,9 @@
     "zod": "^3.25.x"
   },
   "peerDependenciesMeta": {
+    "mongodb": {
+      "optional": true
+    },
     "react": {
       "optional": true
     },
