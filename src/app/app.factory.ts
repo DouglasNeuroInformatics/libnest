@@ -1,6 +1,7 @@
-import type { MiddlewareConsumer, Provider, Type } from '@nestjs/common';
+import type { ConfigurableModuleAsyncOptions, MiddlewareConsumer, Provider, Type } from '@nestjs/common';
 import { APP_FILTER, APP_GUARD, APP_PIPE } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import type { PrismaClient } from '@prisma/client';
 import type { Simplify } from 'type-fest';
 import type { z } from 'zod/v4';
 
@@ -18,16 +19,14 @@ import { AppContainer } from './app.container.js';
 import { AppModule } from './app.module.js';
 
 import type { JSXOptions } from '../interceptors/render.interceptor.js';
-import type { DefaultPrismaClientOptions, PrismaModuleOptions } from '../modules/prisma/prisma.config.js';
-import type { LibnestExtendedPrismaClient } from '../modules/prisma/prisma.extensions.js';
+import type { PrismaModuleOptions } from '../modules/prisma/prisma.config.js';
 import type { RuntimeEnv } from '../user-types.js';
 import type { BaseEnvSchema } from '../utils/env.utils.js';
 import type { AppContainerParams, ConditionalImport, DynamicAppModule, ImportedModule } from './app.base.js';
 
 export type CreateAppOptions<
   TEnvSchema extends BaseEnvSchema = BaseEnvSchema,
-  TPrismaClientOptions extends DefaultPrismaClientOptions = DefaultPrismaClientOptions,
-  TExtendedPrismaClient extends LibnestExtendedPrismaClient = LibnestExtendedPrismaClient
+  TPrismaClient extends PrismaClient = PrismaClient
 > = Simplify<
   Omit<AppContainerParams, 'envConfig' | 'module'> & {
     configureMiddleware?: (consumer: MiddlewareConsumer) => void;
@@ -35,26 +34,18 @@ export type CreateAppOptions<
     envSchema: TEnvSchema;
     imports?: (ConditionalImport<z.output<TEnvSchema>> | ImportedModule)[];
     jsx?: JSXOptions;
-    prisma: PrismaModuleOptions<TPrismaClientOptions, TExtendedPrismaClient>;
+    prisma: ConfigurableModuleAsyncOptions<PrismaModuleOptions<TPrismaClient>>;
     providers?: Provider[];
   }
 >;
 
 export class AppFactory {
-  static create<
-    TEnvSchema extends BaseEnvSchema,
-    TPrismaClientOptions extends DefaultPrismaClientOptions,
-    TExtendedPrismaClient extends LibnestExtendedPrismaClient
-  >({
+  static create<TEnvSchema extends BaseEnvSchema, TPrismaClient extends PrismaClient>({
     docs,
     envSchema,
     version,
     ...options
-  }: CreateAppOptions<TEnvSchema, TPrismaClientOptions, TExtendedPrismaClient>): AppContainer<
-    z.output<TEnvSchema>,
-    TPrismaClientOptions,
-    TExtendedPrismaClient
-  > {
+  }: CreateAppOptions<TEnvSchema, TPrismaClient>): AppContainer<z.output<TEnvSchema>, TPrismaClient> {
     const envConfig = parseEnv(envSchema);
     const module = this.createModule({ envConfig, ...options });
     return new AppContainer({ docs, envConfig, module, version });
@@ -77,7 +68,7 @@ export class AppFactory {
       ConfigModule.forRoot({ envConfig }),
       CryptoModule,
       LoggingModule,
-      PrismaModule.forRoot(prisma)
+      PrismaModule.forRootAsync(prisma)
     ];
     const coreProviders: Provider[] = [
       {

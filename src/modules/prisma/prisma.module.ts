@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import type { ConfigurableModuleAsyncOptions, DynamicModule, FactoryProvider } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
 
 import { ConfigurablePrismaModule, PRISMA_CLIENT_TOKEN, PRISMA_MODULE_OPTIONS_TOKEN } from './prisma.config.js';
 import { PrismaService } from './prisma.service.js';
@@ -31,11 +31,13 @@ import type { PrismaClientLike } from './prisma.types.js';
   ]
 })
 export class PrismaModule extends ConfigurablePrismaModule {
-  static forRoot(options: PrismaModuleOptions): DynamicModule {
+  static forRoot<TPrismaClient extends PrismaClient>(options: PrismaModuleOptions<TPrismaClient>): DynamicModule {
     return super.forRoot(options);
   }
 
-  static forRootAsync(options: ConfigurableModuleAsyncOptions<PrismaModuleOptions>): DynamicModule {
+  static forRootAsync<TPrismaClient extends PrismaClient>(
+    options: ConfigurableModuleAsyncOptions<PrismaModuleOptions<TPrismaClient>>
+  ): DynamicModule {
     return super.forRootAsync(options);
   }
 }
