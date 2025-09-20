@@ -11,29 +11,9 @@ for arg in "$@"; do
   fi
 done
 
-RUNTIME_ARGS=""
-case "$LIBNEST_JAVASCRIPT_RUNTIME" in
-  bun)
-    RUNTIME_ARGS="--watch"
-    ;;
-  node)
-    RUNTIME_ARGS="--enable-source-maps"
-    if [ "$NO_WATCH" = false ]; then
-      RUNTIME_ARGS="$RUNTIME_ARGS --watch --watch-preserve-output"
-    fi
-    ;;
-  deno)
-    RUNTIME_ARGS="-A --unstable-sloppy-imports"
-    ;;
-  *)
-    echo "Error: Invalid runtime '$LIBNEST_JAVASCRIPT_RUNTIME': must be 'node', 'bun', or 'deno'" >&2
-    exit 1
-    ;;
-esac
-
-if ! command -v "$LIBNEST_JAVASCRIPT_RUNTIME" >/dev/null 2>&1; then
-  echo "Error: Runtime '$LIBNEST_JAVASCRIPT_RUNTIME' not found in PATH" >&2
-  exit 1
+RUNTIME_ARGS="--enable-source-maps"
+if [ "$NO_WATCH" = false ]; then
+  RUNTIME_ARGS="$RUNTIME_ARGS --watch --watch-preserve-output"
 fi
 
-exec $LIBNEST_JAVASCRIPT_RUNTIME $RUNTIME_ARGS "${PARENT_DIR}/libnest-dev.js" "$@"
+exec node $RUNTIME_ARGS "${PARENT_DIR}/libnest-dev.js" "$@"

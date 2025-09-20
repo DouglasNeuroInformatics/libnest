@@ -3,9 +3,7 @@ import * as process from 'node:process';
 
 import { Command } from 'commander';
 
-if (process.env.LIBNEST_JAVASCRIPT_RUNTIME === 'node') {
-  module.register('@swc-node/register/esm', import.meta.url);
-}
+module.register('@swc-node/register/esm', import.meta.url);
 
 const { buildProd } = await import('../meta/build.js');
 
