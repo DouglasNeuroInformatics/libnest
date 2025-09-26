@@ -8,49 +8,27 @@ import { GlobalExceptionFilter } from '../filters/global-exception.filter.js';
 import { ConfigModule } from '../modules/config/config.module.js';
 import { CryptoModule } from '../modules/crypto/crypto.module.js';
 import { LoggingModule } from '../modules/logging/logging.module.js';
-import { PrismaModule } from '../modules/prisma/prisma.module.js';
 import { ValidationPipe } from '../pipes/validation.pipe.js';
 import { parseEnv } from '../utils/env.utils.js';
 import { CONFIGURE_USER_MIDDLEWARE_TOKEN, LIBNEST_STATIC_TOKEN } from './app.base.js';
 import { AppContainer } from './app.container.js';
 import { AppModule } from './app.module.js';
 
-import type { DefaultPrismaClientOptions, PrismaModuleOptions } from '../modules/prisma/prisma.config.js';
-import type { LibnestExtendedPrismaClient } from '../modules/prisma/prisma.extensions.js';
-import type { RuntimeEnv } from '../user-types.js';
-import type { BaseEnvSchema } from '../utils/env.utils.js';
+import type { UserTypes } from '../user-config.js';
 import type { AppContainerParams, ConditionalImport, DynamicAppModule, ImportedModule } from './app.base.js';
 
-export type CreateAppOptions<
-  TEnvSchema extends BaseEnvSchema = BaseEnvSchema,
-  TPrismaClientOptions extends DefaultPrismaClientOptions = DefaultPrismaClientOptions,
-  TExtendedPrismaClient extends LibnestExtendedPrismaClient = LibnestExtendedPrismaClient
-> = Simplify<
+export type CreateAppOptions = Simplify<
   Omit<AppContainerParams, 'envConfig' | 'module'> & {
     configureMiddleware?: (consumer: MiddlewareConsumer) => void;
     controllers?: Type<any>[];
-    envSchema: TEnvSchema;
-    imports?: (ConditionalImport<z.output<TEnvSchema>> | ImportedModule)[];
-    prisma: PrismaModuleOptions<TPrismaClientOptions, TExtendedPrismaClient>;
+    envSchema: z.ZodType<UserTypes.Env>;
+    imports?: (ConditionalImport | ImportedModule)[];
     providers?: Provider[];
   }
 >;
 
 export class AppFactory {
-  static create<
-    TEnvSchema extends BaseEnvSchema,
-    TPrismaClientOptions extends DefaultPrismaClientOptions,
-    TExtendedPrismaClient extends LibnestExtendedPrismaClient
-  >({
-    docs,
-    envSchema,
-    version,
-    ...options
-  }: CreateAppOptions<TEnvSchema, TPrismaClientOptions, TExtendedPrismaClient>): AppContainer<
-    z.output<TEnvSchema>,
-    TPrismaClientOptions,
-    TExtendedPrismaClient
-  > {
+  static create({ docs, envSchema, version, ...options }: CreateAppOptions): AppContainer {
     const envConfig = parseEnv(envSchema);
     const module = this.createModule({ envConfig, ...options });
     return new AppContainer({ docs, envConfig, module, version });
@@ -61,19 +39,13 @@ export class AppFactory {
     controllers,
     envConfig,
     imports: userImports = [],
-    prisma,
     providers: userProviders = []
   }: Simplify<
-    Pick<CreateAppOptions, 'configureMiddleware' | 'controllers' | 'imports' | 'prisma' | 'providers'> & {
-      envConfig: RuntimeEnv;
+    Pick<CreateAppOptions, 'configureMiddleware' | 'controllers' | 'imports' | 'providers'> & {
+      envConfig: UserTypes.Env;
     }
   >): DynamicAppModule {
-    const coreImports: ImportedModule[] = [
-      ConfigModule.forRoot({ envConfig }),
-      CryptoModule,
-      LoggingModule,
-      PrismaModule.forRoot(prisma)
-    ];
+    const coreImports: ImportedModule[] = [ConfigModule.forRoot({ envConfig }), CryptoModule, LoggingModule];
     const coreProviders: Provider[] = [
       {
         provide: APP_FILTER,

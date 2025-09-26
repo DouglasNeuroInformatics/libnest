@@ -3,7 +3,7 @@ import * as path from 'node:path';
 import { defineUserConfig } from './src/user-config.js';
 
 declare module './src/user-config.js' {
-  export interface UserConfig extends InferUserConfig<typeof config> {}
+  export interface UserConfig {}
 }
 
 const config = defineUserConfig({

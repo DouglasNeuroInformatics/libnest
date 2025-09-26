@@ -17,14 +17,10 @@ export { MailService } from './modules/mail/mail.service.js';
 export type { PrismaModuleOptions } from './modules/prisma/prisma.config.js';
 export { PRISMA_CLIENT_TOKEN } from './modules/prisma/prisma.config.js';
 export { InjectModel, InjectPrismaClient } from './modules/prisma/prisma.decorators.js';
-export { PrismaService } from './modules/prisma/prisma.service.js';
-export type {
-  ExtendedPrismaClient,
-  Model,
-  PrismaClientLike,
-  PrismaModelName,
-  PrismaModelWhereInputMap
-} from './modules/prisma/prisma.types.js';
+// export { PrismaService } from './modules/prisma/prisma.service.js';
+export { LibnestPrismaExtension } from './modules/prisma/prisma.extensions.js';
+export { PrismaModule } from './modules/prisma/prisma.module.js';
+export type { Model, PrismaModelKey, PrismaModelName } from './modules/prisma/prisma.types.js';
 export { getModelToken } from './modules/prisma/prisma.utils.js';
 export type { VirtualizationModuleOptions } from './modules/virtualization/virtualization.config.js';
 export { VirtualizationModule } from './modules/virtualization/virtualization.module.js';
@@ -33,4 +29,5 @@ export { ParseSchemaPipe } from './pipes/parse-schema.pipe.js';
 export { ValidObjectIdPipe } from './pipes/valid-object-id.pipe.js';
 export { $BaseEnv } from './schemas/env.schema.js';
 export type { BaseEnv } from './schemas/env.schema.js';
+export { $MongoEnv } from './schemas/mongo-env.schema.js';
 export type { BaseEnvSchema } from './utils/env.utils.js';

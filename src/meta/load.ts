@@ -80,7 +80,7 @@ export function loadAppContainer(
       if (!(appContainer instanceof AbstractAppContainer)) {
         return RuntimeException.asAsyncErr('Default export from entry module is not an AppContainer');
       }
-      return ok(appContainer as AbstractAppContainer);
+      return ok(appContainer);
     });
 }
 

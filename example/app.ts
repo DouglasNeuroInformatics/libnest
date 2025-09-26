@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 
 import { $BaseEnv, AppFactory } from '../src/index.js';
+import { PrismaModule } from '../src/modules/prisma/prisma.module.js';
 import { CatsModule } from './cats/cats.module.js';
 
 export default AppFactory.create({
@@ -9,13 +10,28 @@ export default AppFactory.create({
     title: 'Example API'
   },
   envSchema: $BaseEnv,
-  imports: [CatsModule],
-  prisma: {
-    client: {
-      constructor: PrismaClient
-    },
-    dbPrefix: 'libnest-example',
-    useInMemoryDbForTesting: true
-  },
+  imports: [
+    CatsModule,
+    PrismaModule.forRootAsync({
+      inject: ['MONGO_CONNECTION'],
+      provideInjectionTokensFrom: [
+        {
+          provide: 'MONGO_CONNECTION',
+          useFactory: async (): Promise<string> => {
+            const { MongoMemoryReplSet } = await import('mongodb-memory-server');
+            const replSet = await MongoMemoryReplSet.create({ replSet: { count: 1, name: 'rs0' } });
+            return new URL(replSet.getUri('test')).href;
+          }
+        }
+      ],
+      useFactory: (mongoConnection: string) => {
+        return {
+          client: new PrismaClient({
+            datasourceUrl: mongoConnection
+          })
+        };
+      }
+    })
+  ],
   version: null
 });

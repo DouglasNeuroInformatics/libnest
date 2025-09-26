@@ -33,10 +33,7 @@ const plugin = ({
         target: 'esnext',
         transform: {
           decoratorMetadata: true,
-          legacyDecorator: true,
-          react: {
-            runtime: 'automatic'
-          }
+          legacyDecorator: true
         }
       },
       minify: false,

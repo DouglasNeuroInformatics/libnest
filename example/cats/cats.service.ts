@@ -1,15 +1,15 @@
 /* eslint-disable perfectionist/sort-objects */
 
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import type { PrismaClient } from '@prisma/client';
 
 import { InjectPrismaClient } from '../../src/index.js';
 
-import type { PrismaClientLike } from '../../src/index.js';
 import type { $Cat } from './schemas/cat.schema.js';
 
 @Injectable()
 export class CatsService {
-  constructor(@InjectPrismaClient() private readonly prismaClient: PrismaClientLike) {}
+  constructor(@InjectPrismaClient() private readonly prismaClient: PrismaClient) {}
 
   async create(cat: Omit<$Cat, '_id'>): Promise<$Cat> {
     const id = crypto.randomUUID();

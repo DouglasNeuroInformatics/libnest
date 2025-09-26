@@ -5,7 +5,7 @@ import type { ConditionalKeys } from 'type-fest';
 import { defineToken } from '../utils/token.utils.js';
 
 import type { AppVersion, DocsConfig } from '../docs/docs.factory.js';
-import type { BaseEnv } from '../schemas/env.schema.js';
+import type { UserTypes } from '../user-config.js';
 import type { AppModule } from './app.module.js';
 
 export type DynamicAppModule = DynamicModule & {
@@ -14,25 +14,25 @@ export type DynamicAppModule = DynamicModule & {
 
 export type ImportedModule = DynamicModule | Type<any>;
 
-export type ConditionalImport<TEnv extends BaseEnv = BaseEnv> = {
+export type ConditionalImport = {
   module: ImportedModule;
-  when: ConditionalKeys<TEnv, boolean | undefined>;
+  when: ConditionalKeys<UserTypes.Env, boolean | undefined>;
 };
 
-export type AppContainerParams<TEnv extends BaseEnv = BaseEnv> = {
+export type AppContainerParams = {
   docs?: Omit<DocsConfig, 'version'>;
-  envConfig: TEnv;
+  envConfig: UserTypes.Env;
   module: DynamicAppModule;
   version: AppVersion | null;
 };
 
-export abstract class AbstractAppContainer<TEnv extends BaseEnv = BaseEnv> implements AppContainerParams<TEnv> {
+export abstract class AbstractAppContainer implements AppContainerParams {
   readonly docs?: Omit<DocsConfig, 'version'>;
-  readonly envConfig: TEnv;
+  readonly envConfig: UserTypes.Env;
   readonly module: DynamicAppModule;
   readonly version: AppVersion | null;
 
-  constructor(params: AppContainerParams<TEnv>) {
+  constructor(params: AppContainerParams) {
     Object.assign(this, params);
   }
 

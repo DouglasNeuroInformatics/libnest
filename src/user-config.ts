@@ -1,8 +1,5 @@
 import type { Jsonifiable, Promisable } from 'type-fest';
 
-import type { AppContainer } from './app/app.container.js';
-import type { DefaultPrismaClientOptions } from './modules/prisma/prisma.config.js';
-import type { LibnestExtendedPrismaClient } from './modules/prisma/prisma.extensions.js';
 import type { BaseEnv } from './schemas/env.schema.js';
 
 /**
@@ -39,24 +36,12 @@ export function defineUserConfig<T extends UserConfigOptions>(config: T): T {
   return config;
 }
 
-export type InferUserConfig<T extends UserConfigOptions> = T extends {
-  entry: () => Promise<{
-    default: AppContainer<
-      infer TEnv extends BaseEnv,
-      infer TPrismaClientOptions extends DefaultPrismaClientOptions,
-      infer TExtendedPrismaClient extends LibnestExtendedPrismaClient
-    >;
-  }>;
-}
-  ? {
-      RuntimeEnv: TEnv;
-      RuntimePrismaClient: TExtendedPrismaClient;
-      RuntimePrismaClientOptions: TPrismaClientOptions;
-    }
-  : never;
-
 export interface UserConfig {}
 
 export namespace UserTypes {
+  export interface Env extends BaseEnv {}
   export interface Locales {}
+  export interface PrismaClient {
+    [key: string]: any;
+  }
 }
