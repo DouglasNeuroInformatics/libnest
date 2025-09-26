@@ -1,9 +1,6 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
-
 import { PrismaClient } from '@prisma/client';
-import { z } from 'zod/v4';
 
-import { $BaseEnv, AppFactory, AuthModule, CryptoService } from '../src/index.js';
+import { $BaseEnv, AppFactory } from '../src/index.js';
 import { CatsModule } from './cats/cats.module.js';
 
 export default AppFactory.create({
@@ -12,39 +9,7 @@ export default AppFactory.create({
     title: 'Example API'
   },
   envSchema: $BaseEnv,
-  imports: [
-    AuthModule.forRootAsync({
-      inject: [CryptoService],
-      useFactory: (cryptoService: CryptoService) => {
-        return {
-          defineAbility: (ability, payload) => {
-            // We cannot correctly declare UserTypes here until we migrate to a monorepo setup
-            if ((payload as { isAdmin: true }).isAdmin) {
-              ability.can('manage', 'all');
-            }
-          },
-          schemas: {
-            loginCredentials: z.object({
-              password: z.string().min(1),
-              username: z.string().min(1)
-            })
-          },
-          userQuery: async ({ username }) => {
-            if (username !== 'admin') {
-              return null;
-            }
-            return {
-              hashedPassword: await cryptoService.hashPassword('password'),
-              tokenPayload: {
-                isAdmin: true
-              }
-            };
-          }
-        };
-      }
-    }),
-    CatsModule
-  ],
+  imports: [CatsModule],
   prisma: {
     client: {
       constructor: PrismaClient

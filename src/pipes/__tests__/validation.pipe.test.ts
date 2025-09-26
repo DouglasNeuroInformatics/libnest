@@ -3,7 +3,6 @@ import { describe, expect, it } from 'vitest';
 import { z } from 'zod/v4';
 
 import { ValidationSchema } from '../../decorators/validation-schema.decorator.js';
-import { DataTransferObject } from '../../mixins/data-transfer-object.mixin.js';
 import { applyValidationSchema } from '../../utils/validation.utils.js';
 import { ValidationPipe } from '../validation.pipe.js';
 
@@ -65,12 +64,5 @@ describe('ValidationPipe', () => {
         isTest: true
       }
     );
-  });
-
-  it('should return the output data from a mixin', async () => {
-    const metatype = DataTransferObject({ isTest: z.literal('true').transform((arg) => JSON.parse(arg) as boolean) });
-    await expect(validationPipe.transform({ isTest: 'true' }, { metatype, type: 'body' })).resolves.toStrictEqual({
-      isTest: true
-    });
   });
 });
