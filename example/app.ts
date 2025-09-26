@@ -4,11 +4,9 @@ import { PrismaClient } from '@prisma/client';
 import { z } from 'zod/v4';
 
 import { $BaseEnv, AppFactory, AuthModule, CryptoService } from '../src/index.js';
-import { AppController } from './app.controller.js';
 import { CatsModule } from './cats/cats.module.js';
 
 export default AppFactory.create({
-  controllers: [AppController],
   docs: {
     path: '/docs',
     title: 'Example API'
@@ -47,12 +45,6 @@ export default AppFactory.create({
     }),
     CatsModule
   ],
-  jsx: {
-    baseDir: import.meta.dirname,
-    importMap: {
-      index: () => import('./pages/index.js')
-    }
-  },
   prisma: {
     client: {
       constructor: PrismaClient

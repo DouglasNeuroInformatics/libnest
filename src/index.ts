@@ -3,7 +3,6 @@
 export type { ConditionalImport, ImportedModule } from './app/app.base.js';
 export { AppFactory } from './app/app.factory.js';
 export { CurrentUser } from './decorators/current-user.decorator.js';
-export { RenderComponent } from './decorators/render-component.decorator.js';
 export { RouteAccess } from './decorators/route-access.decorator.js';
 export type {
   ProtectedRouteAccess,
