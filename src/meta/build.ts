@@ -47,7 +47,6 @@ export function buildProd({
       logVerbose(`Set global variables: ${JSON.stringify(define)}`);
       logVerbose('Invoking esbuild to bundle application....');
       await esbuild.build({
-        ...config.build.esbuildOptions,
         banner: {
           js: "Object.defineProperties(globalThis, { __dirname: { value: import.meta.dirname, writable: false }, __filename: { value: import.meta.filename, writable: false }, require: { value: (await import('module')).createRequire(import.meta.url), writable: false } });"
         },

@@ -1,4 +1,3 @@
-import type { BuildOptions } from 'esbuild';
 import type { Jsonifiable, Promisable } from 'type-fest';
 
 import type { AppContainer } from './app/app.container.js';
@@ -13,14 +12,6 @@ import type { BaseEnv } from './schemas/env.schema.js';
 export type UserConfigOptions = {
   /** Configuration options for the production build */
   build: {
-    /** Additional options to pass to esbuild */
-    esbuildOptions?: Pick<BuildOptions, 'footer'>;
-    /**
-     * The type of bundle to generate. If set to `module`, the bundle will be a module with
-     * the AppContainer as the default export. If set to standalone, running the bundle will
-     * launch the production server.
-     * @default 'server'
-     */
     mode?: 'module' | 'server';
     /** A callback function to invoke when the build is complete */
     onComplete?: () => Promisable<void>;
