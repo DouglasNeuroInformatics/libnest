@@ -1,5 +1,6 @@
 import { NestFactory } from '@nestjs/core';
-import type { NestExpressApplication } from '@nestjs/platform-express';
+import { FastifyAdapter } from '@nestjs/platform-fastify';
+import type { NestFastifyApplication } from '@nestjs/platform-fastify';
 
 import { JSONLogger } from '../modules/logging/json.logger.js';
 import { AbstractAppContainer } from './app.base.js';
@@ -24,10 +25,12 @@ export class AppContainer extends AbstractAppContainer {
     logger.log(`Application is running on: ${url}`);
   }
 
-  async createApplicationInstance(): Promise<NestExpressApplication> {
-    const app = await NestFactory.create<NestExpressApplication>(this.module, {
-      bufferLogs: true
-    });
+  async createApplicationInstance(): Promise<NestFastifyApplication> {
+    const app = await NestFactory.create<NestFastifyApplication>(
+      this.module,
+      new FastifyAdapter({ bodyLimit: 1024 * 1024 * 50 }),
+      { bufferLogs: true }
+    );
     return configureApp(app, {
       docs: this.docs,
       version: this.version

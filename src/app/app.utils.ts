@@ -1,18 +1,17 @@
 import { VersioningType } from '@nestjs/common';
-import type { NestExpressApplication } from '@nestjs/platform-express';
-import { json } from 'express';
+import type { NestFastifyApplication } from '@nestjs/platform-fastify';
 
 import { DocsFactory } from '../docs/docs.factory.js';
 
 import type { AppVersion, DocsConfig } from '../docs/docs.factory.js';
 
 export async function configureApp(
-  app: NestExpressApplication,
+  app: NestFastifyApplication,
   options: {
     docs?: Omit<DocsConfig, 'version'>;
     version?: AppVersion | null;
   } = {}
-): Promise<NestExpressApplication> {
+): Promise<NestFastifyApplication> {
   if (options.docs) {
     await DocsFactory.configureDocs(app, { ...options.docs, version: options.version });
   }
@@ -25,7 +24,6 @@ export async function configureApp(
       type: VersioningType.URI
     });
   }
-  app.use(json({ limit: '50MB' }));
 
   return app;
 }

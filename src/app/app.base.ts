@@ -1,5 +1,5 @@
 import type { DynamicModule, Type } from '@nestjs/common';
-import type { NestExpressApplication } from '@nestjs/platform-express';
+import type { NestFastifyApplication } from '@nestjs/platform-fastify';
 import type { ConditionalKeys } from 'type-fest';
 
 import { defineToken } from '../utils/token.utils.js';
@@ -38,7 +38,7 @@ export abstract class AbstractAppContainer implements AppContainerParams {
 
   abstract bootstrap(): Promise<void>;
 
-  abstract createApplicationInstance(): Promise<NestExpressApplication>;
+  abstract createApplicationInstance(): Promise<NestFastifyApplication>;
 }
 
 export const { CONFIGURE_USER_MIDDLEWARE_TOKEN } = defineToken('CONFIGURE_USER_MIDDLEWARE_TOKEN');
