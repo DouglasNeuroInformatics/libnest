@@ -1,4 +1,4 @@
-import type { Jsonifiable, Promisable } from 'type-fest';
+import type { ConditionalKeys, IfEmptyObject, Jsonifiable, Promisable } from 'type-fest';
 
 import type { BaseEnv } from './schemas/env.schema.js';
 
@@ -44,4 +44,9 @@ export namespace UserTypes {
   export interface PrismaClient {
     [key: string]: any;
   }
+  export interface RequestUser {
+    [key: string]: unknown;
+  }
+
+  export type Locale = IfEmptyObject<Locales, string, ConditionalKeys<Locales, true>>;
 }
