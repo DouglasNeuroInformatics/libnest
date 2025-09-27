@@ -53,6 +53,8 @@ export function buildProd({
         bundle: true,
         define,
         external: [
+          '@fastify/static',
+          '@fastify/view',
           '@nestjs/microservices',
           '@nestjs/websockets/socket-module',
           'class-transformer',
