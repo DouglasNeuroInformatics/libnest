@@ -1,10 +1,14 @@
 import { PrismaClient } from '@prisma/client';
 
-import { $BaseEnv, AppFactory } from '../src/index.js';
+import { $BaseEnv, acceptLanguage, AppFactory } from '../src/index.js';
 import { PrismaModule } from '../src/modules/prisma/prisma.module.js';
 import { CatsModule } from './cats/cats.module.js';
 
 export default AppFactory.create({
+  configureMiddleware: (consumer) => {
+    const middleware = acceptLanguage({ fallbackLanguage: 'en', supportedLanguages: ['en', 'fr'] });
+    consumer.apply(middleware).forRoutes('*');
+  },
   docs: {
     path: '/docs',
     title: 'Example API'
