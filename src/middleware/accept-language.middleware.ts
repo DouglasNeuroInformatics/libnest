@@ -21,7 +21,7 @@ export function acceptLanguage(options: {
       const quality = isNumberLike(parts[1]) ? parseNumber(parts[1]) : 1;
       if (quality > bestQuality) {
         bestQuality = quality;
-        locale = lang;
+        locale = parts[0]!;
       }
     });
 
