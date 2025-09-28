@@ -1,16 +1,32 @@
-import type { NextFunction, Request, Response } from 'express';
+import { isNumberLike, parseNumber } from '@douglasneuroinformatics/libjs';
+import type { FastifyReply, FastifyRequest } from 'fastify';
 
-import type { Locale } from '../user-types.js';
+import type { UserTypes } from '../user-config.js';
 
-export function acceptLanguage({
-  fallbackLanguage,
-  supportedLanguages
-}: {
-  fallbackLanguage: Locale;
-  supportedLanguages: Locale[];
+export function acceptLanguage(options: {
+  fallbackLanguage: UserTypes.Locale;
+  supportedLanguages: UserTypes.Locale[];
 }) {
-  return (req: Request, _res: Response, next: NextFunction): void => {
-    req.locale = req.acceptsLanguages(supportedLanguages) || fallbackLanguage;
+  const { fallbackLanguage, supportedLanguages } = options;
+  return (req: FastifyRequest['raw'] & { locale?: UserTypes.Locale }, _res: FastifyReply, next: () => void): void => {
+    const header = req.headers['accept-language'];
+
+    let locale: UserTypes.Locale = fallbackLanguage;
+    let bestQuality = -1;
+    header?.split(',').forEach((lang) => {
+      const parts = lang.trim().split(';q=');
+      if (!supportedLanguages.includes(parts[0]!)) {
+        return;
+      }
+      const quality = isNumberLike(parts[1]) ? parseNumber(parts[1]) : 1;
+      if (quality > bestQuality) {
+        bestQuality = quality;
+        locale = lang;
+      }
+    });
+
+    req.locale = locale;
+
     next();
   };
 }
