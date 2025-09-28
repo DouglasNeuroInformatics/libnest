@@ -30,6 +30,7 @@ export { VirtualizationService } from './modules/virtualization/virtualization.s
 export { ParseSchemaPipe } from './pipes/parse-schema.pipe.js';
 export { UUIDPipe } from './pipes/uuid.pipe.js';
 export { ValidObjectIdPipe } from './pipes/valid-object-id.pipe.js';
+export { ValidationPipe } from './pipes/validation.pipe.js';
 export { $BaseEnv } from './schemas/env.schema.js';
 export type { BaseEnv } from './schemas/env.schema.js';
 export { $MongoEnv } from './schemas/mongo-env.schema.js';
