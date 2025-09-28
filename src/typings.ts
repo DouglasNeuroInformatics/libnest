@@ -11,7 +11,6 @@ declare global {
 
 declare module 'fastify' {
   interface FastifyRequest {
-    locale?: UserTypes.Locale;
     user?: UserTypes.RequestUser;
   }
 }
