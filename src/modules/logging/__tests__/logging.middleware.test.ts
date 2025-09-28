@@ -1,4 +1,4 @@
-import type { NextFunction, Request, Response } from 'express';
+import type { FastifyReply, FastifyRequest } from 'fastify';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Mock } from 'vitest';
 
@@ -21,9 +21,9 @@ vi.mock('../json.logger.ts', () => ({ JSONLogger }));
 describe('LoggingMiddleware', () => {
   let loggingMiddleware: LoggingMiddleware;
 
-  let request: Partial<{ [K in keyof Request]: Mock }>;
-  let response: Partial<{ [K in keyof Response]: Mock } & { statusCode: any }>;
-  let next: NextFunction;
+  let request: Partial<{ [K in keyof FastifyRequest['raw']]: Mock }>;
+  let response: Partial<{ [K in keyof FastifyReply['raw']]: Mock } & { statusCode: any }>;
+  let next: () => void;
 
   beforeEach(() => {
     loggingMiddleware = new LoggingMiddleware({});

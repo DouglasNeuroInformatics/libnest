@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import type { NestMiddleware } from '@nestjs/common';
-import type { NextFunction, Request, Response } from 'express';
+import type { FastifyReply, FastifyRequest } from 'fastify';
 
 import { JSONLogger } from './json.logger.js';
 import { LOGGING_MODULE_OPTIONS_TOKEN } from './logging.config.js';
@@ -15,7 +15,7 @@ export class LoggingMiddleware implements NestMiddleware {
     this.logger = new JSONLogger('HTTP', options);
   }
 
-  use(req: Request, res: Response, next: NextFunction): void {
+  use(req: FastifyRequest['raw'], res: FastifyReply['raw'], next: () => void): void {
     const start = Date.now();
     res.on('finish', () => {
       const end = Date.now();
@@ -23,7 +23,7 @@ export class LoggingMiddleware implements NestMiddleware {
         duration: `${end - start}ms`,
         request: {
           method: req.method,
-          path: req.path
+          path: req.url
         },
         response: {
           statusCode: res.statusCode,
