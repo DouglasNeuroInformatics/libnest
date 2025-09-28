@@ -50,3 +50,5 @@ export namespace UserTypes {
 
   export type Locale = IfEmptyObject<Locales, string, ConditionalKeys<Locales, true>>;
 }
+
+export type RequestUser = UserTypes.RequestUser;

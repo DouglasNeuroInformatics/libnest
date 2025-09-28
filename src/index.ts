@@ -34,4 +34,5 @@ export { ValidationPipe } from './pipes/validation.pipe.js';
 export { $BaseEnv } from './schemas/env.schema.js';
 export type { BaseEnv } from './schemas/env.schema.js';
 export { $MongoEnv } from './schemas/mongo-env.schema.js';
+export type { RequestUser } from './user-config.js';
 export type { BaseEnvSchema } from './utils/env.utils.js';
