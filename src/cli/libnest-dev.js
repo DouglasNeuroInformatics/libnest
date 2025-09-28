@@ -23,7 +23,6 @@ program.action(async function () {
   if (!configFile) {
     return program.error(`error: environment variable 'LIBNEST_CONFIG_FILEPATH' must be defined`);
   }
-  globalThis.__LIBNEST_STATIC = { configFile };
   await runDev(configFile).mapErr((error) => {
     program.error(error.toString(), { code: 'LIBNEST_DEV_ERROR', exitCode: 1 });
   });

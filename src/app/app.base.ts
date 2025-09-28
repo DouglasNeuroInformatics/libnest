@@ -42,5 +42,3 @@ export abstract class AbstractAppContainer implements AppContainerParams {
 }
 
 export const { CONFIGURE_USER_MIDDLEWARE_TOKEN } = defineToken('CONFIGURE_USER_MIDDLEWARE_TOKEN');
-
-export const { LIBNEST_STATIC_TOKEN } = defineToken('LIBNEST_STATIC_TOKEN');
