@@ -12,7 +12,7 @@ export type { CryptoOptions } from './modules/crypto/crypto.config.js';
 export { CryptoModule } from './modules/crypto/crypto.module.js';
 export { CryptoService } from './modules/crypto/crypto.service.js';
 export type { LoggingOptions } from './modules/logging/logging.config.js';
-export {} from './modules/logging/logging.module.js';
+export { LoggingModule } from './modules/logging/logging.module.js';
 export { LoggingService } from './modules/logging/logging.service.js';
 export type { MailModuleOptions } from './modules/mail/mail.config.js';
 export { MailModule } from './modules/mail/mail.module.js';
