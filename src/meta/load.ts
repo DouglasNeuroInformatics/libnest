@@ -16,6 +16,7 @@ const $EntryFunction = z.custom<(...args: any[]) => any>((arg) => typeof arg ===
 
 const $UserConfigOptions: z.ZodType<UserConfigOptions> = z.object({
   build: z.object({
+    bundle: z.boolean().optional(),
     esbuildOptions: z.record(z.string(), z.any()).optional(),
     mode: z.enum(['module', 'server']).optional(),
     onComplete: z.custom<(...args: any[]) => any>((data) => typeof data === 'function', 'must be function').optional(),

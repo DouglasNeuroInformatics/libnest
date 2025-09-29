@@ -8,6 +8,7 @@ import type { BaseEnv } from './schemas/env.schema.js';
 export type UserConfigOptions = {
   /** Configuration options for the production build */
   build: {
+    bundle?: boolean;
     mode?: 'module' | 'server';
     /** A callback function to invoke when the build is complete */
     onComplete?: () => Promisable<void>;
