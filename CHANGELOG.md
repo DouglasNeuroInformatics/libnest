@@ -1,5 +1,15 @@
 # Changelog
 
+## [8.0.0](https://github.com/DouglasNeuroInformatics/libnest/compare/v7.5.0...v8.0.0) (2025-10-15)
+
+### ⚠ BREAKING CHANGES
+
+* See PR for release
+
+### Miscellaneous Chores
+
+* release v8.0.0 ([e73a28c](https://github.com/DouglasNeuroInformatics/libnest/commit/e73a28ca2eb0b922a4cb8d2b586777548e436087))
+
 ## [7.5.0](https://github.com/DouglasNeuroInformatics/libnest/compare/v7.4.0...v7.5.0) (2025-10-15)
 
 ### Features
