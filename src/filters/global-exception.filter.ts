@@ -2,8 +2,8 @@ import { isObject } from '@douglasneuroinformatics/libjs';
 import { Catch, HttpException, HttpStatus } from '@nestjs/common';
 import type { ArgumentsHost, ExceptionFilter } from '@nestjs/common';
 import { HttpAdapterHost } from '@nestjs/core';
-import type { ExpressAdapter } from '@nestjs/platform-express';
-import type { Response } from 'express';
+import type { FastifyAdapter } from '@nestjs/platform-fastify';
+import type { FastifyReply } from 'fastify';
 
 import { LoggingService } from '../modules/logging/logging.service.js';
 
@@ -16,15 +16,13 @@ export type ExceptionResponseBody = {
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
   constructor(
-    private readonly httpAdapterHost: HttpAdapterHost<ExpressAdapter>,
+    private readonly httpAdapterHost: HttpAdapterHost<FastifyAdapter>,
     private readonly loggingService: LoggingService
   ) {}
 
   catch(exception: unknown, argumentsHost: ArgumentsHost): void {
-    const { httpAdapter } = this.httpAdapterHost;
-
     const ctx = argumentsHost.switchToHttp();
-    const res = ctx.getResponse<Response>();
+    const res = ctx.getResponse<FastifyReply['raw']>();
 
     const [body, statusCode] = this.parseException(exception);
 
@@ -32,7 +30,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       this.loggingService.error(exception);
     }
 
-    httpAdapter.reply(res, body, statusCode);
+    this.httpAdapterHost.httpAdapter.reply(res, body, statusCode);
   }
 
   private parseException(exception: unknown): [ExceptionResponseBody, number] {

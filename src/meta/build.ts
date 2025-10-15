@@ -6,6 +6,7 @@ import { fromAsyncThrowable, ok, ResultAsync } from 'neverthrow';
 import { loadUserConfig } from './load.js';
 import { parseEntryFromFunction } from './parse.js';
 import { docsPlugin } from './plugins/docs.js';
+import { externalPlugin } from './plugins/external.js';
 import { prismaPlugin } from './plugins/prisma.js';
 import { swcPlugin } from './plugins/swc.js';
 
@@ -38,7 +39,6 @@ export function buildProd({
       logVerbose('Successfully imported esbuild');
       logVerbose('Defining global variables...');
       const define: { [key: string]: string } = {
-        __LIBNEST_STATIC: JSON.stringify({}),
         'process.env.NODE_ENV': "'production'"
       };
       for (const key in config.globals) {
@@ -46,14 +46,20 @@ export function buildProd({
       }
       logVerbose(`Set global variables: ${JSON.stringify(define)}`);
       logVerbose('Invoking esbuild to bundle application....');
+      const plugins = [docsPlugin(), prismaPlugin(), swcPlugin()];
+      if (config.build.bundle === false) {
+        plugins.push(externalPlugin());
+      }
+
       await esbuild.build({
-        ...config.build.esbuildOptions,
         banner: {
           js: "Object.defineProperties(globalThis, { __dirname: { value: import.meta.dirname, writable: false }, __filename: { value: import.meta.filename, writable: false }, require: { value: (await import('module')).createRequire(import.meta.url), writable: false } });"
         },
         bundle: true,
         define,
         external: [
+          '@fastify/static',
+          '@fastify/view',
           '@nestjs/microservices',
           '@nestjs/websockets/socket-module',
           'class-transformer',
@@ -67,7 +73,7 @@ export function buildProd({
         },
         outfile: config.build.outfile,
         platform: 'node',
-        plugins: [docsPlugin(), prismaPlugin(), swcPlugin()],
+        plugins,
         sourcemap: true,
         stdin: {
           contents: [

@@ -1,10 +1,5 @@
-import type { BuildOptions } from 'esbuild';
-import type { Jsonifiable, Promisable } from 'type-fest';
+import type { ConditionalKeys, IfEmptyObject, Jsonifiable, Promisable } from 'type-fest';
 
-import type { AppContainer } from './app/app.container.js';
-import type { Permission } from './modules/auth/auth.config.js';
-import type { DefaultPrismaClientOptions } from './modules/prisma/prisma.config.js';
-import type { LibnestExtendedPrismaClient } from './modules/prisma/prisma.extensions.js';
 import type { BaseEnv } from './schemas/env.schema.js';
 
 /**
@@ -13,14 +8,7 @@ import type { BaseEnv } from './schemas/env.schema.js';
 export type UserConfigOptions = {
   /** Configuration options for the production build */
   build: {
-    /** Additional options to pass to esbuild */
-    esbuildOptions?: Pick<BuildOptions, 'footer'>;
-    /**
-     * The type of bundle to generate. If set to `module`, the bundle will be a module with
-     * the AppContainer as the default export. If set to standalone, running the bundle will
-     * launch the production server.
-     * @default 'server'
-     */
+    bundle?: boolean;
     mode?: 'module' | 'server';
     /** A callback function to invoke when the build is complete */
     onComplete?: () => Promisable<void>;
@@ -49,28 +37,19 @@ export function defineUserConfig<T extends UserConfigOptions>(config: T): T {
   return config;
 }
 
-export type InferUserConfig<T extends UserConfigOptions> = T extends {
-  entry: () => Promise<{
-    default: AppContainer<
-      infer TEnv extends BaseEnv,
-      infer TPrismaClientOptions extends DefaultPrismaClientOptions,
-      infer TExtendedPrismaClient extends LibnestExtendedPrismaClient
-    >;
-  }>;
-}
-  ? {
-      RuntimeEnv: TEnv;
-      RuntimePrismaClient: TExtendedPrismaClient;
-      RuntimePrismaClientOptions: TPrismaClientOptions;
-    }
-  : never;
-
 export interface UserConfig {}
 
 export namespace UserTypes {
+  export interface Env extends BaseEnv {}
   export interface Locales {}
-  export interface JwtPayload {
-    permissions: Permission[];
+  export interface PrismaClient {
+    [key: string]: any;
   }
-  export interface UserQueryMetadata {}
+  export interface RequestUser {
+    [key: string]: unknown;
+  }
+
+  export type Locale = IfEmptyObject<Locales, string, ConditionalKeys<Locales, true>>;
 }
+
+export type RequestUser = UserTypes.RequestUser;

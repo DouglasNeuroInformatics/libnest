@@ -1,10 +1,8 @@
-import type { JSX } from 'react';
-
 import { ConfigurableModuleBuilder } from '@nestjs/common';
 
 export type SendMailOptions = {
   body: {
-    jsx?: JSX.Element;
+    html?: string;
     text: string;
   };
   from?: string;

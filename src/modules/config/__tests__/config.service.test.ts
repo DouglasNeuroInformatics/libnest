@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 
 import { ConfigService } from '../config.service.js';
 
-import type { RuntimeEnv } from '../../../user-types.js';
+import type { UserTypes } from '../../../user-config.js';
 
 describe('ConfigService', () => {
   let configService: ConfigService;
@@ -10,7 +10,7 @@ describe('ConfigService', () => {
   beforeEach(() => {
     configService = new ConfigService({
       THROTTLER_ENABLED: true
-    } as RuntimeEnv);
+    } as UserTypes.Env);
   });
 
   describe('get', () => {

@@ -2,7 +2,7 @@ import * as module from 'node:module';
 import * as path from 'node:path';
 import * as process from 'node:process';
 
-import { Command, InvalidArgumentError, Option } from 'commander';
+import { Command, InvalidArgumentError } from 'commander';
 
 // no longer necessary once the package is built
 if (import.meta.dirname.endsWith('src/cli')) {
@@ -40,10 +40,6 @@ program.option('-e, --env-file <paths...>', 'path to env file(s) to source', (fi
   return (previous ?? []).concat(parseResult(resolveAbsolutePath(filename, process.cwd())));
 });
 
-program.addOption(
-  new Option('-r, --runtime [command]', 'the runtime to use').choices(['bun', 'deno', 'node']).default('node')
-);
-
 program.command('build', 'build application for production', {
   executableFile: path.resolve(import.meta.dirname, 'bin/libnest-build')
 });
@@ -56,7 +52,6 @@ program.hook('preSubcommand', (command) => {
     process.loadEnvFile(envFile);
   });
   process.env.LIBNEST_CONFIG_FILEPATH = command.getOptionValue('configFile');
-  process.env.LIBNEST_JAVASCRIPT_RUNTIME = command.getOptionValue('runtime');
 });
 
 await program.parseAsync(process.argv);

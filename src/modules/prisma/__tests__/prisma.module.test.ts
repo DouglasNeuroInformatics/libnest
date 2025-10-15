@@ -1,55 +1,59 @@
-import { Test } from '@nestjs/testing';
-import type { TestingModule } from '@nestjs/testing';
-import { PrismaClient } from '@prisma/client';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
-import { mockEnvConfig } from '../../../testing/mocks/env-config.mock.js';
-import { ConfigModule } from '../../config/config.module.js';
-import { LoggingModule } from '../../logging/logging.module.js';
-import { MONGO_CONNECTION_TOKEN, PRISMA_CLIENT_TOKEN } from '../prisma.config.js';
+import { ConfigurablePrismaModule, PRISMA_CLIENT_TOKEN } from '../prisma.config.js';
 import { PrismaModule } from '../prisma.module.js';
 
-import type { MockPrismaClientInstance } from '../../../testing/mocks/prisma.client.mock.js';
-import type { MongoConnection } from '../connection.factory.js';
-
 describe('PrismaModule', () => {
-  describe('forRoot', () => {
-    let prismaClient: MockPrismaClientInstance;
-    let mongoConnection: MongoConnection;
+  it('should be defined', () => {
+    expect(PrismaModule).toBeDefined();
+  });
 
-    beforeEach(async () => {
-      const module: TestingModule = await Test.createTestingModule({
-        imports: [
-          ConfigModule.forRoot({
-            envConfig: {
-              ...mockEnvConfig,
-              MONGO_DIRECT_CONNECTION: true,
-              MONGO_REPLICA_SET: 'rs0',
-              MONGO_RETRY_WRITES: true,
-              MONGO_WRITE_CONCERN: 'majority'
-            }
-          }),
-          LoggingModule,
-          PrismaModule.forRoot({
-            client: {
-              constructor: PrismaClient
-            },
-            dbPrefix: 'example'
-          })
-        ]
-      }).compile();
-      prismaClient = module.get(PRISMA_CLIENT_TOKEN);
-      mongoConnection = module.get(MONGO_CONNECTION_TOKEN);
-    });
+  it('should extend ConfigurablePrismaModule', () => {
+    expect(PrismaModule.prototype).toBeInstanceOf(ConfigurablePrismaModule);
+  });
 
-    it('should provide the correct PrismaClient', () => {
-      expect(prismaClient.__isMockPrismaClient).toBe(true);
-    });
+  it('should have Global decorator applied', () => {
+    const metadata = Reflect.getMetadata('__module:global__', PrismaModule);
+    expect(metadata).toBe(true);
+  });
 
-    it('should generate the correct url', () => {
-      expect(mongoConnection.url.href).toBe(
-        `${mockEnvConfig.MONGO_URI.href}/example-test?directConnection=true&replicaSet=rs0&retryWrites=true&w=majority`
-      );
-    });
+  it('should export PRISMA_CLIENT_TOKEN', () => {
+    const exports = Reflect.getMetadata('exports', PrismaModule);
+    expect(exports).toBeDefined();
+    expect(exports).toContain(PRISMA_CLIENT_TOKEN);
+  });
+
+  it('should have model token exports', () => {
+    const exports = Reflect.getMetadata('exports', PrismaModule);
+    expect(exports).toBeDefined();
+    expect(exports.length).toBeGreaterThan(1); // Should have PRISMA_CLIENT_TOKEN + model tokens
+  });
+
+  it('should have providers for PRISMA_CLIENT_TOKEN and model tokens', () => {
+    const providers = Reflect.getMetadata('providers', PrismaModule);
+    expect(providers).toBeDefined();
+    expect(providers.length).toBeGreaterThan(0);
+  });
+
+  it('should provide model instances from the client', () => {
+    const providers = Reflect.getMetadata('providers', PrismaModule);
+    const modelProvider = providers.find((p: any) => p.provide === 'CatPrismaModel');
+    expect(modelProvider).toBeDefined();
+
+    const mockModel = { name: 'Cat' };
+    const mockClient = { cat: mockModel };
+    const result = modelProvider.useFactory(mockClient);
+    expect(result).toBe(mockModel);
+  });
+
+  it('should provide the prisma client from options', () => {
+    const providers = Reflect.getMetadata('providers', PrismaModule);
+    const clientProvider = providers.find((p: any) => p.provide === PRISMA_CLIENT_TOKEN);
+    expect(clientProvider).toBeDefined();
+
+    const mockClient = { cat: vi.fn() };
+    const options = { client: mockClient };
+    const result = clientProvider.useFactory(options);
+    expect(result).toBe(mockClient);
   });
 });

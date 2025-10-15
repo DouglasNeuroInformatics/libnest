@@ -8,7 +8,10 @@ import type { PrismaModelName } from '../prisma.types.js';
 const Inject = vi.hoisted(() => vi.fn(() => 'INJECTED'));
 const getModelToken = vi.hoisted(() => vi.fn((modelName: PrismaModelName) => `MockToken_${modelName}`));
 
-vi.mock('@nestjs/common', () => ({ Inject }));
+vi.mock('@nestjs/common', async (importOriginal) => {
+  const { ConfigurableModuleBuilder } = await importOriginal<typeof import('@nestjs/common')>();
+  return { ConfigurableModuleBuilder, Inject };
+});
 
 vi.mock('../prisma.utils.js', () => ({ getModelToken }));
 

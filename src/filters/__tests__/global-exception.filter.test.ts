@@ -1,7 +1,7 @@
 import type { ArgumentsHost } from '@nestjs/common';
 import { HttpException, HttpStatus, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import type { HttpAdapterHost } from '@nestjs/core';
-import type { ExpressAdapter } from '@nestjs/platform-express';
+import type { FastifyAdapter } from '@nestjs/platform-fastify';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Mock } from 'vitest';
 
@@ -16,8 +16,8 @@ describe('GlobalExceptionFilter', () => {
   let globalExceptionFilter: GlobalExceptionFilter;
 
   let argumentsHost: MockedInstance<ArgumentsHost>;
-  let httpAdapter: Partial<MockedInstance<ExpressAdapter>>;
-  let httpAdapterHost: MockedInstance<HttpAdapterHost<ExpressAdapter>>;
+  let httpAdapter: Partial<MockedInstance<FastifyAdapter>>;
+  let httpAdapterHost: MockedInstance<HttpAdapterHost<FastifyAdapter>>;
   let mockRequest: Mock;
   let mockResponse: Mock;
   let loggingService: MockedInstance<LoggingService>;

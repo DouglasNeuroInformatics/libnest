@@ -1,27 +1,12 @@
-import type { Prisma, PrismaClient } from '@prisma/client';
+import { ConfigurableModuleBuilder } from '@nestjs/common';
 
 import { defineToken } from '../../utils/token.utils.js';
 
-import type { LibnestExtendedPrismaClient } from './prisma.extensions.js';
-import type { InferExtendedClient } from './prisma.types.js';
-
-export type DefaultPrismaClientOptions = Omit<Prisma.PrismaClientOptions, 'datasources' | 'datasourceUrl' | 'log'>;
-
-export type PrismaModuleOptions<
-  TPrismaClientOptions extends DefaultPrismaClientOptions = DefaultPrismaClientOptions,
-  TExtendedPrismaClient extends LibnestExtendedPrismaClient = LibnestExtendedPrismaClient
-> = {
-  client: {
-    constructor: new (options?: Prisma.PrismaClientOptions) => PrismaClient;
-    extends?: (client: InferExtendedClient<NoInfer<TPrismaClientOptions>>) => TExtendedPrismaClient;
-    options?: TPrismaClientOptions;
-  };
-  dbPrefix: null | string;
-  useInMemoryDbForTesting?: boolean;
+export type PrismaModuleOptions = {
+  client: any;
 };
 
 export const { PRISMA_CLIENT_TOKEN } = defineToken('PRISMA_CLIENT_TOKEN');
 
-export const { PRISMA_MODULE_OPTIONS_TOKEN } = defineToken('PRISMA_MODULE_OPTIONS_TOKEN');
-
-export const { MONGO_CONNECTION_TOKEN } = defineToken('MONGO_CONNECTION_TOKEN');
+export const { ConfigurableModuleClass: ConfigurablePrismaModule, MODULE_OPTIONS_TOKEN: PRISMA_MODULE_OPTIONS_TOKEN } =
+  new ConfigurableModuleBuilder<PrismaModuleOptions>().setClassMethodName('forRoot').build();

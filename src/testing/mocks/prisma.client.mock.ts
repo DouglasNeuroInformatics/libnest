@@ -1,10 +1,9 @@
+import type { PrismaClient } from '@prisma/client';
 import { vi } from 'vitest';
 import type { Mock } from 'vitest';
 
 import { getModelKey } from '../../modules/prisma/prisma.utils.js';
 import { MockPrismaModel } from './prisma.model.mock.js';
-
-import type { PrismaClientLike } from '../../modules/prisma/prisma.types.js';
 
 type MockPrismaClientOptions = {
   modelNames: string[];
@@ -24,9 +23,7 @@ type MockPrismaClientConstructor = new <const TOptions extends MockPrismaClientO
   options: TOptions
 ) => MockPrismaClientInstance<TOptions>;
 
-export const MockPrismaClient = class<const TOptions extends MockPrismaClientOptions>
-  implements Partial<PrismaClientLike>
-{
+export const MockPrismaClient = class<const TOptions extends MockPrismaClientOptions> implements Partial<PrismaClient> {
   [key: PropertyKey]: any;
   $connect = vi.fn();
   $disconnect = vi.fn();

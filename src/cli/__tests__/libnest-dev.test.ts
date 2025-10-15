@@ -55,13 +55,6 @@ describe('libnest-dev', () => {
       })
     );
   });
-  it('should call module.register, if the runtime is node', async () => {
-    expect(register).not.toHaveBeenCalled();
-    vi.spyOn(process.env as any, 'LIBNEST_JAVASCRIPT_RUNTIME', 'get').mockReturnValue('node');
-    await exec(['--help']);
-    expect(register).toHaveBeenCalled();
-    vi.spyOn(process.env as any, 'LIBNEST_JAVASCRIPT_RUNTIME', 'get').mockReturnValue(undefined);
-  });
   it('should call the runDev function', async () => {
     const action = vi.spyOn(Command.prototype, 'action');
     await exec(['--help']);

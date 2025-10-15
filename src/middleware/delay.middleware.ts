@@ -1,4 +1,4 @@
-import type { NextFunction, Request, Response } from 'express';
+import type { FastifyReply, FastifyRequest } from 'fastify';
 
 /**
  * Middleware to introduce an arbitrary delay in the response, which can be useful for testing purposes.
@@ -7,7 +7,7 @@ import type { NextFunction, Request, Response } from 'express';
  * @returns An Express middleware function.
  */
 export function delay({ responseDelay }: { responseDelay: number }) {
-  return (_req: Request, _res: Response, next: NextFunction): void => {
+  return (_req: FastifyRequest, _res: FastifyReply, next: () => void): void => {
     setTimeout(() => {
       next();
     }, responseDelay);

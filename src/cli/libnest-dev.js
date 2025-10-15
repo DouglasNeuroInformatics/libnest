@@ -3,9 +3,7 @@ import * as process from 'node:process';
 
 import { Command } from 'commander';
 
-if (process.env.LIBNEST_JAVASCRIPT_RUNTIME === 'node') {
-  module.register('@swc-node/register/esm', import.meta.url);
-}
+module.register('@swc-node/register/esm', import.meta.url);
 
 const { runDev } = await import('../meta/dev.js');
 
@@ -25,7 +23,6 @@ program.action(async function () {
   if (!configFile) {
     return program.error(`error: environment variable 'LIBNEST_CONFIG_FILEPATH' must be defined`);
   }
-  globalThis.__LIBNEST_STATIC = { configFile };
   await runDev(configFile).mapErr((error) => {
     program.error(error.toString(), { code: 'LIBNEST_DEV_ERROR', exitCode: 1 });
   });

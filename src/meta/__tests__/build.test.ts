@@ -144,4 +144,22 @@ describe('buildProd', () => {
     expect(onComplete).toHaveBeenCalledOnce();
     vi.doUnmock('esbuild');
   });
+
+  it('should bundle with bundle:false to mark node_modules as external', { timeout: 10000 }, async () => {
+    const outfile = path.join(outdir, 'module-unbundled.js');
+    loadUserConfig.mockReturnValue(
+      okAsync({
+        build: {
+          bundle: false,
+          mode: 'module',
+          outfile
+        },
+        entry: vi.fn()
+      } satisfies UserConfigOptions)
+    );
+    parseEntryFromFunction.mockReturnValueOnce(ok('./example/app.js'));
+    const result = await buildProd({ configFile });
+    expect(result.isOk()).toBe(true);
+    expect(fs.existsSync(outfile)).toBe(true);
+  });
 });

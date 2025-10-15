@@ -33,10 +33,7 @@ const plugin = ({
         target: 'esnext',
         transform: {
           decoratorMetadata: true,
-          legacyDecorator: true,
-          react: {
-            runtime: 'automatic'
-          }
+          legacyDecorator: true
         }
       },
       minify: false,
@@ -76,7 +73,6 @@ const plugin = ({
         }
         return {
           define: {
-            __LIBNEST_STATIC: JSON.stringify({ configFile: configInfo.filepath } satisfies LibnestStatic),
             'process.env.LIBNEST_CONFIG_FILEPATH': `"${configInfo.filepath}"`
           }
         };

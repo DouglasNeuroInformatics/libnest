@@ -3,25 +3,4 @@
 DIR=$(cd "$(dirname "$0")" && pwd)
 PARENT_DIR="$(dirname "$DIR")"
 
-RUNTIME_ARGS=""
-case "$LIBNEST_JAVASCRIPT_RUNTIME" in
-  bun)
-    ;;
-  node)
-    RUNTIME_ARGS="--enable-source-maps"
-    ;;
-  deno)
-    RUNTIME_ARGS="-A --unstable-sloppy-imports"
-    ;;
-  *)
-    echo "Error: Invalid runtime '$LIBNEST_JAVASCRIPT_RUNTIME': must be 'node', 'bun', or 'deno'" >&2
-    exit 1
-    ;;
-esac
-
-if ! command -v "$LIBNEST_JAVASCRIPT_RUNTIME" >/dev/null 2>&1; then
-  echo "Error: Runtime '$LIBNEST_JAVASCRIPT_RUNTIME' not found in PATH" >&2
-  exit 1
-fi
-
-exec "$LIBNEST_JAVASCRIPT_RUNTIME" $RUNTIME_ARGS "${PARENT_DIR}/libnest-build.js" "$@"
+exec node --enable-source-maps "${PARENT_DIR}/libnest-build.js" "$@"

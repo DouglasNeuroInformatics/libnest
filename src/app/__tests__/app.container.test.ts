@@ -1,6 +1,6 @@
 import { VersioningType } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import type { NestExpressApplication } from '@nestjs/platform-express';
+import type { NestFastifyApplication } from '@nestjs/platform-fastify';
 import { beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { DocsFactory } from '../../docs/docs.factory.js';
@@ -10,7 +10,7 @@ import { AppContainer } from '../app.container.js';
 import type { MockedInstance } from '../../testing/index.js';
 
 describe('AppContainer', () => {
-  let mockApp: MockedInstance<NestExpressApplication>;
+  let mockApp: MockedInstance<NestFastifyApplication>;
   let mockLogger: MockedInstance<JSONLogger>;
 
   beforeAll(() => {
@@ -25,9 +25,8 @@ describe('AppContainer', () => {
       get: vi.fn().mockReturnValue(mockLogger),
       getUrl: vi.fn().mockResolvedValue('http://localhost:3000'),
       listen: vi.fn(),
-      use: vi.fn(),
       useLogger: vi.fn()
-    } as MockedInstance<NestExpressApplication>;
+    } as MockedInstance<NestFastifyApplication>;
     vi.spyOn(NestFactory, 'create').mockResolvedValue(mockApp as any);
   });
 
@@ -48,7 +47,6 @@ describe('AppContainer', () => {
         defaultVersion: '1',
         type: VersioningType.URI
       });
-      expect(mockApp.use).toHaveBeenCalledWith(expect.any(Function));
     });
 
     it('should configure docs when provided', async () => {

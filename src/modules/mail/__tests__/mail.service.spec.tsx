@@ -1,8 +1,6 @@
-import { InternalServerErrorException } from '@nestjs/common';
 import type { Transporter } from 'nodemailer';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { JSXService } from '../../jsx/jsx.service.js';
 import { MailService } from '../mail.service.js';
 import { mailModuleOptionsStub as optionsStub } from './stubs/mail-module-options.stub.js';
 
@@ -26,14 +24,10 @@ const { mockTransport, nodemailer } = vi.hoisted(() => {
 vi.mock('nodemailer', () => nodemailer);
 
 describe('MailService', () => {
-  let jsxService: MockedInstance<JSXService>;
   let mailService: MailService;
 
   beforeEach(() => {
-    jsxService = {
-      renderToString: vi.fn()
-    };
-    mailService = new MailService(optionsStub, jsxService);
+    mailService = new MailService(optionsStub);
   });
 
   it('should create the transporter with the correct options', () => {
@@ -51,22 +45,13 @@ describe('MailService', () => {
   describe('sendMail', () => {
     const sendMailOptions: SendMailOptions = {
       body: {
-        jsx: <h1>Hello World</h1>,
+        html: '<h1>Hello World</h1>',
         text: 'Hello World'
       },
       subject: 'Greeting'
     };
 
-    it('should throw an InternalServerErrorException if attempting to send mail with JSX, if not configured', async () => {
-      // @ts-expect-error - this is private
-      vi.spyOn(mailService, 'jsxService', 'get').mockReturnValueOnce(undefined);
-      await expect(() => {
-        return mailService.sendMail(sendMailOptions);
-      }).rejects.toThrowError(InternalServerErrorException);
-    });
-
     it('should send mail and return the info from nodemailer', async () => {
-      jsxService.renderToString.mockReturnValueOnce('<div>test</div>');
       mockTransport.sendMail.mockImplementationOnce((_, callback) => {
         callback(null, { success: true });
       });
@@ -74,7 +59,7 @@ describe('MailService', () => {
       expect(result).toStrictEqual({ success: true });
       expect(mockTransport.sendMail).toHaveBeenCalledExactlyOnceWith(
         expect.objectContaining({
-          html: '<div>test</div>'
+          html: sendMailOptions.body.html
         }),
         expect.any(Function)
       );

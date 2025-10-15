@@ -3,11 +3,11 @@ import type { DynamicModule } from '@nestjs/common';
 
 import { ConfigService } from '../../index.js';
 
-import type { RuntimeEnv } from '../../user-types.js';
+import type { UserTypes } from '../../user-config.js';
 
 @Module({})
 export class ConfigModule {
-  static forRoot({ envConfig }: { envConfig: RuntimeEnv }): DynamicModule {
+  static forRoot({ envConfig }: { envConfig: UserTypes.Env }): DynamicModule {
     return {
       exports: [ConfigService],
       global: true,
