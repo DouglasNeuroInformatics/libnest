@@ -28,7 +28,6 @@ export type { VirtualizationModuleOptions } from './modules/virtualization/virtu
 export { VirtualizationModule } from './modules/virtualization/virtualization.module.js';
 export { VirtualizationService } from './modules/virtualization/virtualization.service.js';
 export { ParseSchemaPipe } from './pipes/parse-schema.pipe.js';
-export { UUIDPipe } from './pipes/uuid.pipe.js';
 export { ValidObjectIdPipe } from './pipes/valid-object-id.pipe.js';
 export { ValidationPipe } from './pipes/validation.pipe.js';
 export { $BaseEnv } from './schemas/env.schema.js';
