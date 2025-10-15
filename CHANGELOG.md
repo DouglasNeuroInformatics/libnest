@@ -1,5 +1,13 @@
 # Changelog
 
+## [7.5.0](https://github.com/DouglasNeuroInformatics/libnest/compare/v7.4.0...v7.5.0) (2025-10-15)
+
+### Features
+
+* add bundle option ([7c9c9ef](https://github.com/DouglasNeuroInformatics/libnest/commit/7c9c9efe035ed391f7d31adf10aacecb4064d9c8))
+* add UUIDPipe ([8300465](https://github.com/DouglasNeuroInformatics/libnest/commit/8300465a67579762f640e3ef5e96ad48e922a331))
+* allow custom env for testing in config service ([c6d869b](https://github.com/DouglasNeuroInformatics/libnest/commit/c6d869b3b63bd63992aaa134b7304bdab9dea52a))
+
 ## [7.4.0](https://github.com/DouglasNeuroInformatics/libnest/compare/v7.3.3...v7.4.0) (2025-08-26)
 
 ### Features
