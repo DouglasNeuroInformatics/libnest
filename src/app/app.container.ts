@@ -20,7 +20,7 @@ export class AppContainer extends AbstractAppContainer {
     // configure logger here, so in tests we can setup differently
     app.useLogger(logger);
 
-    await app.listen(this.envConfig.API_PORT);
+    await app.listen(this.envConfig.API_PORT, '0.0.0.0');
     const url = await app.getUrl();
     logger.log(`Application is running on: ${url}`);
   }
