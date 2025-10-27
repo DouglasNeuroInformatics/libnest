@@ -88,7 +88,7 @@ describe('AppContainer', () => {
       await appContainer.bootstrap();
 
       expect(mockApp.useLogger).toHaveBeenCalledWith(mockLogger);
-      expect(mockApp.listen).toHaveBeenCalledWith(3000);
+      expect(mockApp.listen).toHaveBeenCalledWith(3000, '0.0.0.0');
       expect(mockLogger.log).toHaveBeenCalledWith('Application is running on: http://localhost:3000');
     });
   });
