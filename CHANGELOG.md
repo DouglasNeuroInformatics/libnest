@@ -1,5 +1,11 @@
 # Changelog
 
+## [8.0.1](https://github.com/DouglasNeuroInformatics/libnest/compare/v8.0.0...v8.0.1) (2025-10-27)
+
+### Bug Fixes
+
+* listen on 0.0.0.0 ([2a09d0b](https://github.com/DouglasNeuroInformatics/libnest/commit/2a09d0bb81857f482dc6695643011927a6d1b668))
+
 ## [8.0.0](https://github.com/DouglasNeuroInformatics/libnest/compare/v7.5.0...v8.0.0) (2025-10-15)
 
 ### ⚠ BREAKING CHANGES
