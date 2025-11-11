@@ -29,7 +29,7 @@ export class AppContainer extends AbstractAppContainer {
     const app = await NestFactory.create<NestFastifyApplication>(
       this.module,
       new FastifyAdapter({ bodyLimit: 1024 * 1024 * 50 }),
-      { bufferLogs: true }
+      { bufferLogs: true, rawBody: true }
     );
     return configureApp(app, {
       docs: this.docs,
