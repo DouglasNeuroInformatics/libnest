@@ -1,5 +1,11 @@
 # Changelog
 
+## [8.0.2](https://github.com/DouglasNeuroInformatics/libnest/compare/v8.0.1...v8.0.2) (2025-11-11)
+
+### Bug Fixes
+
+* attach raw body to request object (required for stripe webhooks) ([5b268b3](https://github.com/DouglasNeuroInformatics/libnest/commit/5b268b350cf0765cf481b60ad9d58055d4b97a22))
+
 ## [8.0.1](https://github.com/DouglasNeuroInformatics/libnest/compare/v8.0.0...v8.0.1) (2025-10-27)
 
 ### Bug Fixes
