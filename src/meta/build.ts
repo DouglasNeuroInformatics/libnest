@@ -39,6 +39,7 @@ export function buildProd({
       logVerbose('Successfully imported esbuild');
       logVerbose('Defining global variables...');
       const define: { [key: string]: string } = {
+        'process.env.LIBNEST_INSTANCE_ID': `"${crypto.randomUUID()}"`,
         'process.env.NODE_ENV': "'production'"
       };
       for (const key in config.globals) {

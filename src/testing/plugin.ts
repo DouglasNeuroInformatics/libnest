@@ -73,7 +73,8 @@ const plugin = ({
         }
         return {
           define: {
-            'process.env.LIBNEST_CONFIG_FILEPATH': `"${configInfo.filepath}"`
+            'process.env.LIBNEST_CONFIG_FILEPATH': `"${configInfo.filepath}"`,
+            'process.env.LIBNEST_INSTANCE_ID': `"${crypto.randomUUID()}"`
           }
         };
       },
