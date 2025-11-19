@@ -5,9 +5,7 @@ import type { BaseEnv } from '../schemas/env.schema.js';
 
 export type BaseEnvSchema = z.ZodType<BaseEnv>;
 
-export function getInstanceId(): string {
-  return process.env.LIBNEST_INSTANCE_ID!;
-}
+export const INSTANCE_ID = process.env.LIBNEST_INSTANCE_ID!;
 
 export function parseEnv<TSchema extends BaseEnvSchema = BaseEnvSchema>(schema: TSchema): z.output<TSchema> {
   // this is required so that these can be statically replaced in the bundle

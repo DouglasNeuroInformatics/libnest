@@ -35,4 +35,4 @@ export type { BaseEnv } from './schemas/env.schema.js';
 export { $MongoEnv } from './schemas/mongo-env.schema.js';
 export type { RequestUser } from './user-config.js';
 export type { BaseEnvSchema } from './utils/env.utils.js';
-export { getInstanceId } from './utils/env.utils.js';
+export { INSTANCE_ID } from './utils/env.utils.js';
