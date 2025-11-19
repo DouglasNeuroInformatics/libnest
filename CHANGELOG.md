@@ -1,5 +1,11 @@
 # Changelog
 
+## [8.1.0](https://github.com/DouglasNeuroInformatics/libnest/compare/v8.0.2...v8.1.0) (2025-11-19)
+
+### Features
+
+* add getInstanceId ([d6c8184](https://github.com/DouglasNeuroInformatics/libnest/commit/d6c81848bd30d30773a13d489703a30080d5f6a1))
+
 ## [8.0.2](https://github.com/DouglasNeuroInformatics/libnest/compare/v8.0.1...v8.0.2) (2025-11-11)
 
 ### Bug Fixes
