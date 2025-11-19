@@ -1,5 +1,11 @@
 # Changelog
 
+## [8.1.1](https://github.com/DouglasNeuroInformatics/libnest/compare/v8.1.0...v8.1.1) (2025-11-19)
+
+### Bug Fixes
+
+* improve instanceid api ([d80a6c7](https://github.com/DouglasNeuroInformatics/libnest/commit/d80a6c7df0bd3c4c67611052cb96bd347d9c66f9))
+
 ## [8.1.0](https://github.com/DouglasNeuroInformatics/libnest/compare/v8.0.2...v8.1.0) (2025-11-19)
 
 ### Features
