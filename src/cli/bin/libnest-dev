@@ -16,4 +16,5 @@ if [ "$NO_WATCH" = false ]; then
   RUNTIME_ARGS="$RUNTIME_ARGS --watch --watch-preserve-output"
 fi
 
-exec node $RUNTIME_ARGS "${PARENT_DIR}/libnest-dev.js" "$@"
+LIBNEST_INSTANCE_ID=$(head -c 16 /dev/urandom | od -An -tx1 | tr -d ' \n'; echo) \
+  exec node $RUNTIME_ARGS "${PARENT_DIR}/libnest-dev.js" "$@"
