@@ -1,7 +1,8 @@
 import type { Class, OmitIndexSignature } from 'type-fest';
 import { z } from 'zod/v4';
 
-import { applySwaggerMetadata, applyValidationSchema } from '../utils/validation.utils.js';
+import { applySwaggerMetadata } from '../utils/swagger.utils.js';
+import { applyValidationSchema } from '../utils/validation.utils.js';
 
 export function ValidationSchema<T extends z.ZodType<{ [key: string]: any }>>(
   schema: T
