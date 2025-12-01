@@ -5,9 +5,16 @@ import { z } from 'zod/v4';
 import { ParseSchemaPipe } from '../parse-schema.pipe.js';
 
 describe('ParseSchemaPipe', () => {
-  it('should validate and return the transformed value', async () => {
+  it('should validate and return the transformed value (legacy options)', async () => {
     const schema = z.object({ name: z.string() });
     const pipe = new ParseSchemaPipe({ schema });
+    const value = { name: 'John Doe' };
+    await expect(pipe.transform(value)).resolves.toEqual(value);
+  });
+
+  it('should validate and return the transformed value (schema only)', async () => {
+    const schema = z.object({ name: z.string() });
+    const pipe = new ParseSchemaPipe(schema);
     const value = { name: 'John Doe' };
     await expect(pipe.transform(value)).resolves.toEqual(value);
   });
@@ -29,9 +36,15 @@ describe('ParseSchemaPipe', () => {
     });
   });
 
-  it('should return undefined if value is optional and undefined', async () => {
+  it('should return undefined if value is optional and undefined (legacy)', async () => {
     const schema = z.object({ name: z.string() });
     const pipe = new ParseSchemaPipe({ isOptional: true, schema });
+    await expect(pipe.transform(undefined)).resolves.toBeUndefined();
+  });
+
+  it('should return undefined if value is optional and undefined', async () => {
+    const schema = z.object({ name: z.string() }).optional();
+    const pipe = new ParseSchemaPipe(schema);
     await expect(pipe.transform(undefined)).resolves.toBeUndefined();
   });
 
