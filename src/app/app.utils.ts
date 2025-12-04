@@ -16,7 +16,10 @@ export async function configureApp(
     await DocsFactory.configureDocs(app, { ...options.docs, version: options.version });
   }
 
-  app.enableCors();
+  app.enableCors({
+    methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
+    origin: '*'
+  });
   app.enableShutdownHooks();
   if (options.version) {
     app.enableVersioning({
