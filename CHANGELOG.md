@@ -1,5 +1,11 @@
 # Changelog
 
+## [8.1.2](https://github.com/DouglasNeuroInformatics/libnest/compare/v8.1.1...v8.1.2) (2025-12-04)
+
+### Bug Fixes
+
+* specify the Access-Control-Allow-Methods header ([5b0a23e](https://github.com/DouglasNeuroInformatics/libnest/commit/5b0a23e628d0ef0893a73b42b2f9efcc2080942d))
+
 ## [8.1.1](https://github.com/DouglasNeuroInformatics/libnest/compare/v8.1.0...v8.1.1) (2025-11-19)
 
 ### Bug Fixes
