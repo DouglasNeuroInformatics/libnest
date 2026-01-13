@@ -1,6 +1,7 @@
 import type { MiddlewareConsumer, Provider, Type } from '@nestjs/common';
 import { APP_FILTER, APP_GUARD, APP_PIPE } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import type { ThrottlerModuleOptions } from '@nestjs/throttler';
 import type { Simplify } from 'type-fest';
 import type { z } from 'zod/v4';
 
@@ -24,6 +25,7 @@ export type CreateAppOptions = Simplify<
     envSchema: z.ZodType<UserTypes.Env>;
     imports?: (ConditionalImport | ImportedModule)[];
     providers?: Provider[];
+    throttler?: ThrottlerModuleOptions;
   }
 >;
 
@@ -39,9 +41,26 @@ export class AppFactory {
     controllers,
     envConfig,
     imports: userImports = [],
-    providers: userProviders = []
+    providers: userProviders = [],
+    throttler = [
+      {
+        limit: 25,
+        name: 'short',
+        ttl: 1000
+      },
+      {
+        limit: 100,
+        name: 'medium',
+        ttl: 10_000
+      },
+      {
+        limit: 250,
+        name: 'long',
+        ttl: 60_000
+      }
+    ]
   }: Simplify<
-    Pick<CreateAppOptions, 'configureMiddleware' | 'controllers' | 'imports' | 'providers'> & {
+    Pick<CreateAppOptions, 'configureMiddleware' | 'controllers' | 'imports' | 'providers' | 'throttler'> & {
       envConfig: UserTypes.Env;
     }
   >): DynamicAppModule {
@@ -65,25 +84,7 @@ export class AppFactory {
     }
 
     if (envConfig.THROTTLER_ENABLED) {
-      coreImports.push(
-        ThrottlerModule.forRoot([
-          {
-            limit: 25,
-            name: 'short',
-            ttl: 1000
-          },
-          {
-            limit: 100,
-            name: 'medium',
-            ttl: 10_000
-          },
-          {
-            limit: 250,
-            name: 'long',
-            ttl: 60_000
-          }
-        ])
-      );
+      coreImports.push(ThrottlerModule.forRoot(throttler));
       coreProviders.push({
         provide: APP_GUARD,
         useClass: ThrottlerGuard
