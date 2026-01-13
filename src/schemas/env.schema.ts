@@ -16,8 +16,6 @@ export const $BaseEnv = z.object({
   DEBUG: $BooleanLike.optional(),
   /** enable log-level logs (default = true in development or production, false in tests) */
   LOG: $BooleanLike.optional(),
-  LOGIN_REQUEST_TROTTLER_LIMIT: $NumberLike.pipe(z.number().int().positive()).optional(),
-  LOGIN_REQUEST_TROTTLER_TTL: $NumberLike.pipe(z.number().int().positive()).optional(),
   NODE_ENV: z.enum(['development', 'production', 'test']),
   SECRET_KEY: z.string().min(16),
   THROTTLER_ENABLED: $BooleanLike.default(true),
