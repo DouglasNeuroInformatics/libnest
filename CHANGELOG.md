@@ -1,5 +1,11 @@
 # Changelog
 
+## [8.2.0](https://github.com/DouglasNeuroInformatics/libnest/compare/v8.1.2...v8.2.0) (2026-01-13)
+
+### Features
+
+* add ability for user to override default throttler config ([0681187](https://github.com/DouglasNeuroInformatics/libnest/commit/0681187aacfd024d5362e1aea00842b67b8dad9a))
+
 ## [8.1.2](https://github.com/DouglasNeuroInformatics/libnest/compare/v8.1.1...v8.1.2) (2025-12-04)
 
 ### Bug Fixes
