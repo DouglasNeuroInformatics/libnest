@@ -202,6 +202,22 @@ describe('AppFactory', () => {
         });
       });
 
+      describe('default configuration with delay', () => {
+        let moduleRef: TestingModule;
+
+        beforeAll(async () => {
+          vi.stubEnv('API_RESPONSE_DELAY', '10');
+          moduleRef = await createModuleRef();
+        });
+
+        it('should call the delay middleware', async () => {
+          const app = moduleRef.createNestApplication();
+          await app.init();
+          expect(delay).toHaveBeenCalled();
+          await app.close();
+        });
+      });
+
       describe('custom configuration', () => {
         let configureMiddleware: Mock;
         let moduleRef: TestingModule;
