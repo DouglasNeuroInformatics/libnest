@@ -22,10 +22,11 @@ vi.mock(import('../../middleware/delay.middleware.js'), async (importOriginal) =
   };
 });
 
-vi.mock('../../modules/crypto/crypto.service.js', async (importOriginal) => {
-  const { CryptoService } = await importOriginal<typeof import('../../modules/crypto/crypto.service.js')>();
+vi.mock('../../modules/crypto/crypto.service.js', () => {
   return {
-    CryptoService: vi.fn((options: any) => new CryptoService(options))
+    CryptoService: vi.fn(function (this: CryptoService) {
+      return;
+    })
   };
 });
 
@@ -239,8 +240,8 @@ describe('AppFactory', () => {
       let init: (debug?: boolean) => Promise<TestingModule>;
 
       beforeAll(() => {
-        DebugModule = vi.fn(() => {
-          return {};
+        DebugModule = vi.fn(function (this: any) {
+          return;
         });
         init = (debug?: boolean) => {
           vi.stubEnv('DEBUG', debug?.toString() ?? '');
