@@ -19,7 +19,7 @@ export default defineConfig({
         'src/typings/*',
         'src/user-config.ts'
       ],
-      include: ['example/**/*', 'src/**/*'],
+      include: ['example/**/*.?(c|m)[jt]s?(x)', 'src/**/*.?(c|m)[jt]s?(x)'],
       provider: 'v8',
       skipFull: true,
       thresholds: {
