@@ -1,6 +1,6 @@
 import { Command } from 'commander';
 import { err, ok } from 'neverthrow';
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { createExec, process } from '../../testing/helpers/cli.js';
 
@@ -20,6 +20,10 @@ const exec = createExec({
 });
 
 describe('libnest', () => {
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
   it('should output help', async () => {
     const parseAsync = vi.spyOn(Command.prototype, 'parseAsync');
     const result = await exec(['--help']);
