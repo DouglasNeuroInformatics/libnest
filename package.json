@@ -100,7 +100,7 @@
     "@douglasneuroinformatics/semantic-release": "^0.2.1",
     "@douglasneuroinformatics/tsconfig": "^1.0.5",
     "@types/node": "22.x",
-    "@vitest/coverage-v8": "^3.2.4",
+    "@vitest/coverage-v8": "^4.0.17",
     "concurrently": "^9.2.1",
     "eslint": "9.39.2",
     "http-server": "^14.1.1",
@@ -113,7 +113,7 @@
     "typedoc-material-theme": "^1.4.1",
     "typedoc-plugin-zod": "^1.4.3",
     "typescript": "5.9.x",
-    "vitest": "^3.2.4"
+    "vitest": "^4.0.17"
   },
   "commitlint": {
     "extends": [
