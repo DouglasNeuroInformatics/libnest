@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import type { Plugin } from 'vitest/config.js';
+import type { Plugin } from 'vitest/config';
 
 import plugin from '../plugin.js';
 

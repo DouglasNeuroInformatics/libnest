@@ -4,7 +4,7 @@ import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 
 import swc from 'unplugin-swc';
-import type { Plugin } from 'vitest/config.js';
+import type { Plugin } from 'vitest/config';
 
 const plugin = ({
   baseUrl,
