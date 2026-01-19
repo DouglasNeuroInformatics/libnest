@@ -59,8 +59,8 @@ importers:
         specifier: ^14.0.2
         version: 14.0.2
       es-module-lexer:
-        specifier: ^1.7.0
-        version: 1.7.0
+        specifier: ^2.0.0
+        version: 2.0.0
       esbuild:
         specifier: ^0.27.2
         version: 0.27.2
@@ -3067,6 +3067,10 @@ packages:
   es-module-lexer@1.7.0:
     resolution:
       { integrity: sha512-jEQoCwk8hyb2AZziIOLhDqpm5+2ww5uIE6lkO/6jcOCusfk6LhMHpXXfBLXTZ7Ydyt0j4VoUQv6uGNYbdW+kBA== }
+
+  es-module-lexer@2.0.0:
+    resolution:
+      { integrity: sha512-5POEcUuZybH7IdmGsD8wlf0AI55wMecM9rVBTI/qEAy2c1kTOm3DjFYjrBdI2K3BaJjJYfYFeRtM0t9ssnRuxw== }
 
   es-object-atoms@1.1.1:
     resolution:
@@ -9293,6 +9297,8 @@ snapshots:
       safe-array-concat: 1.1.3
 
   es-module-lexer@1.7.0: {}
+
+  es-module-lexer@2.0.0: {}
 
   es-object-atoms@1.1.1:
     dependencies:
