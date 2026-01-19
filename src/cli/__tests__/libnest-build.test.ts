@@ -1,4 +1,6 @@
+import { RuntimeException } from '@douglasneuroinformatics/libjs';
 import { Command } from 'commander';
+import { ok } from 'neverthrow';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { CommandRunner } from '../../testing/helpers/cli.js';
@@ -54,8 +56,9 @@ describe('libnest-build', () => {
 
   it('should call the buildProd function', async () => {
     const action = vi.spyOn(Command.prototype, 'action');
-    const mapErr = vi.fn();
-    buildProd.mockReturnValueOnce({ mapErr });
+    const programError = vi.spyOn(Command.prototype, 'error');
+
+    buildProd.mockReturnValueOnce(ok());
 
     const result = await command.run([], {
       env: {
@@ -65,5 +68,22 @@ describe('libnest-build', () => {
 
     expect(action).toHaveBeenCalledOnce();
     expect(result.error).toBe(null);
+    expect(programError).not.toHaveBeenCalled();
+  });
+
+  it('should handle errors correctly', async () => {
+    const action = vi.spyOn(Command.prototype, 'action');
+    const programError = vi.spyOn(Command.prototype, 'error');
+    buildProd.mockReturnValueOnce(RuntimeException.asErr('Something Went Wrong'));
+
+    const result = await command.run([], {
+      env: {
+        LIBNEST_CONFIG_FILEPATH: '/path/to/config.js'
+      }
+    });
+
+    expect(action).toHaveBeenCalledOnce();
+    expect(result.error).toBeInstanceOf(Error);
+    expect(programError).toHaveBeenCalledOnce();
   });
 });
