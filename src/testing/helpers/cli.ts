@@ -3,10 +3,10 @@ import * as path from 'node:path';
 import { vi } from 'vitest';
 import type { Mock } from 'vitest';
 
-class MockProcessExitError extends Error {
+class CommandRunnerExitError extends Error {
   constructor(public exitCode: number) {
     super(`Process existed with code ${exitCode}`);
-    this.name = MockProcessExitError.name;
+    this.name = CommandRunnerExitError.name;
   }
 }
 
@@ -40,7 +40,7 @@ namespace CommandRunner {
   };
 }
 
-export class CommandRunner {
+class CommandRunner {
   private entry: string;
   private root: string;
 
@@ -82,7 +82,7 @@ export class CommandRunner {
       cwd: vi.fn(() => options.cwd ?? null),
       env: options.env ?? {},
       exit: vi.fn((exitCode: number) => {
-        throw new MockProcessExitError(exitCode);
+        throw new CommandRunnerExitError(exitCode);
       }),
       kill: vi.fn(),
       loadEnvFile: vi.fn(),
@@ -104,7 +104,7 @@ export class CommandRunner {
         stdout
       };
     } catch (error) {
-      if (error instanceof CommanderError || error instanceof MockProcessExitError) {
+      if (error instanceof CommanderError || error instanceof CommandRunnerExitError) {
         return {
           error,
           mocks: {
@@ -122,3 +122,5 @@ export class CommandRunner {
     }
   }
 }
+
+export { CommandRunner, CommandRunnerExitError };

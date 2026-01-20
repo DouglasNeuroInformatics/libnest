@@ -1,4 +1,6 @@
+import { RuntimeException } from '@douglasneuroinformatics/libjs';
 import { Command } from 'commander';
+import { ok } from 'neverthrow';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { CommandRunner } from '../../testing/helpers/cli.js';
@@ -44,6 +46,21 @@ describe('libnest-dev', () => {
     expect(result.mocks.process.exit).toHaveBeenLastCalledWith(0);
   });
 
+  it('should not call process.kill for LIBNEST_DEV_ERROR', async () => {
+    const exitOverride = vi.spyOn(Command.prototype, 'exitOverride');
+    runDev.mockReturnValueOnce(ok());
+    const result = await command.run([], {
+      env: {
+        LIBNEST_CONFIG_FILEPATH: '/path/to/config.js'
+      }
+    });
+    const errorHandler = exitOverride.mock.lastCall![0]!;
+    expect(errorHandler).toBeTypeOf('function');
+    errorHandler({ code: 'LIBNEST_DEV_ERROR' } as any);
+    expect(result.mocks.process.kill).not.toHaveBeenCalled();
+    expect(result.mocks.process.exit).not.toHaveBeenCalled();
+  });
+
   it('should set the action', async () => {
     const action = vi.spyOn(Command.prototype, 'action');
     await command.run(['--help']);
@@ -64,15 +81,36 @@ describe('libnest-dev', () => {
 
   it('should call the runDev function', async () => {
     const action = vi.spyOn(Command.prototype, 'action');
-    const mapErr = vi.fn();
-    runDev.mockReturnValueOnce({ mapErr });
+    const programError = vi.spyOn(Command.prototype, 'error');
+
+    runDev.mockReturnValueOnce(ok());
 
     const result = await command.run([], {
       env: {
         LIBNEST_CONFIG_FILEPATH: '/path/to/config.js'
       }
     });
+
     expect(action).toHaveBeenCalledOnce();
     expect(result.error).toBe(null);
+    expect(programError).not.toHaveBeenCalled();
+  });
+
+  it('should handle errors correctly', async () => {
+    const action = vi.spyOn(Command.prototype, 'action');
+    const programError = vi.spyOn(Command.prototype, 'error').mockImplementationOnce(() => {
+      return undefined as never;
+    });
+    runDev.mockReturnValueOnce(RuntimeException.asErr('Something Went Wrong'));
+
+    const result = await command.run([], {
+      env: {
+        LIBNEST_CONFIG_FILEPATH: '/path/to/config.js'
+      }
+    });
+
+    expect(action).toHaveBeenCalledOnce();
+    expect(result.error).toBe(null); // process should not be killed
+    expect(programError).toHaveBeenCalledOnce();
   });
 });
