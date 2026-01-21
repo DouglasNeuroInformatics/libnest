@@ -10,7 +10,7 @@ export const PrismaClient = vi.fn(() => {
 
 export const Prisma = {
   defineExtension: vi.fn((arg) => arg as unknown),
-  getExtensionContext: vi.fn(),
+  getExtensionContext: vi.fn<(...args: any[]) => any>(),
   ModelName: {
     Cat: 'Cat'
   }
