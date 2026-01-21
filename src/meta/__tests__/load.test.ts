@@ -26,7 +26,13 @@ describe('loadUserConfig', () => {
     });
   });
   it('should return an error if the config file does not match the expected schema', async () => {
-    importDefault.mockReturnValueOnce(okAsync({}));
+    importDefault.mockReturnValueOnce(
+      okAsync({
+        build: {
+          onComplete: null
+        }
+      })
+    );
     const result = await loadUserConfig(dummyFilepath);
     expect(result).toMatchObject({
       error: {
