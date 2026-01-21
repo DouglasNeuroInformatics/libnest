@@ -69,7 +69,7 @@ describe('DocsFactory', () => {
 
     expect(DocumentBuilder).toHaveBeenCalledOnce();
 
-    const documentBuilder: MockDocumentBuilderInstance = DocumentBuilder.mock.instances[0]!;
+    const documentBuilder = DocumentBuilder.mock.instances[0] as MockDocumentBuilderInstance;
     expect(documentBuilder.setTitle).toHaveBeenCalledWith('Test API');
     expect(documentBuilder.setContact).toHaveBeenCalledWith('John Doe', 'https://example.com', 'john.doe@example.com');
     expect(documentBuilder.setDescription).toHaveBeenCalledWith('This is a test API');

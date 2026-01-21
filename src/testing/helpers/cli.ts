@@ -1,86 +1,126 @@
 import * as path from 'node:path';
 
-import { isPlainObject } from '@douglasneuroinformatics/libjs';
-import { CommanderError } from 'commander';
 import { vi } from 'vitest';
+import type { Mock } from 'vitest';
 
-type ProcessExitTestResult = {
-  exitCode: number;
-};
-
-const isProcessExitTestResult = (arg: unknown): arg is ProcessExitTestResult => {
-  return isPlainObject(arg) && typeof arg.exitCode === 'number';
-};
-
-const { getArgv, process } = vi.hoisted(() => {
-  const getArgv = vi.fn<() => string[]>();
-  const process = {
-    get argv(): string[] {
-      return getArgv();
-    },
-    cwd: vi.fn(),
-    env: {
-      LIBNEST_CONFIG_FILEPATH: vi.fn()
-    },
-    exit: vi.fn((exitCode: number) => {
-      // eslint-disable-next-line @typescript-eslint/only-throw-error
-      throw { exitCode } satisfies ProcessExitTestResult;
-    }),
-    kill: vi.fn(),
-    loadEnvFile: vi.fn(),
-    ppid: undefined,
-    stderr: {
-      write: vi.fn()
-    },
-    stdout: {
-      write: vi.fn()
-    }
-  };
-
-  return {
-    getArgv,
-    process
-  };
-});
-
-vi.mock('node:process', () => process);
-
-vi.mock('commander', async (importOriginal) => {
-  const { Command: DefaultCommand, ...module } = await importOriginal<typeof import('commander')>();
-
-  // Force to throw a CommanderError on exit and write stdout/stderr to mock functions
-  class Command extends DefaultCommand {
-    constructor(name: string) {
-      super(name);
-      this.configureOutput({
-        writeErr: process.stderr.write,
-        writeOut: process.stdout.write
-      });
-      this.exitOverride();
-    }
+class CommandRunnerExitError extends Error {
+  constructor(public exitCode: number) {
+    super(`Process existed with code ${exitCode}`);
+    this.name = CommandRunnerExitError.name;
   }
-  return {
-    Command,
-    ...module
-  };
-});
+}
 
-function createExec(options: { entry: string; root: string }) {
-  return async (args: string[]): Promise<CommanderError | ProcessExitTestResult | undefined> => {
-    getArgv.mockReturnValueOnce(['node', options.entry, ...args]);
-    try {
-      await import(path.resolve(options.root, options.entry));
-    } catch (err) {
-      if (err instanceof CommanderError || isProcessExitTestResult(err)) {
-        return err;
-      }
-      throw err;
-    } finally {
-      vi.resetModules();
-    }
-    return;
+namespace CommandRunner {
+  export type CreateOptions = {
+    entry: string;
+    root: string;
+  };
+
+  export type RunOptions = {
+    cwd?: string;
+    env?: {
+      [key: string]: string;
+    };
+    ppid?: number;
+  };
+
+  export type RunResult = {
+    error: null | {
+      exitCode: number;
+    };
+    mocks: {
+      process: {
+        exit: Mock;
+        kill: Mock;
+        loadEnvFile: Mock;
+      };
+    };
+    stderr: string;
+    stdout: string;
   };
 }
 
-export { createExec, process };
-export type { ProcessExitTestResult };
+class CommandRunner {
+  private entry: string;
+  private root: string;
+
+  constructor(options: CommandRunner.CreateOptions) {
+    this.entry = options.entry;
+    this.root = options.root;
+  }
+
+  async run(args: string[], options: CommandRunner.RunOptions = {}): Promise<CommandRunner.RunResult> {
+    let stderr = '';
+    let stdout = '';
+
+    vi.doMock('commander', async (importOriginal) => {
+      const { Command: DefaultCommand, ...module } = await importOriginal<typeof import('commander')>();
+
+      // Force to throw a CommanderError on exit and capture stdout/stderr
+      class Command extends DefaultCommand {
+        constructor(name: string) {
+          super(name);
+          this.configureOutput({
+            writeErr: (err) => {
+              stderr += err;
+            },
+            writeOut: (out) => {
+              stdout += out;
+            }
+          });
+          this.exitOverride();
+        }
+      }
+      return {
+        Command,
+        ...module
+      };
+    });
+
+    const process = {
+      argv: ['node', this.entry, ...args],
+      cwd: vi.fn(() => options.cwd ?? null),
+      env: options.env ?? {},
+      exit: vi.fn((exitCode: number) => {
+        throw new CommandRunnerExitError(exitCode);
+      }),
+      kill: vi.fn(),
+      loadEnvFile: vi.fn(),
+      ppid: options.ppid ?? null
+    };
+
+    vi.doMock('process', () => process);
+
+    const { CommanderError } = await vi.importActual<typeof import('commander')>('commander');
+
+    try {
+      await import(path.resolve(this.root, this.entry));
+      return {
+        error: null,
+        mocks: {
+          process
+        },
+        stderr,
+        stdout
+      };
+    } catch (error) {
+      if (error instanceof CommanderError || error instanceof CommandRunnerExitError) {
+        return {
+          error,
+          mocks: {
+            process
+          },
+          stderr,
+          stdout
+        };
+      }
+      throw error;
+    } finally {
+      vi.doUnmock('commander');
+      vi.doUnmock('process');
+      vi.resetModules();
+    }
+  }
+}
+
+export { CommandRunner, CommandRunnerExitError };

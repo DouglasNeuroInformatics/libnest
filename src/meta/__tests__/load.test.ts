@@ -26,7 +26,13 @@ describe('loadUserConfig', () => {
     });
   });
   it('should return an error if the config file does not match the expected schema', async () => {
-    importDefault.mockReturnValueOnce(okAsync({}));
+    importDefault.mockReturnValueOnce(
+      okAsync({
+        build: {
+          onComplete: null
+        }
+      })
+    );
     const result = await loadUserConfig(dummyFilepath);
     expect(result).toMatchObject({
       error: {
@@ -46,6 +52,10 @@ describe('loadUserConfig', () => {
 });
 
 describe('loadEntry', () => {
+  it('should return the default export', async () => {
+    await expect(loadEntry(() => Promise.resolve({ default: -1 }))).resolves.toMatchObject({ value: -1 });
+  });
+
   it('should return an error if the entry function throws', async () => {
     await expect(
       loadEntry(() => {

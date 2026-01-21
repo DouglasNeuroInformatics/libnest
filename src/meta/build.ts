@@ -48,6 +48,9 @@ export function buildProd({
       logVerbose(`Set global variables: ${JSON.stringify(define)}`);
       logVerbose('Invoking esbuild to bundle application....');
       const plugins = [docsPlugin(), prismaPlugin(), swcPlugin()];
+
+      // this is due to a bug in the v8 coverage implementation in vitest v4, both conditions are checked
+      /* v8 ignore if -- @preserve */
       if (config.build.bundle === false) {
         plugins.push(externalPlugin());
       }

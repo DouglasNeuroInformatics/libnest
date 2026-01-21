@@ -1,5 +1,4 @@
 /* eslint-disable perfectionist/sort-classes */
-/* eslint-disable no-dupe-class-members */
 
 import { isPlainObject, parseStack } from '@douglasneuroinformatics/libjs';
 import { Inject, Injectable, Optional } from '@nestjs/common';

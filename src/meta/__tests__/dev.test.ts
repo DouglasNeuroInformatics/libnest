@@ -30,6 +30,22 @@ describe('runDev', () => {
     });
   });
 
+  it('should call the bootstrap function on the app container, but not define global variables if none are specified', async () => {
+    const bootstrap = vi.fn();
+    const entry = vi.fn();
+    const resolvedConfigPath = '/app/libnest.config.ts';
+    const mockUserConfig = {
+      entry
+    } satisfies Partial<UserConfigOptions>;
+    resolveAbsoluteImportPath.mockReturnValueOnce(ok(resolvedConfigPath));
+    loadUserConfig.mockReturnValueOnce(okAsync(mockUserConfig));
+    loadAppContainer.mockReturnValueOnce(okAsync({ bootstrap }));
+    const result = await runDev(dummyFilepath);
+    expect(result.isOk());
+    expect(loadUserConfig).toHaveBeenLastCalledWith(resolvedConfigPath);
+    expect(loadAppContainer).toHaveBeenLastCalledWith(mockUserConfig);
+  });
+
   it('should call the bootstrap function on the app container and allow accessing global variables', async () => {
     const bootstrap = vi.fn(() => {
       // @ts-expect-error - this is defined in the config

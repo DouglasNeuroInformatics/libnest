@@ -1,7 +1,9 @@
+import { RuntimeException } from '@douglasneuroinformatics/libjs';
 import { Command } from 'commander';
-import { describe, expect, it, vi } from 'vitest';
+import { ok } from 'neverthrow';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { createExec, process } from '../../testing/helpers/cli.js';
+import { CommandRunner } from '../../testing/helpers/cli.js';
 
 const { buildProd, register } = vi.hoisted(() => ({
   buildProd: vi.fn(),
@@ -16,48 +18,72 @@ vi.mock('../../meta/build.js', () => ({
   buildProd
 }));
 
-const exec = createExec({
+const command = new CommandRunner({
   entry: '../libnest-build.js',
   root: import.meta.dirname
 });
 
 describe('libnest-build', () => {
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
   it('should output help', async () => {
     const parseAsync = vi.spyOn(Command.prototype, 'parseAsync');
-    const result = await exec(['--help']);
+    const result = await command.run(['--help']);
+    expect(result.error?.exitCode).toBe(0);
     expect(parseAsync).toHaveBeenCalledExactlyOnceWith(['node', '../libnest-build.js', '--help']);
-    expect(result).toMatchObject({ exitCode: 0 });
-    expect(process.stdout.write).toHaveBeenCalledWith(expect.stringContaining('Usage: libnest-build'));
+    expect(result.stdout).toContain('Usage: libnest-build');
   });
+
   it('should set the action', async () => {
     const action = vi.spyOn(Command.prototype, 'action');
-    await exec(['--help']);
+    await command.run(['--help']);
     const callback = action.mock.lastCall![0];
     expect(callback).toBeTypeOf('function');
   });
+
   it('should throw an error if LIBNEST_CONFIG_FILEPATH is not defined', async () => {
     const action = vi.spyOn(Command.prototype, 'action');
-    await exec(['--help']);
-    const callback = action.mock.lastCall![0];
-    vi.spyOn(process.env as any, 'LIBNEST_CONFIG_FILEPATH', 'get').mockReturnValueOnce(undefined);
-    await expect(() => (callback as any)()).rejects.toThrow(
-      expect.objectContaining({
-        exitCode: 1
-      })
+    const programError = vi.spyOn(Command.prototype, 'error');
+    const result = await command.run([]);
+    expect(action).toHaveBeenCalled();
+    expect(programError).toHaveBeenCalledExactlyOnceWith(
+      expect.stringContaining("environment variable 'LIBNEST_CONFIG_FILEPATH' must be defined")
     );
+    expect(result.error?.exitCode).toBe(1);
   });
-  it('should call the bundle function', async () => {
+
+  it('should call the buildProd function', async () => {
     const action = vi.spyOn(Command.prototype, 'action');
-    await exec([]);
-    const callback = action.mock.lastCall![0];
-    vi.spyOn(process.env as any, 'LIBNEST_CONFIG_FILEPATH', 'get').mockReturnValueOnce('/path/to/config.js');
-    const mapErr = vi.fn();
-    buildProd.mockReturnValueOnce({ mapErr });
-    await callback.call({ opts: vi.fn().mockReturnValue({}) } as any);
-    expect(buildProd).toHaveBeenCalledOnce();
-    const programError = vi.spyOn(Command.prototype, 'error').mockImplementationOnce(() => null!);
-    const errorHandler = mapErr.mock.lastCall![0];
-    errorHandler(new Error('An error occurred'));
-    expect(programError).toHaveBeenCalledExactlyOnceWith('Error: An error occurred', { exitCode: 1 });
+    const programError = vi.spyOn(Command.prototype, 'error');
+
+    buildProd.mockReturnValueOnce(ok());
+
+    const result = await command.run([], {
+      env: {
+        LIBNEST_CONFIG_FILEPATH: '/path/to/config.js'
+      }
+    });
+
+    expect(action).toHaveBeenCalledOnce();
+    expect(result.error).toBe(null);
+    expect(programError).not.toHaveBeenCalled();
+  });
+
+  it('should handle errors correctly', async () => {
+    const action = vi.spyOn(Command.prototype, 'action');
+    const programError = vi.spyOn(Command.prototype, 'error');
+    buildProd.mockReturnValueOnce(RuntimeException.asErr('Something Went Wrong'));
+
+    const result = await command.run([], {
+      env: {
+        LIBNEST_CONFIG_FILEPATH: '/path/to/config.js'
+      }
+    });
+
+    expect(action).toHaveBeenCalledOnce();
+    expect(result.error).toBeInstanceOf(Error);
+    expect(programError).toHaveBeenCalledOnce();
   });
 });
