@@ -70,7 +70,13 @@
     "neverthrow": "^8.2.0",
     "reflect-metadata": "~0.1.13",
     "rxjs": "^7.8.2",
+    "vitest": "4.x",
     "zod": "^3.25.x"
+  },
+  "peerDependenciesMeta": {
+    "vite": {
+      "optional": true
+    }
   },
   "dependencies": {
     "@douglasneuroinformatics/libjs": "^3.1.0",
