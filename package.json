@@ -90,7 +90,7 @@
     "nodemailer": "^7.0.12",
     "serialize-error": "^13.0.1",
     "supertest": "^7.2.2",
-    "ts-morph": "^25.0.1",
+    "ts-morph": "^27.0.2",
     "type-fest": "^4.41.0",
     "unplugin-swc": "^1.5.9"
   },
