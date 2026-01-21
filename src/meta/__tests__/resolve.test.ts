@@ -71,7 +71,7 @@ describe('resolveUserConfig', () => {
   });
 
   it('should find a result with the config file if it can be found', () => {
-    fs.readdirSync.mockReturnValueOnce([]).mockReturnValueOnce(['libnest.config.js']);
+    fs.readdirSync.mockReturnValueOnce([]).mockReturnValueOnce(['hello.txt', 'libnest.config.js']);
     const result = resolveUserConfig(import.meta.dirname);
     const expectedValue = path.resolve(path.dirname(import.meta.dirname), 'libnest.config.js');
     expect(result.isOk() && result.value === expectedValue).toBe(true);
