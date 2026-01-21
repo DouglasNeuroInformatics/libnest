@@ -1,5 +1,13 @@
 # Changelog
 
+## [8.2.1](https://github.com/DouglasNeuroInformatics/libnest/compare/v8.2.0...v8.2.1) (2026-01-21)
+
+### Bug Fixes
+
+* add vitest to peer deps as optional ([d64f819](https://github.com/DouglasNeuroInformatics/libnest/commit/d64f8198c825c6da64911acae46ccf78faaec042))
+* annoying ts errors preventing build but that pass linting ([cacc5ac](https://github.com/DouglasNeuroInformatics/libnest/commit/cacc5acbd44e1acb9ad8830bf8bc67e3cc58e41c))
+* update dependencies ([d478479](https://github.com/DouglasNeuroInformatics/libnest/commit/d4784795551d91acab00de76ada6eaa846cc2abf))
+
 ## [8.2.0](https://github.com/DouglasNeuroInformatics/libnest/compare/v8.1.2...v8.2.0) (2026-01-13)
 
 ### Features
