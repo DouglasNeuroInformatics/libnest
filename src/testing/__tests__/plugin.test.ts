@@ -78,7 +78,13 @@ describe('plugin', () => {
       it('should throw an error if the config file cannot be resolved', async () => {
         const libnest = plugin()[1];
         const config = libnest.config as (...args: any[]) => Promise<any>;
+
         await expect(config({})).rejects.toThrow(
+          'Could not determine path to libnest config file: please specify it explicitly in the libnest vitest plugin options'
+        );
+
+        fs.readdir.mockResolvedValueOnce(['hello.txt']);
+        await expect(config({ root: '/' })).rejects.toThrow(
           'Could not determine path to libnest config file: please specify it explicitly in the libnest vitest plugin options'
         );
       });
