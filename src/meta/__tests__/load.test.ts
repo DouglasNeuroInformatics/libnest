@@ -52,6 +52,10 @@ describe('loadUserConfig', () => {
 });
 
 describe('loadEntry', () => {
+  it('should return the default export', async () => {
+    await expect(loadEntry(() => Promise.resolve({ default: -1 }))).resolves.toMatchObject({ value: -1 });
+  });
+
   it('should return an error if the entry function throws', async () => {
     await expect(
       loadEntry(() => {
