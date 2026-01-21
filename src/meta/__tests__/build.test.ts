@@ -3,13 +3,15 @@ import * as os from 'node:os';
 import * as path from 'node:path';
 
 import { ok, okAsync } from 'neverthrow';
-import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
+import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { buildProd } from '../build.js';
+import * as externalPluginModule from '../plugins/external.js';
 
 import type { UserConfigOptions } from '../../user-config.js';
 
 const { loadUserConfig, parseEntryFromFunction } = vi.hoisted(() => ({
+  // externalPlugin: vi.fn(),
   loadUserConfig: vi.fn(),
   parseEntryFromFunction: vi.fn()
 }));
@@ -20,6 +22,7 @@ const esbuildMock = {
 
 vi.mock('../load.js', () => ({ loadUserConfig }));
 vi.mock('../parse.js', () => ({ parseEntryFromFunction }));
+// vi.mock('../plugins/external.js', () => ({}));
 
 describe('buildProd', () => {
   let outdir: string;
@@ -41,6 +44,10 @@ describe('buildProd', () => {
         });
       }, 500);
     });
+  });
+
+  afterEach(() => {
+    vi.resetAllMocks();
   });
 
   it('should return an error if esbuild throws', async () => {
@@ -119,6 +126,7 @@ describe('buildProd', () => {
   it('should handle errors in the onComplete callback', async () => {
     vi.doMock('esbuild', () => esbuildMock);
     const callbackError = new Error('Something went wrong');
+    const externalPlugin = vi.spyOn(externalPluginModule, 'externalPlugin');
     const onComplete = vi.fn().mockImplementation(() => {
       throw callbackError;
     });
@@ -142,10 +150,12 @@ describe('buildProd', () => {
       }
     });
     expect(onComplete).toHaveBeenCalledOnce();
+    expect(externalPlugin).not.toHaveBeenCalled();
     vi.doUnmock('esbuild');
   });
 
   it('should bundle with bundle:false to mark node_modules as external', { timeout: 10000 }, async () => {
+    const externalPlugin = vi.spyOn(externalPluginModule, 'externalPlugin');
     const outfile = path.join(outdir, 'module-unbundled.js');
     loadUserConfig.mockReturnValue(
       okAsync({
@@ -161,5 +171,6 @@ describe('buildProd', () => {
     const result = await buildProd({ configFile });
     expect(result.isOk()).toBe(true);
     expect(fs.existsSync(outfile)).toBe(true);
+    expect(externalPlugin).toHaveBeenCalledOnce();
   });
 });
