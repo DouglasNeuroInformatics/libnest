@@ -88,7 +88,7 @@
     "es-module-lexer": "^2.0.0",
     "esbuild": "^0.27.2",
     "nodemailer": "^7.0.12",
-    "serialize-error": "^12.0.0",
+    "serialize-error": "^13.0.1",
     "supertest": "^7.2.2",
     "ts-morph": "^25.0.1",
     "type-fest": "^4.41.0",
