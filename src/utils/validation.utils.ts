@@ -150,7 +150,7 @@ export async function parseRequestBody<TSchema extends z.ZodType>(
       message: 'Validation Error'
     });
   }
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+
   return result.data;
 }
 

@@ -28,7 +28,7 @@ export class AppContainer extends AbstractAppContainer {
   async createApplicationInstance(): Promise<NestFastifyApplication> {
     const app = await NestFactory.create<NestFastifyApplication>(
       this.module,
-      new FastifyAdapter({ bodyLimit: 1024 * 1024 * 50 }),
+      new FastifyAdapter({ bodyLimit: 1024 * 1024 * 50, ...this.fastifyOptions }),
       { bufferLogs: true, rawBody: true }
     );
     return configureApp(app, {

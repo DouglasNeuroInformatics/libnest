@@ -30,10 +30,10 @@ export type CreateAppOptions = Simplify<
 >;
 
 export class AppFactory {
-  static create({ docs, envSchema, version, ...options }: CreateAppOptions): AppContainer {
+  static create({ docs, envSchema, fastifyOptions, version, ...options }: CreateAppOptions): AppContainer {
     const envConfig = parseEnv(envSchema);
     const module = this.createModule({ envConfig, ...options });
-    return new AppContainer({ docs, envConfig, module, version });
+    return new AppContainer({ docs, envConfig, fastifyOptions, module, version });
   }
 
   static createModule({

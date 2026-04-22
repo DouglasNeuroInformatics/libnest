@@ -1,5 +1,5 @@
 import type { DynamicModule, Type } from '@nestjs/common';
-import type { NestFastifyApplication } from '@nestjs/platform-fastify';
+import type { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 import type { ConditionalKeys } from 'type-fest';
 
 import { defineToken } from '../utils/token.utils.js';
@@ -7,6 +7,8 @@ import { defineToken } from '../utils/token.utils.js';
 import type { AppVersion, DocsConfig } from '../docs/docs.factory.js';
 import type { UserTypes } from '../user-config.js';
 import type { AppModule } from './app.module.js';
+
+export type FastifyAdapterOptions = NonNullable<ConstructorParameters<typeof FastifyAdapter>[0]>;
 
 export type DynamicAppModule = DynamicModule & {
   module: typeof AppModule;
@@ -22,6 +24,7 @@ export type ConditionalImport = {
 export type AppContainerParams = {
   docs?: Omit<DocsConfig, 'version'>;
   envConfig: UserTypes.Env;
+  fastifyOptions?: FastifyAdapterOptions;
   module: DynamicAppModule;
   version: AppVersion | null;
 };
@@ -29,6 +32,7 @@ export type AppContainerParams = {
 export abstract class AbstractAppContainer implements AppContainerParams {
   readonly docs?: Omit<DocsConfig, 'version'>;
   readonly envConfig: UserTypes.Env;
+  readonly fastifyOptions?: FastifyAdapterOptions;
   readonly module: DynamicAppModule;
   readonly version: AppVersion | null;
 
