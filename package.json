@@ -101,10 +101,10 @@
     "unplugin-swc": "^1.5.9"
   },
   "devDependencies": {
-    "@douglasneuroinformatics/eslint-config": "^5.3.7",
+    "@douglasneuroinformatics/eslint-config": "^6.0.0",
     "@douglasneuroinformatics/prettier-config": "^0.3.0",
     "@douglasneuroinformatics/semantic-release": "^0.2.1",
-    "@douglasneuroinformatics/tsconfig": "^1.0.5",
+    "@douglasneuroinformatics/tsconfig": "^2.0.0",
     "@types/node": "22.x",
     "@vitest/coverage-v8": "^4.0.17",
     "concurrently": "^9.2.1",
@@ -115,10 +115,10 @@
     "mongodb-memory-server": "^11.0.1",
     "prettier": "^3.8.0",
     "prisma": "^6.19.2",
-    "typedoc": "^0.28.16",
+    "typedoc": "^0.28.19",
     "typedoc-material-theme": "^1.4.1",
     "typedoc-plugin-zod": "^1.4.3",
-    "typescript": "5.9.x",
+    "typescript": "6.0.x",
     "vitest": "^4.0.17"
   },
   "commitlint": {
