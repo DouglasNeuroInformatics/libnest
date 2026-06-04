@@ -1,6 +1,6 @@
 import { BadRequestException, InternalServerErrorException } from '@nestjs/common';
+import { ApiProperty } from '@nestjs/swagger';
 import type { ApiPropertyOptions } from '@nestjs/swagger';
-import { createApiPropertyDecorator } from '@nestjs/swagger/dist/decorators/api-property.decorator.js';
 import type { SchemaObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.interface.js';
 import type { Class } from 'type-fest';
 import { z } from 'zod/v4';
@@ -100,7 +100,7 @@ export function applySwaggerMetadata<T extends z.ZodType<{ [key: string]: any }>
   }
   for (const propertyKey in baseSchema.properties) {
     const propertyMetadata = getSwaggerPropertyMetadata(baseSchema.properties[propertyKey]!);
-    createApiPropertyDecorator(propertyMetadata, true)(target.prototype, propertyKey);
+    ApiProperty(propertyMetadata)(target.prototype, propertyKey);
   }
 }
 

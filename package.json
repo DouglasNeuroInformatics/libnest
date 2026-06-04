@@ -42,7 +42,7 @@
     "/src"
   ],
   "engines": {
-    "node": "22.x"
+    "node": "22.x || 24.x"
   },
   "scripts": {
     "build": "rm -rf dist && tsc -b tsconfig.build.json && cp -r src/cli/bin dist/cli/bin && cp -r src/docs/assets dist/docs/assets",
@@ -103,9 +103,9 @@
   "devDependencies": {
     "@douglasneuroinformatics/eslint-config": "^6.0.0",
     "@douglasneuroinformatics/prettier-config": "^0.3.0",
-    "@douglasneuroinformatics/semantic-release": "^0.2.1",
+    "@douglasneuroinformatics/semantic-release": "^0.2.2",
     "@douglasneuroinformatics/tsconfig": "^2.0.0",
-    "@types/node": "22.x",
+    "@types/node": "24.x",
     "@vitest/coverage-v8": "^4.0.17",
     "concurrently": "^9.2.1",
     "eslint": "9.39.2",
