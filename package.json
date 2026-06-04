@@ -42,7 +42,7 @@
     "/src"
   ],
   "engines": {
-    "node": "22.x"
+    "node": "22.x || 24.x"
   },
   "scripts": {
     "build": "rm -rf dist && tsc -b tsconfig.build.json && cp -r src/cli/bin dist/cli/bin && cp -r src/docs/assets dist/docs/assets",
