@@ -1,5 +1,11 @@
 # Changelog
 
+## [8.3.0](https://github.com/DouglasNeuroInformatics/libnest/compare/v8.2.1...v8.3.0) (2026-04-22)
+
+### Features
+
+* add option to pass options to fastify instance ([e1bee78](https://github.com/DouglasNeuroInformatics/libnest/commit/e1bee7816e63710c3d75257bc10a3b3ac1f201bc))
+
 ## [8.2.1](https://github.com/DouglasNeuroInformatics/libnest/compare/v8.2.0...v8.2.1) (2026-01-21)
 
 ### Bug Fixes
