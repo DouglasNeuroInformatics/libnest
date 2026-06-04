@@ -1,5 +1,11 @@
 # Changelog
 
+## [8.3.1](https://github.com/DouglasNeuroInformatics/libnest/compare/v8.3.0...v8.3.1) (2026-06-04)
+
+### Bug Fixes
+
+* import ApiProperty from public entry instead of swagger dist subpath ([b1d1613](https://github.com/DouglasNeuroInformatics/libnest/commit/b1d1613fb8efd177b8b8ce9f7b83e78c2249f799))
+
 ## [8.3.0](https://github.com/DouglasNeuroInformatics/libnest/compare/v8.2.1...v8.3.0) (2026-04-22)
 
 ### Features
