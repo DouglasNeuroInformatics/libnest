@@ -4,9 +4,11 @@ import { RuntimeException } from '@douglasneuroinformatics/libjs';
 import { fromAsyncThrowable, ok, ResultAsync } from 'neverthrow';
 
 import { loadUserConfig } from './load.js';
+import { resolveNativeDependency } from './native-dependencies.js';
 import { parseEntryFromFunction } from './parse.js';
 import { docsPlugin } from './plugins/docs.js';
 import { externalPlugin } from './plugins/external.js';
+import { nativeDependenciesPlugin } from './plugins/native-dependencies.js';
 import { prismaPlugin } from './plugins/prisma.js';
 import { swcPlugin } from './plugins/swc.js';
 
@@ -53,6 +55,10 @@ export function buildProd({
       /* v8 ignore if -- @preserve */
       if (config.build.bundle === false) {
         plugins.push(externalPlugin());
+      }
+
+      if (config.build.nativeDependencies?.length) {
+        plugins.push(nativeDependenciesPlugin(config.build.nativeDependencies.map(resolveNativeDependency)));
       }
 
       await esbuild.build({

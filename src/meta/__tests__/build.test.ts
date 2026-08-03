@@ -7,6 +7,7 @@ import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest
 
 import { buildProd } from '../build.js';
 import * as externalPluginModule from '../plugins/external.js';
+import * as nativeDependenciesPluginModule from '../plugins/native-dependencies.js';
 
 import type { UserConfigOptions } from '../../user-config.js';
 
@@ -152,6 +153,84 @@ describe('buildProd', () => {
     expect(onComplete).toHaveBeenCalledOnce();
     expect(externalPlugin).not.toHaveBeenCalled();
     vi.doUnmock('esbuild');
+  });
+
+  it('should not register the native dependencies plugin when none are declared', { timeout: 10000 }, async () => {
+    const nativeDependenciesPlugin = vi.spyOn(nativeDependenciesPluginModule, 'nativeDependenciesPlugin');
+    const outfile = path.join(outdir, 'module-no-native.js');
+    loadUserConfig.mockReturnValue(
+      okAsync({
+        build: {
+          mode: 'module',
+          nativeDependencies: [],
+          outfile
+        },
+        entry: vi.fn()
+      } satisfies UserConfigOptions)
+    );
+    parseEntryFromFunction.mockReturnValueOnce(ok('./example/app.js'));
+    const result = await buildProd({ configFile });
+    expect(result.isOk()).toBe(true);
+    expect(nativeDependenciesPlugin).not.toHaveBeenCalled();
+  });
+
+  it('should emit a declared native dependency beside the bundle', { timeout: 10000 }, async () => {
+    const artifact = path.join(outdir, 'artifact-source');
+    await fs.promises.writeFile(artifact, 'native artifact');
+    const outfile = path.join(outdir, 'module-native.js');
+    loadUserConfig.mockReturnValue(
+      okAsync({
+        build: {
+          mode: 'module',
+          // `neverthrow` stands in for a native package: it is already in the example app's graph, so
+          // the plugin observes a real resolution rather than a stubbed one.
+          nativeDependencies: [
+            {
+              locate: () => artifact,
+              outputName: 'artifact',
+              packageName: 'neverthrow',
+              runtimeEnvVar: 'ARTIFACT_BINARY_PATH'
+            }
+          ],
+          outfile
+        },
+        entry: vi.fn()
+      } satisfies UserConfigOptions)
+    );
+    parseEntryFromFunction.mockReturnValueOnce(ok('./example/app.js'));
+
+    const result = await buildProd({ configFile });
+
+    expect(result.isOk()).toBe(true);
+    expect(fs.existsSync(path.join(outdir, 'artifact'))).toBe(true);
+    expect(fs.readFileSync(outfile, 'utf-8')).toContain('process.env.ARTIFACT_BINARY_PATH ??=');
+  });
+
+  it('should fail the build when a declared native dependency is never imported', async () => {
+    const outfile = path.join(outdir, 'module-missing-native.js');
+    loadUserConfig.mockReturnValue(
+      okAsync({
+        build: {
+          mode: 'module',
+          nativeDependencies: [
+            {
+              locate: () => '/dev/null',
+              outputName: 'absent',
+              packageName: '@scope/never-imported',
+              runtimeEnvVar: 'ABSENT_BINARY_PATH'
+            }
+          ],
+          outfile
+        },
+        entry: vi.fn()
+      } satisfies UserConfigOptions)
+    );
+    parseEntryFromFunction.mockReturnValueOnce(ok('./example/app.js'));
+
+    const result = await buildProd({ configFile });
+
+    expect(result.isErr()).toBe(true);
+    expect(result).toMatchObject({ error: { message: 'Failed to build application' } });
   });
 
   it('should bundle with bundle:false to mark node_modules as external', { timeout: 10000 }, async () => {

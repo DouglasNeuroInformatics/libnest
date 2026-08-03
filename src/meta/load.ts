@@ -7,6 +7,7 @@ import { z } from 'zod/v4';
 
 import { AbstractAppContainer } from '../app/app.base.js';
 import { importDefault } from './import.js';
+import { KNOWN_NATIVE_DEPENDENCY_NAMES } from './native-dependencies.js';
 import { parseEntryFromFunction } from './parse.js';
 
 import type { UserConfigOptions } from '../user-config.js';
@@ -14,11 +15,18 @@ import type { UserConfigOptions } from '../user-config.js';
 // we cannot use zod function here as we cannot have any wrappers apply and screw up toString representation
 const $AnyFunction = z.custom<(...args: any[]) => any>((arg) => typeof arg === 'function', 'must be function');
 
+const $NativeDependency = z.object({
+  locate: $AnyFunction,
+  outputName: z.string().min(1),
+  packageName: z.string().min(1),
+  runtimeEnvVar: z.string().regex(/^[A-Z_][A-Z0-9_]*$/, 'must be a valid environment variable name')
+});
+
 const $UserConfigOptions: z.ZodType<UserConfigOptions> = z.object({
   build: z.object({
     bundle: z.boolean().optional(),
-    esbuildOptions: z.record(z.string(), z.any()).optional(),
     mode: z.enum(['module', 'server']).optional(),
+    nativeDependencies: z.array(z.union([z.enum(KNOWN_NATIVE_DEPENDENCY_NAMES), $NativeDependency])).optional(),
     onComplete: $AnyFunction.optional(),
     outfile: z.string().min(1)
   }),

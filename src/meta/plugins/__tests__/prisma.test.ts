@@ -63,6 +63,12 @@ describe('prismaPlugin', () => {
     );
   });
 
+  it('should terminate its banner statement, so a second appending plugin still parses', async () => {
+    fs.readdir.mockResolvedValueOnce([mockTargetFile]);
+    await prismaPlugin().setup(build as any);
+    expect(build.initialOptions.banner.js.endsWith(';')).toBe(true);
+  });
+
   it('should copy the binary to the target directory', async () => {
     fs.readdir.mockResolvedValueOnce([mockTargetFile]);
     const plugin = prismaPlugin();
