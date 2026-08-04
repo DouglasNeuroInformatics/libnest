@@ -26,7 +26,10 @@ export function prismaPlugin(): Plugin {
         throw new Error(`Failed to find prisma query engine for target '${binaryTarget}' in directory '${enginesDir}'`);
       }
 
-      build.initialOptions.banner!.js! += `process.env.PRISMA_QUERY_ENGINE_LIBRARY = import.meta.dirname + '/' + '${engineFile}'`;
+      // The trailing semicolon is load-bearing: the banner concatenates statements from every plugin
+      // that appends to it, with no separator between them. Without it, a second appending plugin
+      // produces a bundle that does not parse.
+      build.initialOptions.banner!.js! += `process.env.PRISMA_QUERY_ENGINE_LIBRARY = import.meta.dirname + '/' + '${engineFile}';`;
 
       build.onEnd(async () => {
         return fs.copyFile(path.join(enginesDir, engineFile), path.join(outdir, engineFile));
