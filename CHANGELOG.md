@@ -1,5 +1,11 @@
 # Changelog
 
+## [8.4.0](https://github.com/DouglasNeuroInformatics/libnest/compare/v8.3.1...v8.4.0) (2026-08-04)
+
+### Features
+
+* **meta:** add build.nativeDependencies for packages that cannot be bundled ([5557ed6](https://github.com/DouglasNeuroInformatics/libnest/commit/5557ed6e214cf020143925f1a035c214d311ffda))
+
 ## [8.3.1](https://github.com/DouglasNeuroInformatics/libnest/compare/v8.3.0...v8.3.1) (2026-06-04)
 
 ### Bug Fixes
