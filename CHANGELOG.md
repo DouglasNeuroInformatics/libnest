@@ -1,5 +1,12 @@
 # Changelog
 
+## [8.4.1](https://github.com/DouglasNeuroInformatics/libnest/compare/v8.4.0...v8.4.1) (2026-08-05)
+
+### Bug Fixes
+
+* **meta:** correct the prisma version cited in the banner comment ([84126b5](https://github.com/DouglasNeuroInformatics/libnest/commit/84126b53b7aef577ae7e0af23030f9038f042342))
+* **meta:** define build banner globals as writable ([63a10b4](https://github.com/DouglasNeuroInformatics/libnest/commit/63a10b47d16a7864865fdca688e2e60d26257a89)), closes [#77](https://github.com/DouglasNeuroInformatics/libnest/issues/77)
+
 ## [8.4.0](https://github.com/DouglasNeuroInformatics/libnest/compare/v8.3.1...v8.4.0) (2026-08-04)
 
 ### Features
