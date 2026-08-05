@@ -14,6 +14,19 @@ import { swcPlugin } from './plugins/swc.js';
 
 import type { UserConfigOptions } from '../user-config.js';
 
+/**
+ * The banner prepended to the production bundle, which backfills the CommonJS globals that some
+ * dependencies expect to exist at runtime.
+ *
+ * These are defined `writable: true` deliberately. Some dependencies ship an esbuild-style banner of
+ * their own that assigns to `globalThis['__dirname']` (`@prisma/client` >= 6.19.0 does). Once inlined
+ * into this bundle, that assignment runs in module scope, where a non-writable property makes it throw
+ * `TypeError: Cannot assign to read only property` instead of failing silently, killing the process
+ * before the app bootstraps.
+ */
+export const GLOBALS_BANNER =
+  "Object.defineProperties(globalThis, { __dirname: { value: import.meta.dirname, writable: true }, __filename: { value: import.meta.filename, writable: true }, require: { value: (await import('module')).createRequire(import.meta.url), writable: true } });";
+
 export function buildProd({
   configFile,
   verbose
@@ -63,7 +76,7 @@ export function buildProd({
 
       await esbuild.build({
         banner: {
-          js: "Object.defineProperties(globalThis, { __dirname: { value: import.meta.dirname, writable: false }, __filename: { value: import.meta.filename, writable: false }, require: { value: (await import('module')).createRequire(import.meta.url), writable: false } });"
+          js: GLOBALS_BANNER
         },
         bundle: true,
         define,
