@@ -11,7 +11,7 @@ import { GLOBALS_BANNER } from '../build.js';
 const execFileAsync = promisify(execFile);
 
 /**
- * The banner that `@prisma/client` >= 6.19.3 prepends to its ESM runtime, which esbuild inlines into
+ * The banner that `@prisma/client` >= 6.19.0 prepends to its ESM runtime, which esbuild inlines into
  * the application bundle verbatim. The assignment to `globalThis` is the part that matters.
  */
 const DEPENDENCY_BANNER = [
@@ -40,14 +40,14 @@ describe('GLOBALS_BANNER', () => {
 
   it('should not leave a bundled dependency unable to assign to globalThis', { timeout: 30000 }, async () => {
     const esbuild = await import('esbuild');
-    const srcdir = path.join(outdir, 'src');
-    await fs.promises.mkdir(srcdir, { recursive: true });
+    const sourceDir = path.join(outdir, 'src');
+    await fs.promises.mkdir(sourceDir, { recursive: true });
     await fs.promises.writeFile(
-      path.join(srcdir, 'dependency.js'),
+      path.join(sourceDir, 'dependency.js'),
       `${DEPENDENCY_BANNER}\nexport const value = 'ok';\n`
     );
     await fs.promises.writeFile(
-      path.join(srcdir, 'entry.js'),
+      path.join(sourceDir, 'entry.js'),
       "import { value } from './dependency.js';\nconsole.log(value);\n"
     );
 
@@ -55,7 +55,7 @@ describe('GLOBALS_BANNER', () => {
     await esbuild.build({
       banner: { js: GLOBALS_BANNER },
       bundle: true,
-      entryPoints: [path.join(srcdir, 'entry.js')],
+      entryPoints: [path.join(sourceDir, 'entry.js')],
       format: 'esm',
       outfile,
       platform: 'node'

@@ -19,7 +19,7 @@ import type { UserConfigOptions } from '../user-config.js';
  * dependencies expect to exist at runtime.
  *
  * These are defined `writable: true` deliberately. Some dependencies ship an esbuild-style banner of
- * their own that assigns to `globalThis['__dirname']` (`@prisma/client` >= 6.19.3 does). Once inlined
+ * their own that assigns to `globalThis['__dirname']` (`@prisma/client` >= 6.19.0 does). Once inlined
  * into this bundle, that assignment runs in module scope, where a non-writable property makes it throw
  * `TypeError: Cannot assign to read only property` instead of failing silently, killing the process
  * before the app bootstraps.
