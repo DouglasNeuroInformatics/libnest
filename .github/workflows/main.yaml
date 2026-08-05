@@ -21,6 +21,8 @@ jobs:
           node-version-file: '.nvmrc'
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
+      - name: Generate Prisma
+        run: pnpm prisma:generate
       - name: Lint
         run: pnpm run lint
       - name: Test
@@ -30,4 +32,3 @@ jobs:
         with:
           directory: ./coverage/
           token: ${{ secrets.CODECOV_TOKEN }}
-
