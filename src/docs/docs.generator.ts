@@ -20,6 +20,10 @@ import { RoutePathFactory } from '@nestjs/core/router/route-path-factory.js';
 import type { NestFastifyApplication } from '@nestjs/platform-fastify';
 import { z } from 'zod/v4';
 
+import { API_OPERATION_METADATA_KEY } from '../decorators/api-operation.decorator.js';
+
+import type { ApiOperationOptions } from '../decorators/api-operation.decorator.js';
+
 type JsonSchema = { [key: string]: unknown };
 
 type OpenApiParameter = {
@@ -29,7 +33,7 @@ type OpenApiParameter = {
   schema: JsonSchema;
 };
 
-type OpenApiOperation = {
+type OpenApiOperation = ApiOperationOptions & {
   operationId: string;
   parameters?: OpenApiParameter[];
   requestBody?: {
@@ -126,7 +130,9 @@ export class DocsGenerator {
       return;
     }
     const path = routePath.replace(/:(\w+)(\([^)]*\))?\??/g, '{$1}');
+    const handler = (controller.prototype as { [key: string]: object })[methodName]!;
     const operation: OpenApiOperation = {
+      ...(Reflect.getMetadata(API_OPERATION_METADATA_KEY, handler) as ApiOperationOptions | undefined),
       operationId: this.createOperationId(`${controller.name}_${methodName}`),
       responses: this.getResponses(controller, methodName, requestMethod),
       tags: [controller.name.replace(/Controller$/, '')]

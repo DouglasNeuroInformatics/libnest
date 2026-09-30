@@ -27,6 +27,7 @@ import { Test } from '@nestjs/testing';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { z } from 'zod/v4';
 
+import { ApiOperation } from '../../decorators/api-operation.decorator.js';
 import { DocsGenerator } from '../docs.generator.js';
 
 import type { OpenApiParameter } from '../docs.generator.js';
@@ -197,6 +198,7 @@ class TreesController {
 
 @Controller('codes')
 class CodesController {
+  @ApiOperation({ deprecated: true, description: 'Returns nothing', summary: 'Find Codes' })
   @Get()
   find() {
     return null;
@@ -458,6 +460,18 @@ describe('DocsGenerator', () => {
     expect(components.schemas).toEqual({
       AnonymousSchema1: createTreeNode('AnonymousSchema1'),
       AnonymousSchema2: createTreeNode('AnonymousSchema2')
+    });
+  });
+
+  it('should document the summary, description, and deprecation set with @ApiOperation', async () => {
+    const { paths } = await generate([CodesController]);
+    expect(paths['/codes']!.get).toEqual({
+      deprecated: true,
+      description: 'Returns nothing',
+      operationId: 'CodesController_find',
+      responses: { 200: { description: 'OK' } },
+      summary: 'Find Codes',
+      tags: ['Codes']
     });
   });
 

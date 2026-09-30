@@ -2,6 +2,8 @@
 
 export type { ConditionalImport, ImportedModule } from './app/app.base.js';
 export { AppFactory } from './app/app.factory.js';
+export { ApiOperation } from './decorators/api-operation.decorator.js';
+export type { ApiOperationOptions } from './decorators/api-operation.decorator.js';
 export { CurrentUser } from './decorators/current-user.decorator.js';
 export { ValidationSchema } from './decorators/validation-schema.decorator.js';
 export type { AppVersion, DocsConfig } from './docs/docs.factory.js';
