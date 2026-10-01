@@ -2,8 +2,10 @@ import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 
 import type { NestFastifyApplication } from '@nestjs/platform-fastify';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import type { OpenAPIObject } from '@nestjs/swagger';
+
+import { DocsGenerator } from './docs.generator.js';
+
+import type { JsonSchema, OpenApiPaths } from './docs.generator.js';
 
 export type AppVersion = `${number}`;
 
@@ -28,9 +30,24 @@ export type DocsConfig = {
   version?: AppVersion | null;
 };
 
+export type OpenApiDocument = {
+  components: { schemas: { [name: string]: JsonSchema } };
+  externalDocs?: { description: string; url: string };
+  info: {
+    contact?: { email: string; name: string; url: string };
+    description?: string;
+    license?: { name: string; url: string };
+    title: string;
+    version: string;
+  };
+  openapi: '3.1.0';
+  paths: OpenApiPaths;
+  tags?: { name: string }[];
+};
+
 export class DocsFactory {
   static async configureDocs(app: NestFastifyApplication, config: DocsConfig): Promise<void> {
-    const document = this.createDocs(app, config);
+    const document = this.createDocument(app, config);
     const httpAdapter = app.getHttpAdapter().getInstance();
     const specUrl = config.path.endsWith('/') ? config.path + 'spec.json' : config.path + '/spec.json';
     httpAdapter.get(specUrl, (_, reply) => {
@@ -45,31 +62,18 @@ export class DocsFactory {
     });
   }
 
-  private static createDocs(
+  private static createDocument(
     app: NestFastifyApplication,
     { contact, description, externalDoc, license, tags, title, version }: DocsConfig
-  ): OpenAPIObject {
-    const documentBuilder = new DocumentBuilder();
-    documentBuilder.setTitle(title);
-
-    if (contact) {
-      documentBuilder.setContact(contact.name, contact.url, contact.email);
-    }
-    if (description) {
-      documentBuilder.setDescription(description);
-    }
-    if (license) {
-      documentBuilder.setLicense(license.name, license.url);
-    }
-    if (version) {
-      documentBuilder.setVersion(version.toString());
-    }
-    if (externalDoc) {
-      documentBuilder.setExternalDoc(externalDoc.description, externalDoc.url);
-    }
-    if (tags?.length) {
-      tags.forEach((tag) => documentBuilder.addTag(tag));
-    }
-    return SwaggerModule.createDocument(app, documentBuilder.build());
+  ): OpenApiDocument {
+    const { components, paths } = new DocsGenerator(app).generate();
+    return {
+      components,
+      externalDocs: externalDoc,
+      info: { contact, description, license, title, version: version ?? '1.0.0' },
+      openapi: '3.1.0',
+      paths,
+      tags: tags?.map((name) => ({ name }))
+    };
   }
 }

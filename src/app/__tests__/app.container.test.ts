@@ -74,6 +74,9 @@ describe('AppContainer', () => {
         title: 'Test API',
         version: '1'
       });
+      expect(mockApp.enableVersioning.mock.invocationCallOrder.at(-1)).toBeLessThan(
+        mockDocsFactory.configureDocs.mock.invocationCallOrder.at(-1)!
+      );
     });
   });
 

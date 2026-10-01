@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Post } from '@nestjs/common';
-import { ApiOperation } from '@nestjs/swagger';
 
+import { ApiOperation } from '../../src/index.js';
 import { CatsService } from './cats.service.js';
 import { $Cat, $CreateCatData } from './schemas/cat.schema.js';
 

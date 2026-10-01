@@ -12,10 +12,6 @@ export async function configureApp(
     version?: AppVersion | null;
   } = {}
 ): Promise<NestFastifyApplication> {
-  if (options.docs) {
-    await DocsFactory.configureDocs(app, { ...options.docs, version: options.version });
-  }
-
   app.enableCors({
     methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
     origin: '*'
@@ -26,6 +22,11 @@ export async function configureApp(
       defaultVersion: options.version,
       type: VersioningType.URI
     });
+  }
+
+  // must run after versioning is enabled, since the document reads the versioning config to build its paths
+  if (options.docs) {
+    await DocsFactory.configureDocs(app, { ...options.docs, version: options.version });
   }
 
   return app;
