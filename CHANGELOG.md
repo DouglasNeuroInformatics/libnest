@@ -1,5 +1,24 @@
 # Changelog
 
+## [9.0.0](https://github.com/DouglasNeuroInformatics/libnest/compare/v8.4.1...v9.0.0) (2026-10-01)
+
+### ⚠ BREAKING CHANGES
+
+* **docs:** API docs are generated from the Zod schemas that controller
+parameters are typed with. @nestjs/swagger decorators are no longer read, and
+@ValidationSchema is deprecated.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+
+### Features
+
+* **docs:** add ApiOperation decorator ([7661d36](https://github.com/DouglasNeuroInformatics/libnest/commit/7661d364a461220447ff9336797d8c51f6f383b5))
+* **docs:** replace @nestjs/swagger with a zod-native OpenAPI generator ([9f15bac](https://github.com/DouglasNeuroInformatics/libnest/commit/9f15bacda03fb43c70e5bb332280fef779c97212))
+
+### Bug Fixes
+
+* **app:** configure docs after enabling versioning ([e2ce5cf](https://github.com/DouglasNeuroInformatics/libnest/commit/e2ce5cfedc0789d865fdabf465edb187fb34409f))
+
 ## [8.4.1](https://github.com/DouglasNeuroInformatics/libnest/compare/v8.4.0...v8.4.1) (2026-08-05)
 
 ### Bug Fixes
