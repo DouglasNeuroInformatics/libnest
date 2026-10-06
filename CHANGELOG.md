@@ -1,5 +1,24 @@
 # Changelog
 
+## [10.0.0](https://github.com/DouglasNeuroInformatics/libnest/compare/v9.0.0...v10.0.0) (2026-10-06)
+
+### ⚠ BREAKING CHANGES
+
+* requires @nestjs/common, @nestjs/core, @nestjs/platform-fastify
+and @nestjs/testing ^12.0.0, reflect-metadata ^0.2.2, fastify ^5.12.1 and
+vitest 5.x. The e2e helper from @douglasneuroinformatics/libnest/testing now
+runs the app on the Fastify adapter instead of Express.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+
+### Features
+
+* require NestJS 12, reflect-metadata 0.2.2 and Vitest 5 ([aeb485f](https://github.com/DouglasNeuroInformatics/libnest/commit/aeb485f5ad6746442d7cc7cb3315fa16cfa0020e))
+
+### Bug Fixes
+
+* require Node 22.12 or later on the 22.x line ([3bec8df](https://github.com/DouglasNeuroInformatics/libnest/commit/3bec8df7a4b24a5e8f91ee757c4e699f08c455e1))
+
 ## [9.0.0](https://github.com/DouglasNeuroInformatics/libnest/compare/v8.4.1...v9.0.0) (2026-10-01)
 
 ### ⚠ BREAKING CHANGES
