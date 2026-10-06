@@ -1,4 +1,5 @@
 import { APP_FILTER, APP_GUARD, APP_PIPE } from '@nestjs/core';
+import { FastifyAdapter } from '@nestjs/platform-fastify';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { beforeAll, describe, expect, it, vi } from 'vitest';
@@ -12,6 +13,7 @@ import { ValidationPipe } from '../../pipes/validation.pipe.js';
 import { $BaseEnv } from '../../schemas/env.schema.js';
 import { AppFactory } from '../app.factory.js';
 
+import type { CryptoOptions } from '../../modules/crypto/crypto.config.js';
 import type { BaseEnv } from '../../schemas/env.schema.js';
 import type { CreateAppOptions } from '../app.factory.js';
 
@@ -24,8 +26,8 @@ vi.mock(import('../../middleware/delay.middleware.js'), async (importOriginal) =
 
 vi.mock('../../modules/crypto/crypto.service.js', () => {
   return {
-    CryptoService: vi.fn(function (this: CryptoService) {
-      return;
+    CryptoService: vi.fn(function (this: CryptoService, options: CryptoOptions) {
+      Object.assign(this, options);
     })
   };
 });
@@ -187,14 +189,11 @@ describe('AppFactory', () => {
         });
 
         it('should provide the CryptoService with the default number of pbkdf2 iterations', () => {
-          expect(moduleRef.get(CryptoService)).toBeDefined();
-          expect(CryptoService).toHaveBeenLastCalledWith(
-            expect.objectContaining({
-              pbkdf2Params: {
-                iterations: 100_000
-              }
-            })
-          );
+          expect(moduleRef.get(CryptoService)).toMatchObject({
+            pbkdf2Params: {
+              iterations: 100_000
+            }
+          });
         });
 
         it('should not call the delay middleware by default', () => {
@@ -211,7 +210,7 @@ describe('AppFactory', () => {
         });
 
         it('should call the delay middleware', async () => {
-          const app = moduleRef.createNestApplication();
+          const app = moduleRef.createNestApplication(new FastifyAdapter());
           await app.init();
           expect(delay).toHaveBeenCalled();
           await app.close();
@@ -231,18 +230,15 @@ describe('AppFactory', () => {
         });
 
         it('should provide the CryptoService with pbkdf2 iterations disabled', () => {
-          expect(moduleRef.get(CryptoService)).toBeDefined();
-          expect(CryptoService).toHaveBeenLastCalledWith(
-            expect.objectContaining({
-              pbkdf2Params: {
-                iterations: 1
-              }
-            })
-          );
+          expect(moduleRef.get(CryptoService)).toMatchObject({
+            pbkdf2Params: {
+              iterations: 1
+            }
+          });
         });
 
         it('should call the delay and custom middleware', async () => {
-          const app = moduleRef.createNestApplication();
+          const app = moduleRef.createNestApplication(new FastifyAdapter());
           await app.init();
           expect(configureMiddleware).toHaveBeenCalledOnce();
           expect(delay).toHaveBeenLastCalledWith({ responseDelay: 10 });

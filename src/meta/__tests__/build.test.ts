@@ -5,7 +5,7 @@ import * as path from 'node:path';
 import { ok, okAsync } from 'neverthrow';
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 
-import { buildProd } from '../build.js';
+import { buildProd, OPTIONAL_EXTERNALS } from '../build.js';
 import * as externalPluginModule from '../plugins/external.js';
 import * as nativeDependenciesPluginModule from '../plugins/native-dependencies.js';
 
@@ -122,6 +122,40 @@ describe('buildProd', () => {
     expect(onComplete).toHaveBeenCalledOnce();
     expect(consoleLog).toHaveBeenCalled();
     expect(consoleLog).toHaveBeenLastCalledWith('Done!');
+  });
+
+  it('should start the bundled application without the optional packages Nest imports lazily', async () => {
+    // the bundle must sit inside the repository, so that `mongodb-memory-server`, which the example app
+    // needs at runtime, resolves from node_modules, while the optional Nest packages still do not
+    const buildDir = path.resolve(import.meta.dirname, '../../../build');
+    await fs.promises.mkdir(buildDir, { recursive: true });
+    const bundleDir = await fs.promises.mkdtemp(path.join(buildDir, 'optional-externals-'));
+    const outfile = path.join(bundleDir, 'module.js');
+    loadUserConfig.mockReturnValue(
+      okAsync({
+        build: {
+          mode: 'module',
+          outfile
+        },
+        entry: vi.fn()
+      } satisfies UserConfigOptions)
+    );
+    parseEntryFromFunction.mockReturnValueOnce(ok('./example/app.js'));
+    try {
+      const result = await buildProd({ configFile });
+      expect(result.isOk()).toBe(true);
+      const bundle = await fs.promises.readFile(outfile, 'utf-8');
+      for (const specifier of OPTIONAL_EXTERNALS.filter((specifier) => specifier !== 'mongodb-memory-server')) {
+        expect(bundle).toContain(`import("${specifier}")`);
+      }
+      const appContainer = await import(outfile).then((module) => module.default);
+      const app = await appContainer.createApplicationInstance();
+      app.useLogger(false);
+      await expect(app.init()).resolves.toBe(app);
+      await app.close();
+    } finally {
+      await fs.promises.rm(bundleDir, { force: true, recursive: true });
+    }
   });
 
   it('should handle errors in the onComplete callback', async () => {
