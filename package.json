@@ -61,16 +61,16 @@
     "test:coverage": "vitest --coverage"
   },
   "peerDependencies": {
-    "@nestjs/common": "^11.0.11",
-    "@nestjs/core": "^11.0.11",
-    "@nestjs/platform-fastify": "^11.1.6",
-    "@nestjs/testing": "^11.0.11",
+    "@nestjs/common": "^12.0.0",
+    "@nestjs/core": "^12.0.0",
+    "@nestjs/platform-fastify": "^12.0.0",
+    "@nestjs/testing": "^12.0.0",
     "@prisma/client": "^6.9.0",
-    "fastify": "^5.6.1",
+    "fastify": "^5.12.1",
     "neverthrow": "^8.2.0",
-    "reflect-metadata": "~0.1.13",
+    "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.2",
-    "vitest": "4.x",
+    "vitest": "5.x",
     "zod": "^3.25.x"
   },
   "peerDependenciesMeta": {
@@ -80,8 +80,7 @@
   },
   "dependencies": {
     "@douglasneuroinformatics/libjs": "^3.1.0",
-    "@nestjs/swagger": "^11.2.5",
-    "@nestjs/throttler": "^6.5.0",
+    "@nestjs/throttler": "^6.7.1",
     "@prisma/engines": "^6.19.2",
     "@prisma/get-platform": "^6.19.2",
     "@swc-node/register": "^1.11.1",
@@ -106,7 +105,7 @@
     "@douglasneuroinformatics/semantic-release": "^0.2.2",
     "@douglasneuroinformatics/tsconfig": "^2.0.0",
     "@types/node": "24.x",
-    "@vitest/coverage-v8": "^4.0.17",
+    "@vitest/coverage-v8": "^5.0.3",
     "concurrently": "^9.2.1",
     "eslint": "9.39.2",
     "http-server": "^14.1.1",
@@ -119,7 +118,8 @@
     "typedoc-material-theme": "^1.4.1",
     "typedoc-plugin-zod": "^1.4.3",
     "typescript": "6.0.x",
-    "vitest": "^4.0.17"
+    "vite": "^7.3.6",
+    "vitest": "^5.0.3"
   },
   "commitlint": {
     "extends": [

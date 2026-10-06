@@ -27,6 +27,28 @@ import type { UserConfigOptions } from '../user-config.js';
 export const GLOBALS_BANNER =
   "Object.defineProperties(globalThis, { __dirname: { value: import.meta.dirname, writable: true }, __filename: { value: import.meta.filename, writable: true }, require: { value: (await import('module')).createRequire(import.meta.url), writable: true } });";
 
+/**
+ * Packages left out of the production bundle because nothing requires them to be installed.
+ *
+ * Most are optional packages that `@nestjs/*` loads lazily with a literal `import()`, which esbuild
+ * resolves at build time and fails on when the package is absent. At runtime Nest catches the failed
+ * import and carries on without the package. The specifiers must match what Nest imports exactly:
+ * `@nestjs/websockets/socket-module.js` keeps its extension, while `@nestjs/microservices` also covers
+ * the `@nestjs/microservices/microservices-module.js` subpath, as esbuild treats a bare package name as
+ * a prefix.
+ */
+export const OPTIONAL_EXTERNALS = [
+  '@fastify/multipart',
+  '@fastify/static',
+  '@fastify/view',
+  '@nestjs/microservices',
+  '@nestjs/platform-express',
+  '@nestjs/websockets/socket-module.js',
+  'class-transformer',
+  'class-validator',
+  'mongodb-memory-server'
+];
+
 export function buildProd({
   configFile,
   verbose
@@ -64,7 +86,7 @@ export function buildProd({
       logVerbose('Invoking esbuild to bundle application....');
       const plugins = [docsPlugin(), prismaPlugin(), swcPlugin()];
 
-      // this is due to a bug in the v8 coverage implementation in vitest v4, both conditions are checked
+      // this is due to a bug in the v8 coverage implementation in vitest v4 (still present in v5), both conditions are checked
       /* v8 ignore if -- @preserve */
       if (config.build.bundle === false) {
         plugins.push(externalPlugin());
@@ -80,15 +102,7 @@ export function buildProd({
         },
         bundle: true,
         define,
-        external: [
-          '@fastify/static',
-          '@fastify/view',
-          '@nestjs/microservices',
-          '@nestjs/websockets/socket-module',
-          'class-transformer',
-          'class-validator',
-          'mongodb-memory-server'
-        ],
+        external: OPTIONAL_EXTERNALS,
         format: 'esm',
         keepNames: true,
         loader: {

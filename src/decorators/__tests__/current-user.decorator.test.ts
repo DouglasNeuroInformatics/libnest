@@ -1,6 +1,7 @@
 import type { IncomingMessage, Server, ServerResponse } from 'http';
 
 import { Controller, Get } from '@nestjs/common';
+import { FastifyAdapter } from '@nestjs/platform-fastify';
 import type { NestFastifyApplication } from '@nestjs/platform-fastify';
 import { Test } from '@nestjs/testing';
 import request from 'supertest';
@@ -28,18 +29,20 @@ describe('CurrentUser', () => {
     const moduleRef = await Test.createTestingModule({
       controllers: [AppController]
     }).compile();
-    app = moduleRef.createNestApplication<NestFastifyApplication>({
+    app = moduleRef.createNestApplication<NestFastifyApplication>(new FastifyAdapter(), {
       logger: ['error', 'fatal', 'warn']
     });
 
-    app.use((req: any, _res: any, next: any) => {
-      const username = req.query.username;
+    const fastify = app.getHttpAdapter().getInstance();
+    fastify.addHook('onRequest', (request, _reply, done) => {
+      const { username } = request.query as { username?: string };
       if (username) {
-        req.user = { username } as any;
+        request.user = { username };
       }
-      return next();
+      done();
     });
     await app.init();
+    await fastify.ready();
     server = app.getHttpServer();
   });
 

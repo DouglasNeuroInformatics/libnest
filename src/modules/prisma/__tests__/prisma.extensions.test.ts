@@ -3,24 +3,25 @@ import { beforeAll, describe, expect, it, vi } from 'vitest';
 import type { MockInstance } from 'vitest';
 
 describe('LibnestPrismaExtension', () => {
-  let defineExtensionMock: MockInstance;
+  let defineExtensionCalls: unknown[][];
   let getExtensionContextMock: MockInstance;
   let extensionFactory: (client: any) => any;
 
   beforeAll(async () => {
-    defineExtensionMock = vi.spyOn(Prisma, 'defineExtension').mockImplementation((arg) => arg as any);
+    const defineExtensionMock = vi.spyOn(Prisma, 'defineExtension').mockImplementation((arg) => arg as any);
     getExtensionContextMock = vi.spyOn(Prisma, 'getExtensionContext');
     vi.spyOn(Prisma, 'ModelName', 'get').mockReturnValueOnce({
       Dog: 'Dog'
     });
     await import('../prisma.extensions.js');
+    defineExtensionCalls = [...defineExtensionMock.mock.calls];
   });
 
   it('should define the extension', () => {
-    expect(defineExtensionMock).toHaveBeenCalledOnce();
-    const extensionArg = defineExtensionMock.mock.lastCall?.[0];
+    expect(defineExtensionCalls).toHaveLength(1);
+    const extensionArg = defineExtensionCalls[0]![0];
     expect(extensionArg).toBeTypeOf('function');
-    extensionFactory = extensionArg;
+    extensionFactory = extensionArg as (client: any) => any;
   });
 
   it('should correctly extend the PrismaClient', async () => {

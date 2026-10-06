@@ -1,3 +1,4 @@
+import { FastifyAdapter } from '@nestjs/platform-fastify';
 import type { NestFastifyApplication } from '@nestjs/platform-fastify';
 import { Test } from '@nestjs/testing';
 import request from 'supertest';
@@ -22,13 +23,13 @@ export function e2e(appContainer: AppContainer, fn: EndToEndTestFactory): void {
   const collector = suite('App (e2e)', (test) => fn({ api, expect, it: test, test }));
 
   collector.on('beforeAll', async () => {
-    const { docs, module, version } = appContainer;
+    const { docs, fastifyOptions, module, version } = appContainer;
 
     const moduleRef = await Test.createTestingModule({
       imports: [module]
     }).compile();
 
-    app = moduleRef.createNestApplication({
+    app = moduleRef.createNestApplication<NestFastifyApplication>(new FastifyAdapter(fastifyOptions), {
       logger: false
     });
 
@@ -38,6 +39,7 @@ export function e2e(appContainer: AppContainer, fn: EndToEndTestFactory): void {
     });
 
     await app.init();
+    await app.getHttpAdapter().getInstance().ready();
     const agent = request.agent(app.getHttpServer());
     Object.assign(agent, {
       setAccessToken: (token: string) => {

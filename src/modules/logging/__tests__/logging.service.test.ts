@@ -1,6 +1,6 @@
-import { INQUIRER } from '@nestjs/core';
-import { Test, TestingModule } from '@nestjs/testing';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { Injectable } from '@nestjs/common';
+import { Test } from '@nestjs/testing';
+import { describe, expect, it, vi } from 'vitest';
 
 import { LOGGING_MODULE_OPTIONS_TOKEN } from '../logging.config.js';
 import { LoggingService } from '../logging.service.js';
@@ -11,38 +11,31 @@ const JSONLogger = vi.hoisted(() => vi.fn());
 
 vi.mock('../json.logger.ts', () => ({ JSONLogger }));
 
+@Injectable()
+class TestParent {
+  constructor(readonly loggingService: LoggingService) {}
+}
+
 describe('LoggingService', () => {
-  let loggingService: LoggingService;
-  let mockOptions: LoggingOptions;
-  let mockParentClass: object;
-
-  beforeEach(async () => {
-    mockOptions = {
-      debug: false,
-      log: true,
-      verbose: true
-    };
-    mockParentClass = { constructor: { name: 'TestParent' } };
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        LoggingService,
-        { provide: INQUIRER, useValue: mockParentClass },
-        { provide: LOGGING_MODULE_OPTIONS_TOKEN, useValue: mockOptions }
-      ]
+  const resolveLoggingService = async (providers: { provide: string; useValue: LoggingOptions }[] = []) => {
+    const moduleRef = await Test.createTestingModule({
+      providers: [LoggingService, TestParent, ...providers]
     }).compile();
+    return moduleRef.get(TestParent).loggingService;
+  };
 
-    loggingService = await module.resolve<LoggingService>(LoggingService);
+  it('should extend JSONLogger', async () => {
+    await expect(resolveLoggingService()).resolves.toBeInstanceOf(JSONLogger);
   });
 
-  it('should be defined', () => {
-    expect(loggingService).toBeDefined();
+  it('should call the JSONLogger constructor with the name of the class it is injected into and the options', async () => {
+    const options: LoggingOptions = { debug: false, log: true, verbose: true };
+    await resolveLoggingService([{ provide: LOGGING_MODULE_OPTIONS_TOKEN, useValue: options }]);
+    expect(JSONLogger).toHaveBeenCalledWith('TestParent', options);
   });
 
-  it('should extend JSONLogger', () => {
-    expect(loggingService).toBeInstanceOf(JSONLogger);
-  });
-
-  it('should call the JSONLogger constructor with correct parameters', () => {
-    expect(JSONLogger).toHaveBeenCalledWith('TestParent', mockOptions);
+  it('should resolve without logging options, so JSONLogger falls back to its defaults', async () => {
+    await resolveLoggingService();
+    expect(JSONLogger).toHaveBeenCalledWith('TestParent', undefined);
   });
 });
