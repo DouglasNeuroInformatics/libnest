@@ -3,7 +3,7 @@ import * as process from 'node:process';
 
 import { Command } from 'commander';
 
-module.register('@swc-node/register/esm', import.meta.url);
+module.register('../meta/loader.js', import.meta.url);
 
 const { buildProd } = await import('../meta/build.js');
 

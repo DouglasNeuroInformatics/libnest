@@ -7,7 +7,7 @@ import { Command, InvalidArgumentError } from 'commander';
 /* v8 ignore if -- @preserve */
 if (import.meta.dirname.endsWith('src/cli')) {
   // no longer necessary once the package is built
-  module.register('@swc-node/register/esm', import.meta.url);
+  module.register('../meta/loader.js', import.meta.url);
 }
 
 const { resolveAbsoluteImportPath, resolveAbsolutePath } = await import('../meta/resolve.js');

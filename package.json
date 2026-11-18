@@ -83,7 +83,6 @@
     "@nestjs/throttler": "^6.7.1",
     "@prisma/engines": "^6.19.2",
     "@prisma/get-platform": "^6.19.2",
-    "@swc-node/register": "^1.11.1",
     "@swc/core": "^1.15.8",
     "@swc/helpers": "^0.5.18",
     "@types/nodemailer": "^7.0.5",
@@ -93,6 +92,7 @@
     "es-module-lexer": "^2.0.0",
     "esbuild": "^0.27.2",
     "nodemailer": "^7.0.12",
+    "oxc-resolver": "^11.24.2",
     "serialize-error": "^13.0.1",
     "supertest": "^7.2.2",
     "ts-morph": "^27.0.2",
@@ -135,7 +135,6 @@
     ],
     "ignoreDependencies": [
       "@douglasneuroinformatics/tsconfig",
-      "@swc-node/register",
       "@swc/helpers"
     ],
     "ignore": [

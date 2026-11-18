@@ -36,6 +36,11 @@ describe('libnest-build', () => {
     expect(result.stdout).toContain('Usage: libnest-build');
   });
 
+  it('should register the loader that compiles the TypeScript it imports', async () => {
+    await command.run(['--help']);
+    expect(register).toHaveBeenCalledExactlyOnceWith('../meta/loader.js', expect.stringContaining('libnest-build.js'));
+  });
+
   it('should set the action', async () => {
     const action = vi.spyOn(Command.prototype, 'action');
     await command.run(['--help']);
