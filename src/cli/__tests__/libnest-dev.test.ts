@@ -61,6 +61,16 @@ describe('libnest-dev', () => {
     expect(result.mocks.process.exit).not.toHaveBeenCalled();
   });
 
+  it('should register a module that exports the resolve and load hooks', async () => {
+    await command.run(['--help']);
+    expect(register).toHaveBeenCalledOnce();
+    const [specifier, parentURL] = register.mock.lastCall!;
+    await expect(import(new URL(specifier, parentURL).href)).resolves.toMatchObject({
+      load: expect.any(Function),
+      resolve: expect.any(Function)
+    });
+  });
+
   it('should set the action', async () => {
     const action = vi.spyOn(Command.prototype, 'action');
     await command.run(['--help']);
