@@ -1,5 +1,24 @@
 # Changelog
 
+## [11.0.0](https://github.com/DouglasNeuroInformatics/libnest/compare/v10.0.0...v11.0.0) (2026-11-18)
+
+### ⚠ BREAKING CHANGES
+
+* **meta:** the CLI no longer compiles application code according to
+tsconfig.json. `libnest dev`, and the config file both commands import, compile
+`.ts` with the options of the production bundle, whatever `target`,
+`useDefineForClassFields`, `experimentalDecorators` or `emitDecoratorMetadata`
+say, and compile `.tsx`, `.mts` and `.jsx` with esbuild, as the bundle does,
+which emits no decorator metadata. A project `.swcrc` now applies in
+development, as it does in the bundle. Application `.js` files run as written
+instead of passing through SWC. The SWCRC, SWC_CONFIG_FILE,
+SWC_NODE_INLINE_SOURCE_MAP and SWC_NODE_IGNORE_DYNAMIC variables of
+@swc-node/register are ignored.
+
+### Features
+
+* **meta:** run the CLI on TypeScript 7 by dropping @swc-node/register ([07bd97f](https://github.com/DouglasNeuroInformatics/libnest/commit/07bd97f109b5ac46c5b6796a7b653ca13dfdb763)), closes [#82](https://github.com/DouglasNeuroInformatics/libnest/issues/82)
+
 ## [10.0.0](https://github.com/DouglasNeuroInformatics/libnest/compare/v9.0.0...v10.0.0) (2026-10-06)
 
 ### ⚠ BREAKING CHANGES
